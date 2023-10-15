@@ -8,7 +8,8 @@ with PrologMQI() as mqi:
         path = create_posix_path(
             "../prolog/knowledge_base.pl")  # Replace with your file path
         prolog_thread.query(f'consult("{path}").')
-        prolog_thread.query_async("default_gpa(GPA)", find_all=False)
+        prolog_thread.query_async("update_default_gpa(2.5)", find_all=False)
+        # prolog_thread.query_async("default_gpa(GPA)", find_all=False)
         while True:
             result = prolog_thread.query_async_result()
             if result is None:

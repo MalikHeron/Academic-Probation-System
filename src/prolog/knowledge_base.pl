@@ -1,4 +1,5 @@
 % The default GPA
+:- dynamic(default_gpa/1).
 default_gpa(2.2).
 
 % The grade points and credits of each module
@@ -20,8 +21,14 @@ cumulative_gpa(StudentID, CumulativeGPA) :-
 
 % A predicate that updates the default GPA
 update_default_gpa(NewGPA) :-
-    retract(default_gpa(OldGPA)),
-    assert(default_gpa(NewGPA)).
+    (   retract(default_gpa(OldGPA)) ->
+        true
+    ;   OldGPA = 'No old GPA'
+    ),
+    assert(default_gpa(NewGPA)),
+    write('Old GPA: '), write(OldGPA), nl,
+    write('New GPA: '), write(NewGPA), nl.
+
 
 % A predicate that calculates the sum of a list of numbers
 sum(List, Sum) :-
