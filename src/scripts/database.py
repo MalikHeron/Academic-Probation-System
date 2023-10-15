@@ -7,7 +7,7 @@ from sqlite3 import Error
 def create_connection():
     conn = None
     try:
-        conn = sqlite3.connect('student_grades.db')
+        conn = sqlite3.connect('../../data/student_grades.db')
     except Error as e:
         print(e)
 
@@ -65,7 +65,7 @@ if conn is not None:
     # create modules table
     create_table(conn, sql_create_modules_table)
 
-    # create grades table
+    # create details table
     create_table(conn, sql_create_details_table)
 else:
     print("Error! cannot create the database connection.")
