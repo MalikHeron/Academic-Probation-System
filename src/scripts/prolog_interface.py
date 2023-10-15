@@ -46,8 +46,33 @@ class PrologQueryHandler:
     @staticmethod
     def get_student_list():
         try:
-            # TODO
-            result = list(prolog.query(f""))
+            result = list(prolog.query("student_master(Id, Name, Email, School, Programme)"))
+            if result is None:
+                return None
+            else:
+                logging.info(result)
+                return result
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def get_module_list():
+        try:
+            result = list(prolog.query("module_master(Code, Name, Credits)"))
+            if result is None:
+                return None
+            else:
+                logging.info(result)
+                return result
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def get_details_list():
+        try:
+            result = list(prolog.query("module_details(Id, Code, Grade_Points, Semester, Year)"))
             if result is None:
                 return None
             else:
