@@ -1,5 +1,6 @@
 import datetime
 import tkinter as tk
+from src.scripts.prolog_interface import PrologQueryHandler as prolog
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -53,19 +54,24 @@ class AcademicProbationSystem:
         year = self.year_selector.get()
         gpa = self.gpa_entry.get()
 
-        # Validate GPA
-        try:
-            gpa = float(gpa)
-            if not 0.0 <= gpa <= 4.0:
-                raise ValueError("GPA must be between 0.0 and 4.0")
-        except ValueError as e:
-            messagebox.showerror("Invalid Input", str(e))
-            return
+        if gpa != "":
+            # Validate GPA
+            try:
+                gpa = float(gpa)
+                if not 0.0 <= gpa <= 4.0:
+                    raise ValueError("GPA must be between 0.0 and 4.0")
+                else:
+                    prolog.update_gpa(gpa)  # update default GPA
+            except ValueError as e:
+                messagebox.showerror("Invalid Input", str(e))
+                return
+        else:
+            gpa = prolog.get_default_gpa()
 
-        # messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
-        self.report()
+        messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
+        self.report(year, gpa)
 
-    def report(self):
+    def report(self, year, gpa):
         # Create new window
         new_window = tk.Toplevel(self.root)
 
@@ -76,8 +82,8 @@ class AcademicProbationSystem:
         # Labels
         tk.Label(new_window, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
         tk.Label(new_window, text="Academic Probation Alert GPA Report").pack()
-        tk.Label(new_window, text=f"Year: {self.year_selector.get()}").pack()
-        tk.Label(new_window, text=f"GPA: {self.gpa_entry.get()}").pack(pady=5)
+        tk.Label(new_window, text=f"Year: {year}").pack()
+        tk.Label(new_window, text=f"GPA: {gpa}").pack(pady=5)
 
         # Create Treeview in new window
         tree = ttk.Treeview(new_window, show='headings', style="Treeview")  # Apply the style

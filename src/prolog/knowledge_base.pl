@@ -29,7 +29,6 @@ update_default_gpa(NewGPA) :-
     write('Old GPA: '), write(OldGPA), nl,
     write('New GPA: '), write(NewGPA), nl.
 
-
 % A predicate that calculates the sum of a list of numbers
 sum(List, Sum) :-
     sum(List, 0, Sum).
