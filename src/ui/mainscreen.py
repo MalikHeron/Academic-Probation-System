@@ -5,48 +5,12 @@ from tkinter import ttk
 
 class AcademicProbationSystem:
     def __init__(self):
-        self.gpa_entry = None
         self.year_selector = None
+        self.gpa_entry = None
         self.root = tk.Tk()
         self.root.title('Academic Probation System')
         self.setup_window()
         self.setup_components()
-
-    def submit(self):
-        year = self.year_selector.get()
-        gpa = self.gpa_entry.get()
-
-        # Validate GPA
-        try:
-            gpa = float(gpa)
-            if not 0.0 <= gpa <= 4.0:
-                raise ValueError("GPA must be between 0.0 and 4.0")
-        except ValueError as e:
-            messagebox.showerror("Invalid Input", str(e))
-            return
-
-        messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
-        self.result_table()
-
-    def result_table(self):
-        # Create new window
-        new_window = tk.Toplevel(self.root)
-
-        # Create Treeview in new window
-        tree = ttk.Treeview(new_window)
-
-        # Define columns
-        tree["columns"] = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
-
-        # Format columns
-        for col in tree["columns"]:
-            # Set column width to length of the heading (plus some padding)
-            tree.column(col, width=len(col) * 10)
-            tree.heading(col, text=col)
-
-        # Insert data
-        tree.insert("", "end", values=("1", "John Doe", "3.5", "3.7", "3.6"))
-        tree.pack()
 
     def setup_window(self):
         # Set window size
@@ -67,17 +31,70 @@ class AcademicProbationSystem:
     def setup_components(self):
         # Year Selector
         tk.Label(self.root, text="Select Year:").pack()
-        year_selector = tk.Spinbox(self.root, from_=2000, to=2030)
-        year_selector.pack()
+        self.year_selector = tk.Spinbox(self.root, from_=2000, to=2030)
+        self.year_selector.pack(pady=5)
+
+        # Optional Label
+        tk.Label(self.root, text="OR", font=("Helvetica", 10, "bold")).pack(pady=5)
 
         # GPA Entry
         tk.Label(self.root, text="Enter GPA:").pack()
-        gpa_entry = tk.Entry(self.root)
-        gpa_entry.pack()
+        self.gpa_entry = tk.Entry(self.root)
+        self.gpa_entry.pack(pady=5)
 
         # Submit Button
         submit_button = tk.Button(self.root, text="Submit", command=self.submit)
-        submit_button.pack()
+        submit_button.pack(pady=5)
+
+    def submit(self):
+        # Get data
+        year = self.year_selector.get()
+        gpa = self.gpa_entry.get()
+
+        # Validate GPA
+        try:
+            gpa = float(gpa)
+            if not 0.0 <= gpa <= 4.0:
+                raise ValueError("GPA must be between 0.0 and 4.0")
+        except ValueError as e:
+            messagebox.showerror("Invalid Input", str(e))
+            return
+
+        # messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
+        self.report()
+
+    def report(self):
+        # Create new window
+        new_window = tk.Toplevel(self.root)
+
+        # Create a style
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
+
+        # Labels
+        tk.Label(new_window, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
+        tk.Label(new_window, text="Academic Probation Alert GPA Report").pack()
+        tk.Label(new_window, text=f"Year: {self.year_selector.get()}").pack()
+        tk.Label(new_window, text=f"GPA: {self.gpa_entry.get()}").pack(pady=5)
+
+        # Create Treeview in new window
+        tree = ttk.Treeview(new_window, show='headings', style="Treeview")  # Apply the style
+
+        # Define columns
+        columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
+        tree["columns"] = columns
+
+        # Format columns
+        for col in columns:
+            tree.column(col, width=len(col) * 10)
+            tree.heading(col, text=col)
+
+        # Insert data
+        tree.insert("", "end", values=("1", "John Doe", "3.5", "3.7", "3.6"))
+        tree.pack()
+
+        close_button = tk.Button(new_window, text="Close", command=new_window.destroy)
+        close_button.pack(pady=5)
 
     def run(self):
         self.root.mainloop()
