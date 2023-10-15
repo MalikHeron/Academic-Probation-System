@@ -50,8 +50,8 @@ sql_create_details_table = """CREATE TABLE IF NOT EXISTS module_details (
                                 grade_points integer NOT NULL,
                                 semester integer NOT NULL,
                                 year integer NOT NULL,
-                                FOREIGN KEY (student_id) REFERENCES students (id),
-                                FOREIGN KEY (module_code) REFERENCES modules (code)
+                                FOREIGN KEY (student_id) REFERENCES student_master (id),
+                                FOREIGN KEY (module_code) REFERENCES module_master (code)
                             );"""
 
 # create a database connection
