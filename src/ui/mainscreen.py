@@ -1,0 +1,88 @@
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import ttk
+
+
+class AcademicProbationSystem:
+    def __init__(self):
+        self.gpa_entry = None
+        self.year_selector = None
+        self.root = tk.Tk()
+        self.root.title('Academic Probation System')
+        self.setup_window()
+        self.setup_components()
+
+    def submit(self):
+        year = self.year_selector.get()
+        gpa = self.gpa_entry.get()
+
+        # Validate GPA
+        try:
+            gpa = float(gpa)
+            if not 0.0 <= gpa <= 4.0:
+                raise ValueError("GPA must be between 0.0 and 4.0")
+        except ValueError as e:
+            messagebox.showerror("Invalid Input", str(e))
+            return
+
+        messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
+        self.result_table()
+
+    def result_table(self):
+        # Create new window
+        new_window = tk.Toplevel(self.root)
+
+        # Create Treeview in new window
+        tree = ttk.Treeview(new_window)
+
+        # Define columns
+        tree["columns"] = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
+
+        # Format columns
+        for col in tree["columns"]:
+            # Set column width to length of the heading (plus some padding)
+            tree.column(col, width=len(col) * 10)
+            tree.heading(col, text=col)
+
+        # Insert data
+        tree.insert("", "end", values=("1", "John Doe", "3.5", "3.7", "3.6"))
+        tree.pack()
+
+    def setup_window(self):
+        # Set window size
+        window_width = 500
+        window_height = 200
+
+        # Get screen width and height
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        # Calculate position
+        position_top = int(screen_height / 2 - window_height / 2)
+        position_right = int(screen_width / 2 - window_width / 2)
+
+        # Set window size and position
+        self.root.geometry(f"{window_width}x{window_height}+{position_right}+{position_top}")
+
+    def setup_components(self):
+        # Year Selector
+        tk.Label(self.root, text="Select Year:").pack()
+        year_selector = tk.Spinbox(self.root, from_=2000, to=2030)
+        year_selector.pack()
+
+        # GPA Entry
+        tk.Label(self.root, text="Enter GPA:").pack()
+        gpa_entry = tk.Entry(self.root)
+        gpa_entry.pack()
+
+        # Submit Button
+        submit_button = tk.Button(self.root, text="Submit", command=self.submit)
+        submit_button.pack()
+
+    def run(self):
+        self.root.mainloop()
+
+
+# Create and run the application
+app = AcademicProbationSystem()
+app.run()
