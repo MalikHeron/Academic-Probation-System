@@ -1,3 +1,4 @@
+import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -30,8 +31,9 @@ class AcademicProbationSystem:
 
     def setup_components(self):
         # Year Selector
+        current_year = datetime.datetime.now().year  # Get the current year
         tk.Label(self.root, text="Select Year:").pack()
-        self.year_selector = tk.Spinbox(self.root, from_=2000, to=2030)
+        self.year_selector = tk.Spinbox(self.root, from_=2000, to=current_year)
         self.year_selector.pack(pady=5)
 
         # Optional Label
