@@ -2,8 +2,8 @@
 :- dynamic(default_gpa/1).
 default_gpa(2.2).
 
-% The grade points and credits of each module
-grade_points('CMP4011', 4).
+% The credits of each module
+credits('CMP4011', 4).
 
 % A predicate that calculates the GPA for a given student ID and semester
 gpa(StudentID, Semester, GPA) :-

@@ -1,6 +1,6 @@
 import datetime
 import tkinter as tk
-from src.scripts.prolog_interface import PrologQueryHandler as prolog
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -61,12 +61,12 @@ class AcademicProbationSystem:
                 if not 0.0 <= gpa <= 4.0:
                     raise ValueError("GPA must be between 0.0 and 4.0")
                 else:
-                    prolog.update_gpa(gpa)  # update default GPA
+                    Prolog.update_gpa(gpa)  # update default GPA
             except ValueError as e:
                 messagebox.showerror("Invalid Input", str(e))
                 return
         else:
-            gpa = prolog.get_default_gpa()
+            gpa = Prolog.get_default_gpa()  # get default gpa
 
         messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
         self.report(year, gpa)
