@@ -2,6 +2,7 @@ import itertools
 import sqlite3
 import threading
 import time
+import logging
 from sqlite3 import Error
 
 from scripts.queries import *
@@ -52,7 +53,11 @@ class DatabaseManager:
         try:
             c = self.conn.cursor()
             c.execute(create_table_sql)
-            c.execute(sql_create_unique_index)
+            if create_table_sql == sql_create_details_table:
+                try:
+                    c.execute(sql_create_unique_index)
+                except Error as e:
+                    logging.warning(e)
         except Error as e:
             print(e)
 
@@ -111,7 +116,7 @@ class DatabaseManager:
         self.done = True
         t.join()  # Wait for the animation thread to finish
 
-        print('\rKnowledge Base Updated.', flush=True)
+        print('\rKnowledge Base Updated.\n', flush=True)
 
     def commit_changes(self):
         try:
