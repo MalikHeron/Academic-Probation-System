@@ -47,7 +47,7 @@ gpa(StudentID, Name, Semester, GPA) :-
     findall(
         GradePointsEarned,
         (   module_details(StudentID, Module, GradePoint, Semester, _),
-            module_master(Module, _, Credits),
+            module_master(Module, Credits),
             GradePointsEarned is Credits * GradePoint
         ),
         GradePointsEarnedList
