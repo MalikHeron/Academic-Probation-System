@@ -3,6 +3,7 @@ import tkinter as tk
 from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 from tkinter import messagebox
 from tkinter import ttk
+from scripts.database import DatabaseManager
 
 
 class AcademicProbationSystem:
@@ -13,6 +14,7 @@ class AcademicProbationSystem:
         self.root.title('Academic Probation System')
         self.setup_window()
         self.setup_components()
+        DatabaseManager()
 
     def setup_window(self):
         # Set window size
@@ -29,6 +31,7 @@ class AcademicProbationSystem:
 
         # Set window size and position
         self.root.geometry(f"{window_width}x{window_height}+{position_right}+{position_top}")
+        self.root.resizable(False, False)
 
     def setup_components(self):
         # Year Selector
@@ -97,11 +100,13 @@ class AcademicProbationSystem:
             tree.column(col, width=len(col) * 10)
             tree.heading(col, text=col)
 
-        # Insert data
-        for student in Prolog.calculate_cumulative_gpa():
-            tree.insert("", "end", values=(
-                student['Id'], student['Name'], student['GPA1'], student['GPA2'], student['CumulativeGPA']))
-            tree.pack()
+        # Insert data in table
+        for results in Prolog.calculate_cumulative_gpa():
+            for student in results['Results']:
+                student_id, name, gpa1, gpa2, cumulative_gpa = student
+                tree.insert("", "end", values=(student_id, name, gpa1, gpa2, cumulative_gpa))
+
+        tree.pack()
 
         close_button = tk.Button(new_window, text="Close", command=new_window.destroy)
         close_button.pack(pady=5)
