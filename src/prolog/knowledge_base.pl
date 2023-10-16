@@ -42,8 +42,8 @@ module_details(1, 'MAT101', 3.33, 2, 2022).
 module_details(1, 'CE101', 4.00, 2, 2022).
 
 % A predicate that calculates the GPA for a given student ID and semester
-gpa(StudentID, Semester, GPA) :-
-    student_master(StudentID, _, _, _, _),
+gpa(StudentID, Name, Semester, GPA) :-
+    student_master(StudentID, Name, _, _, _),
     findall(
         GradePointsEarned,
         (   module_details(StudentID, Module, GradePoint, Semester, _),
@@ -68,11 +68,11 @@ gpa(StudentID, Semester, GPA) :-
     write('GPA is '), write(GPA), nl, nl.
 
 % A predicate that calculates the Cumulative GPA for a given student ID
-cumulative_gpa(StudentID, CumulativeGPA) :-
-    (   gpa(StudentID, 1, GPA1), gpa(StudentID, 2, GPA2) ->
+cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
+    (   gpa(StudentID, Name, 1, GPA1), gpa(StudentID, Name, 2, GPA2) ->
         findall(
             TotalGradePoints,
-            (   gpa(StudentID, Semester, _),
+            (   gpa(StudentID, Name, Semester, _),
                 findall(
                     GradePointsEarned,
                     (   module_details(StudentID, Module, GradePoint, Semester, _),
@@ -88,7 +88,7 @@ cumulative_gpa(StudentID, CumulativeGPA) :-
         sum_list(TotalGradePointsList, AllTotalGradePoints),
         findall(
             TotalCredits,
-            (   gpa(StudentID, Semester, _),
+            (   gpa(StudentID, Name, Semester, _),
                 findall(
                     Credits,
                     (   module_details(StudentID, Module, _, Semester, _),
@@ -102,7 +102,7 @@ cumulative_gpa(StudentID, CumulativeGPA) :-
         ),
         sum_list(TotalCreditsList, AllTotalCredits),
         CumulativeGPA is AllTotalGradePoints / AllTotalCredits
-    ;   gpa(StudentID, 1, GPA1) ->
+    ;   gpa(StudentID, Name, 1, GPA1) ->
         CumulativeGPA is GPA1
     ).
 
