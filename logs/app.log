@@ -1,0 +1,1 @@
+root - ERROR - An error occurred: Caused by: 'cumulative_gpa(Id, Name, GPA1, GPA2, CumulativeGPA)'. Returned: 'error(existence_error(procedure, /(module_master, 3)), context(:(system, /(<meta-call>, 1)), _3044))'.

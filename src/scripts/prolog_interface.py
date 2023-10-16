@@ -58,7 +58,7 @@ class PrologQueryHandler:
     @staticmethod
     def get_module_list():
         try:
-            result = list(prolog.query("module_master(Code, Name, Credits)"))
+            result = list(prolog.query("module_master(Code, Credits)"))
             if result is None:
                 return None
             else:

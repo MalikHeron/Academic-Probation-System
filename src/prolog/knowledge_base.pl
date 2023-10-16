@@ -15,17 +15,17 @@ student_master(9, 'Jessica Wilson', 'jessicawilson@gmail.com', 'School of Engine
 student_master(10, 'Thomas Moore', 'thomasmoore@gmail.com', 'School of Science', 'Physics').
 
 % Facts for module_master
-module_master('CS101', 'Artificial Intelligence', 3).
-module_master('BA101', 'Introduction to Business Administration', 3).
-module_master('FA101', 'Introduction to Fine Arts', 4).
-module_master('ME101', 'Introduction to Mechanical Engineering', 4).
-module_master('BI101', 'Introduction to Biology', 3).
-module_master('IS101', 'Introduction to Information Systems', 2).
-module_master('AC101', 'Introduction to Accounting', 1).
-module_master('MU101', 'Introduction to Music', 1).
-module_master('CE101', 'Introduction to Civil Engineering', 2).
-module_master('PH101', 'Introduction to Physics', 4).
-module_master('MAT101', 'Introduction to Statistics', 4).
+module_master('CS101', 3).
+module_master('BA101', 3).
+module_master('FA101', 4).
+module_master('ME101', 4).
+module_master('BI101', 3).
+module_master('IS101', 2).
+module_master('AC101', 1).
+module_master('MU101', 1).
+module_master('CE101', 2).
+module_master('PH101', 4).
+module_master('MAT101', 4).
 
 % Facts for module_details
 module_details(1, 'CS101', 3.67, 1, 2021).
@@ -57,7 +57,7 @@ gpa(StudentID, Name, Semester, GPA) :-
     findall(
         Credits,
         (   module_details(StudentID, Module, _, Semester, _),
-            module_master(Module, _, Credits)
+            module_master(Module, Credits)
         ),
         CreditsList
     ),
@@ -76,7 +76,7 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
                 findall(
                     GradePointsEarned,
                     (   module_details(StudentID, Module, GradePoint, Semester, _),
-                        module_master(Module, _, Credits),
+                        module_master(Module, Credits),
                         GradePointsEarned is Credits * GradePoint
                     ),
                     GradePointsEarnedList
@@ -92,7 +92,7 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
                 findall(
                     Credits,
                     (   module_details(StudentID, Module, _, Semester, _),
-                        module_master(Module, _, Credits)
+                        module_master(Module, Credits)
                     ),
                     CreditsList
                 ),

@@ -41,7 +41,7 @@ class DatabaseManager:
         for module in Prolog.get_module_list():
             c = self.conn.cursor()
             c.execute(sql_insert_modules,
-                      (module['Code'], module['Name'], module['Credits']))
+                      (module['Code'], module['Credits']))
 
     def insert_details(self):
         for detail in Prolog.get_details_list():

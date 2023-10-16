@@ -9,7 +9,6 @@ sql_create_students_table = """CREATE TABLE IF NOT EXISTS student_master (
 
 sql_create_modules_table = """CREATE TABLE IF NOT EXISTS module_master (
                                     code text PRIMARY KEY,
-                                    name text NOT NULL,
                                     credits integer NOT NULL
                                 );"""
 
@@ -70,8 +69,8 @@ sql_insert_students = """INSERT OR IGNORE INTO student_master(id, name, email, s
 (?,?,?,?,?)"""
 
 # Inserting data into module_master
-sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, name, credits) VALUES
-(?,?,?);"""
+sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, credits) VALUES
+(?,?);"""
 
 # Inserting data into module_details
 sql_insert_details = """INSERT OR IGNORE INTO module_details(student_id, module_code, grade_points, semester, 
