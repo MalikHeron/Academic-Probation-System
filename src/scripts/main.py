@@ -37,7 +37,7 @@ class AcademicProbationSystem:
         # Year Selector
         current_year = datetime.datetime.now().year  # Get the current year
         tk.Label(self.root, text="Select Year:").pack()
-        self.year_selector = tk.Spinbox(self.root, from_=2000, to=current_year)
+        self.year_selector = tk.Spinbox(self.root, from_=2016, to=current_year)
         self.year_selector.pack(pady=5)
 
         # Optional Label
