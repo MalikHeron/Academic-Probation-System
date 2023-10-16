@@ -1,71 +1,42 @@
 % The default GPA
 :- dynamic(default_gpa/1).
+:- dynamic(student/5).
+:- dynamic(module/2).
+:- dynamic(module_details/5).
+
 default_gpa(2.2).
 
-% Facts for student_master
-student_master(1, 'John Doe', 'johndoe@gmail.com', 'School of Computing', 'Computer Science').
-student_master(2, 'Jane Smith', 'janesmith@gmail.com', 'School of Business', 'Business Administration').
-student_master(3, 'Robert Johnson', 'robertjohnson@gmail.com', 'School of Arts', 'Fine Arts').
-student_master(4, 'Michael Williams', 'michaelwilliams@gmail.com', 'School of Engineering', 'Mechanical Engineering').
-student_master(5, 'Sarah Brown', 'sarahbrown@gmail.com', 'School of Science', 'Biology').
-student_master(6, 'David Jones', 'davidjones@gmail.com', 'School of Computing', 'Information Systems').
-student_master(7, 'Emily Davis', 'emilydavis@gmail.com', 'School of Business', 'Accounting').
-student_master(8, 'James Miller', 'jamesmiller@gmail.com', 'School of Arts', 'Music').
-student_master(9, 'Jessica Wilson', 'jessicawilson@gmail.com', 'School of Engineering', 'Civil Engineering').
-student_master(10, 'Thomas Moore', 'thomasmoore@gmail.com', 'School of Science', 'Physics').
+% Facts for student
+% student(Id, Name, Email, School, Programme).
 
-% Facts for module_master
-module_master('CS101', 3).
-module_master('BA101', 3).
-module_master('FA101', 4).
-module_master('ME101', 4).
-module_master('BI101', 3).
-module_master('IS101', 2).
-module_master('AC101', 1).
-module_master('MU101', 1).
-module_master('CE101', 2).
-module_master('PH101', 4).
-module_master('MAT101', 4).
+% Facts for module
+% module(Module, Credits).
 
 % Facts for module_details
-module_details(1, 'CS101', 3.67, 1, 2021).
-module_details(1, 'BA101', 2.00, 1, 2021).
-module_details(1, 'FA101', 3.33, 1, 2021).
-module_details(1, 'ME101', 2.33, 1, 2021).
-module_details(1, 'BI101', 1.30, 1, 2021).
-module_details(1, 'IS101', 3.00, 1, 2021).
-module_details(1, 'AC101', 4.00, 1, 2021).
-module_details(1, 'MU101', 4.30, 2, 2022).
-module_details(1, 'PH101', 3.67, 2, 2022).
-module_details(1, 'BI101', 3.00, 2, 2022).
-module_details(1, 'MAT101', 3.33, 2, 2022).
-module_details(1, 'CE101', 4.00, 2, 2022).
+% module_details(Id, Module, GradePoint, Semester, Year).
 
 % A predicate that calculates the GPA for a given student ID and semester
 gpa(StudentID, Name, Semester, GPA) :-
-    student_master(StudentID, Name, _, _, _),
+    student(StudentID, Name, _, _, _),
     findall(
         GradePointsEarned,
         (   module_details(StudentID, Module, GradePoint, Semester, _),
-            module_master(Module, Credits),
+            module(Module, Credits),
             GradePointsEarned is Credits * GradePoint
         ),
         GradePointsEarnedList
     ),
     sum_list(GradePointsEarnedList, TotalGradePoints),
-    write('Total Grade Points: '), write(TotalGradePoints), nl,
     findall(
         Credits,
         (   module_details(StudentID, Module, _, Semester, _),
-            module_master(Module, Credits)
+            module(Module, Credits)
         ),
         CreditsList
     ),
     sum_list(CreditsList, TotalCredits),
-    write('Total Credits: '), write(TotalCredits), nl,
     TotalCredits \= 0,
-    GPA is round((TotalGradePoints / TotalCredits) * 100) / 100,
-    write('GPA is '), write(GPA), nl, nl.
+    GPA is round((TotalGradePoints / TotalCredits) * 100) / 100.
 
 % A predicate that calculates the Cumulative GPA for a given student ID
 cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
@@ -76,7 +47,7 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
                 findall(
                     GradePointsEarned,
                     (   module_details(StudentID, Module, GradePoint, Semester, _),
-                        module_master(Module, Credits),
+                        module(Module, Credits),
                         GradePointsEarned is Credits * GradePoint
                     ),
                     GradePointsEarnedList
@@ -92,7 +63,7 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
                 findall(
                     Credits,
                     (   module_details(StudentID, Module, _, Semester, _),
-                        module_master(Module, Credits)
+                        module(Module, Credits)
                     ),
                     CreditsList
                 ),
@@ -104,6 +75,22 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
         CumulativeGPA is round((AllTotalGradePoints / AllTotalCredits) * 100) / 100
     ;   gpa(StudentID, Name, 1, GPA1) ->
         CumulativeGPA is round(GPA1 * 100) / 100
+    ).
+
+% A predicate that calculates the Cumulative GPA for all students and stores the results in a list
+cumulative_gpa_all_students(Results) :-
+    findall(
+        [StudentID, Name, GPA1, GPA2, CumulativeGPA],
+        (   student(StudentID, Name, _, _, _),
+            gpa(StudentID, Name, 1, GPA1),
+            gpa(StudentID, Name, 2, GPA2),
+            (   cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) ->
+                format('Student: ~w, Cumulative GPA: ~2f~n', [Name, CumulativeGPA])
+            ;   CumulativeGPA = 'No GPA calculated',
+                format('Student: ~w, No GPA calculated~n', [Name])
+            )
+        ),
+        Results
     ).
 
 % A predicate that updates the default GPA

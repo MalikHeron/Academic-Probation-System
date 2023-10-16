@@ -22,7 +22,15 @@ sql_create_details_table = """CREATE TABLE IF NOT EXISTS module_details (
                                 FOREIGN KEY (module_code) REFERENCES module_master (code)
                             );"""
 
-'''
+sql_create_unique_index = """CREATE UNIQUE INDEX idx_module_details_unique ON 
+                        module_details(student_id, module_code, semester, year
+                        );"""
+
+# SQL for retrieving data
+sql_get_students = """SELECT * FROM student_master"""
+sql_get_modules = """SELECT * FROM module_master"""
+sql_get_details = """SELECT * FROM module_details"""
+
 # Inserting data into student_master
 sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, school, programme) VALUES
 (1, 'John Doe', 'johndoe@gmail.com', 'School of Computing', 'Computer Science'),
@@ -36,42 +44,55 @@ sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, 
 (9, 'Jessica Wilson', 'jessicawilson@gmail.com', 'School of Engineering', 'Civil Engineering'),
 (10, 'Thomas Moore', 'thomasmoore@gmail.com', 'School of Science', 'Physics');"""
 
-# Inserting data into module_master
-sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, name, credits) VALUES
-('CS101', 'Artificial Intelligence', 4),
-('BA101', 'Introduction to Business Administration', 4),
-('FA101', 'Introduction to Fine Arts', 3),
-('ME101', 'Introduction to Mechanical Engineering', 5),
-('BI101', 'Introduction to Biology', 4),
-('IS101', 'Introduction to Information Systems', 4),
-('AC101', 'Introduction to Accounting', 4),
-('MU101', 'Introduction to Music', 3),
-('CE101', 'Introduction to Civil Engineering', 5),
-('PH101', 'Introduction to Physics', 4);"""
+# Inserting data into 
+sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, credits) VALUES
+('CS101', 3),
+('BA101', 3),
+('FA101', 4),
+('ME101', 4),
+('BI101', 3),
+('IS101', 2),
+('AC101', 1),
+('MU101', 1),
+('CE101', 2),
+('PH101', 4),
+('MAT101', 4);"""
 
 # Inserting data into module_details
 sql_insert_details = """INSERT OR IGNORE INTO module_details(student_id, module_code, grade_points, semester, year) 
 VALUES
-(1, 'CS101', 4, 1, 2023),
-(2, 'BA101', 3.5, 1, 2023),
-(3, 'FA101', 4.0, 1, 2023),
-(4, 'ME101', 3.7, 1, 2023),
-(5, 'BI101', 3.8, 1, 2023),
-(6, 'IS101', 3.9, 1, 2023),
-(7, 'AC101', 4.0, 1, 2023),
-(8, 'MU101', 3.6, 1, 2023),
-(9, 'CE101', 3.5, 1, 2023),
-(10, 'PH101',4.0 ,1 ,2023);"""
-'''
-
-# Inserting data into student_master
-sql_insert_students = """INSERT OR IGNORE INTO student_master(id, name, email, school, programme) VALUES
-(?,?,?,?,?)"""
-
-# Inserting data into module_master
-sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, credits) VALUES
-(?,?);"""
-
-# Inserting data into module_details
-sql_insert_details = """INSERT OR IGNORE INTO module_details(student_id, module_code, grade_points, semester, 
-year) VALUES(?,?,?,?,?)"""
+(1, 'CS101', 3.67, 1, 2021),
+(1, 'BA101', 2.00, 1, 2021),
+(1, 'FA101', 3.33, 1, 2021),
+(1, 'ME101', 2.33, 1, 2021),
+(1, 'BI101', 1.30, 1, 2021),
+(1, 'IS101', 3.00, 1, 2021),
+(1, 'AC101', 4.00, 1, 2021),
+(1, 'MU101', 4.30, 2, 2022),
+(1, 'PH101', 3.67, 2, 2022),
+(1, 'BI101', 3.00, 2, 2022),
+(1, 'MAT101', 3.33, 2, 2022),
+(2, 'CE101', 4.00, 1, 2018),
+(2, 'CS101', 3.27, 1, 2018),
+(2, 'BA101', 2.10, 1, 2018),
+(2, 'FA101', 1.33, 1, 2018),
+(2, 'ME101', 3.33, 1, 2018),
+(2, 'BI101', 3.30, 2, 2019),
+(2, 'IS101', 2.00, 2, 2019),
+(2, 'AC101', 3.00, 2, 2019),
+(3, 'MU101', 4.10, 1, 20217),
+(3, 'PH101', 3.57, 1, 2017),
+(3, 'BI101', 3.50, 1, 2017),
+(3, 'MAT101', 3.13, 1, 2017),
+(3, 'CE101', 2.00, 2, 2018),
+(3, 'CS101', 1.67, 2, 2018),
+(3, 'BA101', 1.90, 2, 2018),
+(4, 'FA101', 3.13, 2, 2021),
+(4, 'ME101', 2.63, 2, 2021),
+(4, 'BI101', 1.90, 2, 2021),
+(4, 'IS101', 3.10, 2, 2021),
+(4, 'AC101', 4.20, 2, 2021),
+(4, 'PH101', 3.67, 1, 2023),
+(4, 'BI101', 3.00, 1, 2023),
+(4, 'MAT101', 3.33, 1, 2023),
+(4, 'CE101', 4.00, 1, 2023);"""

@@ -1,4 +1,7 @@
+import itertools
 import sqlite3
+import threading
+import time
 from sqlite3 import Error
 
 from scripts.queries import *
@@ -15,8 +18,29 @@ def create_connection(db_file):
 
 
 class DatabaseManager:
-    def __init__(self, db_file):
-        self.conn = create_connection(db_file)
+    def __init__(self):
+        # Create database connection
+        self.done = None
+        self.conn = create_connection('../../data/student_grades.db')
+
+        # Create tables
+        self.create_table(sql_create_students_table)
+        self.create_table(sql_create_modules_table)
+        self.create_table(sql_create_details_table)
+
+        # Insert data
+        self.insert_students()
+        self.insert_modules()
+        self.insert_details()
+
+        # Commit changes
+        self.commit_changes()
+
+        # Update knowledge base
+        self.update_knowledge_base()
+
+        # Close the connection
+        self.close_connection()
 
     def close_connection(self):
         try:
@@ -28,50 +52,69 @@ class DatabaseManager:
         try:
             c = self.conn.cursor()
             c.execute(create_table_sql)
+            c.execute(sql_create_unique_index)
         except Error as e:
             print(e)
 
     def insert_students(self):
-        for student in Prolog.get_student_list():
-            c = self.conn.cursor()
-            c.execute(sql_insert_students,
-                      (student['Id'], student['Name'], student['Email'], student['School'], student['Programme']))
+        c = self.conn.cursor()
+        c.execute(sql_insert_students)
 
     def insert_modules(self):
-        for module in Prolog.get_module_list():
-            c = self.conn.cursor()
-            c.execute(sql_insert_modules,
-                      (module['Code'], module['Credits']))
+        c = self.conn.cursor()
+        c.execute(sql_insert_modules)
 
     def insert_details(self):
-        for detail in Prolog.get_details_list():
-            c = self.conn.cursor()
-            c.execute(sql_insert_details,
-                      (detail['Id'], detail['Code'], detail['Grade_Points'], detail['Semester'],
-                       detail['Year']))
+        c = self.conn.cursor()
+        c.execute(sql_insert_details)
+
+    def get_students(self):
+        c = self.conn.cursor()
+        c.execute(sql_get_students)
+        students = c.fetchall()
+
+        for student in students:
+            Prolog.add_student(student)
+
+    def get_modules(self):
+        c = self.conn.cursor()
+        c.execute(sql_get_modules)
+        modules = c.fetchall()
+
+        for module in modules:
+            Prolog.add_module(module)
+
+    def get_details(self):
+        c = self.conn.cursor()
+        c.execute(sql_get_details)
+        details = c.fetchall()
+
+        for detail in details:
+            Prolog.add_details(detail)
+
+    def animate(self):
+        for c in itertools.cycle(['|', '/', '-', '\\']):
+            if self.done:
+                break
+            print('\rUpdating Knowledge Base... ' + c, end='', flush=True)
+            time.sleep(0.1)
+
+    def update_knowledge_base(self):
+        self.done = False
+        t = threading.Thread(target=self.animate)
+        t.start()
+
+        self.get_students()
+        self.get_modules()
+        self.get_details()
+
+        self.done = True
+        t.join()  # Wait for the animation thread to finish
+
+        print('\rKnowledge Base Updated.', flush=True)
 
     def commit_changes(self):
         try:
             self.conn.commit()
         except Error as e:
             print(e)
-
-
-# Usage
-db_manager = DatabaseManager('../../data/student_grades.db')
-
-# Create tables
-db_manager.create_table(sql_create_students_table)
-db_manager.create_table(sql_create_modules_table)
-db_manager.create_table(sql_create_details_table)
-
-# Insert data
-db_manager.insert_students()
-db_manager.insert_modules()
-db_manager.insert_details()
-
-# Commit changes
-db_manager.commit_changes()
-
-# Close the connection
-db_manager.close_connection()
