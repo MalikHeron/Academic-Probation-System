@@ -101,9 +101,9 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
             TotalCreditsList
         ),
         sum_list(TotalCreditsList, AllTotalCredits),
-        CumulativeGPA is AllTotalGradePoints / AllTotalCredits
+        CumulativeGPA is round((AllTotalGradePoints / AllTotalCredits) * 100) / 100
     ;   gpa(StudentID, Name, 1, GPA1) ->
-        CumulativeGPA is GPA1
+        CumulativeGPA is round(GPA1 * 100) / 100
     ).
 
 % A predicate that updates the default GPA

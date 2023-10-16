@@ -84,7 +84,7 @@ class PrologQueryHandler:
     @staticmethod
     def calculate_cumulative_gpa():
         try:
-            result = list(prolog.query("cumulative_gpa(StudentId, Name, GPA1, GPA2, CumulativeGPA)"))
+            result = list(prolog.query("cumulative_gpa(Id, Name, GPA1, GPA2, CumulativeGPA)"))
             if result is None:
                 return None
             else:

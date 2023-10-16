@@ -98,8 +98,10 @@ class AcademicProbationSystem:
             tree.heading(col, text=col)
 
         # Insert data
-        tree.insert("", "end", values=("1", "John Doe", "3.5", "3.7", "3.6"))
-        tree.pack()
+        for student in Prolog.calculate_cumulative_gpa():
+            tree.insert("", "end", values=(
+                student['Id'], student['Name'], student['GPA1'], student['GPA2'], student['CumulativeGPA']))
+            tree.pack()
 
         close_button = tk.Button(new_window, text="Close", command=new_window.destroy)
         close_button.pack(pady=5)
