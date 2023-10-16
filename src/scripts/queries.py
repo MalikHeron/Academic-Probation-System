@@ -51,7 +51,8 @@ sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, name, credits)
 ('PH101', 'Introduction to Physics', 4);"""
 
 # Inserting data into module_details
-sql_insert_details = """INSERT OR IGNORE INTO module_details(student_id, module_code, grade_points, semester, year) VALUES
+sql_insert_details = """INSERT OR IGNORE INTO module_details(student_id, module_code, grade_points, semester, year) 
+VALUES
 (1, 'CS101', 4, 1, 2023),
 (2, 'BA101', 3.5, 1, 2023),
 (3, 'FA101', 4.0, 1, 2023),

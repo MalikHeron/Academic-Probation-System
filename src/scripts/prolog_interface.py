@@ -37,8 +37,7 @@ class PrologQueryHandler:
                 return None
             else:
                 logging.info(result)
-                gpa = result[0]['GPA']
-                return gpa
+                return result[0]['GPA']
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return None
@@ -81,3 +80,20 @@ class PrologQueryHandler:
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return None
+
+    @staticmethod
+    def calculate_cumulative_gpa():
+        try:
+            result = list(prolog.query("cumulative_gpa(StudentId, GPA)"))
+            if result is None:
+                return None
+            else:
+                logging.info(result)
+                print(result)
+                return result
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+
+PrologQueryHandler.calculate_cumulative_gpa()
