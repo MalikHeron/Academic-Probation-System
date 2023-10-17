@@ -57,9 +57,10 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
         findall(
             TotalGradePoints,
             (   % Retrieve the GPA for each semester
-                gpa(StudentID, Name, Semester,_),
+                gpa(StudentID, Name, Semester, _),
                 % Find all grade points earned by the student in each semester
-                findall(GradePointsEarned,
+                findall(
+                    GradePointsEarned,
                     grade_points_earned(StudentID, Semester, GradePointsEarned),
                     GradePointsEarnedList
                 ),
@@ -76,7 +77,7 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
             (   % Retrieve the GPA for each semester
                 gpa(StudentID, Name, Semester, _),
                 % Find all credits for modules taken by the student in each semester
-                findall(Credits,module_credits(StudentID, Semester, Credits), CreditsList),
+                findall(Credits, module_credits(StudentID, Semester, Credits), CreditsList),
                 % Calculate the total credits by summing up the list
                 sum_list(CreditsList, TotalCredits)
             ),
@@ -118,7 +119,7 @@ cumulative_gpa_all_students(Results) :-
         Results
     ).
 
-% A predicate that updates the default GPA
+% Updates the default GPA
 update_default_gpa(NewGPA) :-
     % If retract/1 is able to remove the old GPA, it does nothing
     % If retract/1 is not able to remove the old GPA, it sets OldGPA to 'No old GPA'
@@ -130,13 +131,3 @@ update_default_gpa(NewGPA) :-
     assert(default_gpa(NewGPA)),
     write('Old GPA: '), write(OldGPA), nl,
     write('New GPA: '), write(NewGPA), nl.
-
-% Calculate the sum of a list of numbers
-% The base case: the sum of an empty list is 0
-sum_list([], 0).
-% The recursive case: the sum of a list is the head of the list plus the sum of the rest of the list
-sum_list([H|T], Sum) :-
-   % Recursive call: calculate the sum of the tail of the list
-   sum_list(T, Rest),
-   % The sum is the head of the list plus the sum of the rest of the list
-   Sum is H + Rest.
