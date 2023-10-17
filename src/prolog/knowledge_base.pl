@@ -16,96 +16,127 @@ default_gpa(2.2).
 % Facts for module_details
 % module_details(Id, Module, GradePoint, Semester, Year).
 
-% A predicate that calculates the GPA for a given student ID and semester
+% Calculate grade points earned for a module
+grade_points_earned(StudentID, Semester, GradePointsEarned) :-
+    % Retrieve the details of each module taken by the student in the given semester
+    module_details(StudentID, Module, GradePoint, Semester, _),
+    % Retrieve the credits for each module
+    module(Module, Credits),
+    % Calculate the grade points earned for each module (credits * grade point)
+    GradePointsEarned is Credits * GradePoint.
+
+% Retrieve credits for a module
+module_credits(StudentID, Semester, Credits) :-
+    % Retrieve the details of each module taken by the student in the given semester
+    module_details(StudentID, Module, _, Semester, _),
+    % Retrieve the credits for each module
+    module(Module, Credits).
+
+% Calculates the GPA for a given student ID and semester
 gpa(StudentID, Name, Semester, GPA) :-
+    % Retrieve the student's details
     student(StudentID, Name, _, _, _),
-    findall(
-        GradePointsEarned,
-        (   module_details(StudentID, Module, GradePoint, Semester, _),
-            module(Module, Credits),
-            GradePointsEarned is Credits * GradePoint
-        ),
-        GradePointsEarnedList
-    ),
+    % Find all grade points earned by the student in the given semester
+    findall(GradePointsEarned, grade_points_earned(StudentID, Semester, GradePointsEarned), GradePointsEarnedList),
+    % Calculate the total grade points earned by summing up the list
     sum_list(GradePointsEarnedList, TotalGradePoints),
-    findall(
-        Credits,
-        (   module_details(StudentID, Module, _, Semester, _),
-            module(Module, Credits)
-        ),
-        CreditsList
-    ),
+    % Find all credits for modules taken by the student in the given semester
+    findall(Credits, module_credits(StudentID, Semester, Credits), CreditsList),
+    % Calculate the total credits by summing up the list
     sum_list(CreditsList, TotalCredits),
+    % Ensure that total credits is not zero to avoid division by zero error
     TotalCredits \= 0,
+    % Calculate GPA (total grade points / total credits), rounded to 2 decimal places
     GPA is round((TotalGradePoints / TotalCredits) * 100) / 100.
 
-% A predicate that calculates the Cumulative GPA for a given student ID
+% Calculates the Cumulative GPA for a given student ID
 cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
+    % If the student has GPAs for both semesters
     (   gpa(StudentID, Name, 1, GPA1), gpa(StudentID, Name, 2, GPA2) ->
+        % Find all total grade points earned by the student in all semesters
         findall(
             TotalGradePoints,
-            (   gpa(StudentID, Name, Semester, _),
-                findall(
-                    GradePointsEarned,
-                    (   module_details(StudentID, Module, GradePoint, Semester, _),
-                        module(Module, Credits),
-                        GradePointsEarned is Credits * GradePoint
-                    ),
+            (   % Retrieve the GPA for each semester
+                gpa(StudentID, Name, Semester,_),
+                % Find all grade points earned by the student in each semester
+                findall(GradePointsEarned,
+                    grade_points_earned(StudentID, Semester, GradePointsEarned),
                     GradePointsEarnedList
                 ),
+                % Calculate the total grade points earned by summing up the list
                 sum_list(GradePointsEarnedList, TotalGradePoints)
             ),
             TotalGradePointsList
         ),
+        % Calculate the total of all grade points by summing up the list
         sum_list(TotalGradePointsList, AllTotalGradePoints),
+        % Find all total credits for modules taken by the student in all semesters
         findall(
             TotalCredits,
-            (   gpa(StudentID, Name, Semester, _),
-                findall(
-                    Credits,
-                    (   module_details(StudentID, Module, _, Semester, _),
-                        module(Module, Credits)
-                    ),
-                    CreditsList
-                ),
+            (   % Retrieve the GPA for each semester
+                gpa(StudentID, Name, Semester, _),
+                % Find all credits for modules taken by the student in each semester
+                findall(Credits,module_credits(StudentID, Semester, Credits), CreditsList),
+                % Calculate the total credits by summing up the list
                 sum_list(CreditsList, TotalCredits)
             ),
             TotalCreditsList
         ),
+        % Calculate the total of all credits by summing up the list
         sum_list(TotalCreditsList, AllTotalCredits),
+        % Calculate Cumulative GPA (total of all grade points / total of all credits), rounded to 2 decimal places
         CumulativeGPA is round((AllTotalGradePoints / AllTotalCredits) * 100) / 100
-    ;   gpa(StudentID, Name, 1, GPA1) ->
+    ;   % If the student only has a GPA for semester 1
+        gpa(StudentID, Name, 1, GPA1) ->
+        % The Cumulative GPA is just GPA1 rounded to 2 decimal places
         CumulativeGPA is round(GPA1 * 100) / 100
     ).
 
-% A predicate that calculates the Cumulative GPA for all students and stores the results in a list
+% Calculates the Cumulative GPA for all students and stores the results in a list
 cumulative_gpa_all_students(Results) :-
+    % findall/3 is a built-in Prolog predicate that finds all solutions to a goal and returns them in a list
     findall(
+        % The list of variables we are interested in
         [StudentID, Name, GPA1, GPA2, CumulativeGPA],
-        (   student(StudentID, Name, _, _, _),
+        % The goal we want to find all solutions for
+        (
+            % Retrieve the student's ID and name
+            student(StudentID, Name, _, _, _),
+            % Calculate the GPA for semester 1
             gpa(StudentID, Name, 1, GPA1),
+            % Calculate the GPA for semester 2
             gpa(StudentID, Name, 2, GPA2),
+            % If cumulative_gpa/5 succeeds then format and print the student's name and cumulative GPA
             (   cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) ->
                 format('Student: ~w, Cumulative GPA: ~2f~n', [Name, CumulativeGPA])
+            % If cumulative_gpa/5 fails then print that no GPA was calculated for this student
             ;   CumulativeGPA = 'No GPA calculated',
                 format('Student: ~w, No GPA calculated~n', [Name])
             )
         ),
+        % The variable that will hold the results
         Results
     ).
 
 % A predicate that updates the default GPA
 update_default_gpa(NewGPA) :-
+    % If retract/1 is able to remove the old GPA, it does nothing
+    % If retract/1 is not able to remove the old GPA, it sets OldGPA to 'No old GPA'
     (   retract(default_gpa(OldGPA)) ->
         true
     ;   OldGPA = 'No old GPA'
     ),
+    % Add the new GPA to the database
     assert(default_gpa(NewGPA)),
     write('Old GPA: '), write(OldGPA), nl,
     write('New GPA: '), write(NewGPA), nl.
 
-% A predicate that calculates the sum of a list of numbers
+% Calculate the sum of a list of numbers
+% The base case: the sum of an empty list is 0
 sum_list([], 0).
+% The recursive case: the sum of a list is the head of the list plus the sum of the rest of the list
 sum_list([H|T], Sum) :-
+   % Recursive call: calculate the sum of the tail of the list
    sum_list(T, Rest),
+   % The sum is the head of the list plus the sum of the rest of the list
    Sum is H + Rest.
