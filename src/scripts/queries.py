@@ -44,7 +44,7 @@ sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, 
 (9, 'Jessica Wilson', 'jessicawilson@gmail.com', 'School of Engineering', 'Civil Engineering'),
 (10, 'Thomas Moore', 'thomasmoore@gmail.com', 'School of Science', 'Physics');"""
 
-# Inserting data into 
+# Inserting data into module_master
 sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, credits) VALUES
 ('CS101', 3),
 ('BA101', 3),

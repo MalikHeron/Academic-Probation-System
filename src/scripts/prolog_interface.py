@@ -24,7 +24,6 @@ class PrologQueryHandler:
             else:
                 logging.info(result)
                 return result
-
         except Exception as e:
             logging.error(f"An error occurred: {e}")
         return None

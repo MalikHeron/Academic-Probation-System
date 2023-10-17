@@ -1,9 +1,10 @@
-% The default GPA
+% dynamic predicates
 :- dynamic(default_gpa/1).
 :- dynamic(student/5).
 :- dynamic(module/2).
 :- dynamic(module_details/5).
 
+% The default GPA
 default_gpa(2.2).
 
 % Facts for student
