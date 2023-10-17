@@ -123,9 +123,9 @@ class PrologQueryHandler:
             return None
 
     @staticmethod
-    def calculate_cumulative_gpa():
+    def calculate_cumulative_gpa(year):
         try:
-            result = list(prolog.query("cumulative_gpa_all_students(Results)"))
+            result = list(prolog.query(f"cumulative_gpa_all_students({year}, Results)"))
             if result is None:
                 return None
             else:

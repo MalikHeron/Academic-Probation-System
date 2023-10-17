@@ -130,10 +130,11 @@ class AcademicProbationSystem:
             tree.heading(col, text=col)
 
         # Insert data in table
-        for results in Prolog.calculate_cumulative_gpa():
+        for results in Prolog.calculate_cumulative_gpa(year):
             for student in results['Results']:
                 student_id, name, gpa1, gpa2, cumulative_gpa = student
-                tree.insert("", "end", values=(student_id, name, gpa1, gpa2, cumulative_gpa))
+                if not cumulative_gpa == "No GPA calculated" and cumulative_gpa <= gpa:
+                    tree.insert("", "end", values=(student_id, name, gpa1, gpa2, cumulative_gpa))
 
         tree.pack()
 
