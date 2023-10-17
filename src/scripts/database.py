@@ -1,12 +1,12 @@
 import itertools
+import logging
 import sqlite3
 import threading
 import time
-import logging
 from sqlite3 import Error
 
-from scripts.queries import *
 from scripts.prolog_interface import PrologQueryHandler as Prolog
+from scripts.queries import *
 
 
 def create_connection(db_file):

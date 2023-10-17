@@ -1,11 +1,11 @@
 import smtplib
 
 
-def send_alert(programme, school):
+def send_alert(email, programme, school):
     sender = 'academicprobation2023@gmail.com'
-    receiver = ['2023@gmail.com', '@gmail.com']
+    receiver = [f'{email}']
     password = ''
-    subject = f'GPA below or equal to default GPA'
+    subject = f'Alert: You are on Academic Probation'
     body = (f'Programme: {programme}\n'
             f'School: {school}')
 

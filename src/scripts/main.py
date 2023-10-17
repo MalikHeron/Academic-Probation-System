@@ -1,9 +1,10 @@
 import datetime
 import tkinter as tk
-from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 from tkinter import messagebox
 from tkinter import ttk
+
 from scripts.database import DatabaseManager
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 
 class AcademicProbationSystem:
