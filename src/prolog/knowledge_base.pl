@@ -95,7 +95,7 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
 
 % Calculates the Cumulative GPA for all students and stores the results in a list
 cumulative_gpa_all_students(Results) :-
-    % findall/3 is a built-in Prolog predicate that finds all solutions to a goal and returns them in a list
+    % find all solutions to a goal and returns them in a list
     findall(
         % The list of variables we are interested in
         [StudentID, Name, GPA1, GPA2, CumulativeGPA],
@@ -103,10 +103,6 @@ cumulative_gpa_all_students(Results) :-
         (
             % Retrieve the student's ID and name
             student(StudentID, Name, _, _, _),
-            % Calculate the GPA for semester 1
-            gpa(StudentID, Name, 1, GPA1),
-            % Calculate the GPA for semester 2
-            gpa(StudentID, Name, 2, GPA2),
             % If cumulative_gpa/5 succeeds then format and print the student's name and cumulative GPA
             (   cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) ->
                 format('Student: ~w, Cumulative GPA: ~2f~n', [Name, CumulativeGPA])

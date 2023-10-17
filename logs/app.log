@@ -1,2 +1,1 @@
 root - WARNING - index idx_module_details_unique already exists
-root - ERROR - An error occurred: Caused by: 'cumulative_gpa_all_students(Results)'. Returned: 'error(type_error(callable, 2.68), context(/(cumulative_gpa, 5), _6308))'.
