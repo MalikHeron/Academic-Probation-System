@@ -1,4 +1,5 @@
 import datetime
+import threading
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -136,7 +137,9 @@ class AcademicProbationSystem:
                 student_id, name, email, school, programme, gpa1, gpa2, cumulative_gpa = student
                 if not cumulative_gpa == "No GPA calculated" and cumulative_gpa <= gpa:
                     tree.insert("", "end", values=(student_id, name, gpa1, gpa2, cumulative_gpa))
-                    # send_alert(email, school, programme)
+                    # Create a thread for the send_alert function
+                    t = threading.Thread(target=send_alert, args=(name, email, school, programme, cumulative_gpa, gpa))
+                    t.start()
 
         tree.pack()
 
