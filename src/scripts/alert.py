@@ -45,7 +45,7 @@ def send_alert(name, email, school, programme, cumulative_gpa, gpa):
         Please do not hesitate to reach out if you have any questions or need further clarification about the 
         implications of being on academic probation.
         
-        Best,
+        Best Regards,
         Academic Probation System
         University of Technology, Jamaica
     """)

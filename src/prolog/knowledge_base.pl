@@ -93,6 +93,7 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, Year, CumulativeGPA) :-
         CumulativeGPA is round((AllTotalGradePoints / AllTotalCredits) * 100) / 100
     ;   % If the student only has a GPA for semester 1
         gpa(StudentID, Name, 1, Year, GPA1) ->
+        GPA2 is 0,
         % The Cumulative GPA is just GPA1 rounded to 2 decimal places
         CumulativeGPA is round(GPA1 * 100) / 100
     ).
