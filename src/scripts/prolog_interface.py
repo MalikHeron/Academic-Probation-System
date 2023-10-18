@@ -7,6 +7,7 @@ from pyswip import Prolog
 
 # Configure the logging module
 logging.basicConfig(filename='../../logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.getLogger().setLevel(logging.INFO)  # Set logger's level to INFO
 
 # Connects the application to the prolog knowledge base
 prolog = Prolog()
