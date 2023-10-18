@@ -1,7 +1,7 @@
 import smtplib
 
 
-def send_alert(email, programme, school):
+def send_alert(email, school, programme):
     sender = 'academicprobation2023@gmail.com'
     receiver = [f'{email}']
     password = ''

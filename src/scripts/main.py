@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
+from scripts.alert import send_alert
 from scripts.database import DatabaseManager
 from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
@@ -132,9 +133,10 @@ class AcademicProbationSystem:
         # Insert data in table
         for results in Prolog.calculate_cumulative_gpa(year):
             for student in results['Results']:
-                student_id, name, gpa1, gpa2, cumulative_gpa = student
+                student_id, name, email, school, programme, gpa1, gpa2, cumulative_gpa = student
                 if not cumulative_gpa == "No GPA calculated" and cumulative_gpa <= gpa:
                     tree.insert("", "end", values=(student_id, name, gpa1, gpa2, cumulative_gpa))
+                    # send_alert(email, school, programme)
 
         tree.pack()
 

@@ -102,11 +102,11 @@ cumulative_gpa_all_students(Year, Results) :-
     % find all solutions to a goal and returns them in a list
     findall(
         % The list of variables we are interested in
-        [StudentID, Name, GPA1, GPA2, CumulativeGPA],
+        [StudentID, Name, Email, School, Programme, GPA1, GPA2, CumulativeGPA],
         % The goal we want to find all solutions for
         (
-            % Retrieve the student's ID and name
-            student(StudentID, Name, _, _, _),
+            % Retrieve the student's details
+            student(StudentID, Name, Email, School, Programme),
             % If cumulative_gpa/5 succeeds then format and print the student's name and cumulative GPA
             (   cumulative_gpa(StudentID, Name, GPA1, GPA2, Year, CumulativeGPA) ->
                 format('Student: ~w, Cumulative GPA: ~2f~n', [Name, CumulativeGPA])
