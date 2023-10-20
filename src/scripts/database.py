@@ -1,74 +1,125 @@
+import itertools
+import logging
 import sqlite3
+import threading
+import time
 from sqlite3 import Error
 
+from scripts.prolog_interface import PrologQueryHandler as Prolog
+from scripts.queries import *
 
-# install SQLite from the database tab
 
-def create_connection():
-    conn = None
+def create_connection(db_file):
+    connection = None
     try:
-        conn = sqlite3.connect('student_grades.db')
+        connection = sqlite3.connect(db_file)
     except Error as e:
         print(e)
-
-    return conn
-
-
-def close_connection(conn):
-    try:
-        conn.close()
-    except Error as e:
-        print(e)
+    return connection
 
 
-def create_table(conn, create_table_sql):
-    try:
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Error as e:
-        print(e)
+class DatabaseManager:
+    def __init__(self):
+        # Create database connection
+        self.done = None
+        self.conn = create_connection('../../data/student_grades.db')
 
+        # Create tables
+        self.create_table(sql_create_students_table)
+        self.create_table(sql_create_modules_table)
+        self.create_table(sql_create_details_table)
 
-# SQL for creating table
-sql_create_students_table = """CREATE TABLE IF NOT EXISTS student_master (
-                                    id integer PRIMARY KEY,
-                                    name text NOT NULL,
-                                    email text NOT NULL,
-                                    school text NOT NULL,
-                                    programme text NOT NULL
-                                );"""
+        # Insert data
+        self.insert_students()
+        self.insert_modules()
+        self.insert_details()
 
-sql_create_modules_table = """CREATE TABLE IF NOT EXISTS module_master (
-                                    code text PRIMARY KEY,
-                                    name text NOT NULL,
-                                    credits integer NOT NULL
-                                );"""
+        # Commit changes
+        self.commit_changes()
 
-sql_create_details_table = """CREATE TABLE IF NOT EXISTS module_details (
-                                student_id integer NOT NULL,
-                                module_code text NOT NULL,
-                                grade_points integer NOT NULL,
-                                semester integer NOT NULL,
-                                year integer NOT NULL,
-                                FOREIGN KEY (student_id) REFERENCES student_master (id),
-                                FOREIGN KEY (module_code) REFERENCES module_master (code)
-                            );"""
+        # Update knowledge base
+        self.update_knowledge_base()
 
-# create a database connection
-conn = create_connection()
+        # Close the connection
+        self.close_connection()
 
-# create tables
-if conn is not None:
-    # create students table
-    create_table(conn, sql_create_students_table)
+    def close_connection(self):
+        try:
+            self.conn.close()
+        except Error as e:
+            print(e)
 
-    # create modules table
-    create_table(conn, sql_create_modules_table)
+    def create_table(self, create_table_sql):
+        try:
+            c = self.conn.cursor()
+            c.execute(create_table_sql)
+            if create_table_sql == sql_create_details_table:
+                try:
+                    c.execute(sql_create_unique_index)
+                except Error as e:
+                    logging.warning(e)
+        except Error as e:
+            print(e)
 
-    # create grades table
-    create_table(conn, sql_create_details_table)
-else:
-    print("Error! cannot create the database connection.")
+    def insert_students(self):
+        c = self.conn.cursor()
+        c.execute(sql_insert_students)
 
-# close the connection
-close_connection(conn)
+    def insert_modules(self):
+        c = self.conn.cursor()
+        c.execute(sql_insert_modules)
+
+    def insert_details(self):
+        c = self.conn.cursor()
+        c.execute(sql_insert_details)
+
+    def get_students(self):
+        c = self.conn.cursor()
+        c.execute(sql_get_students)
+        students = c.fetchall()
+
+        for student in students:
+            Prolog.add_student(student)
+
+    def get_modules(self):
+        c = self.conn.cursor()
+        c.execute(sql_get_modules)
+        modules = c.fetchall()
+
+        for module in modules:
+            Prolog.add_module(module)
+
+    def get_details(self):
+        c = self.conn.cursor()
+        c.execute(sql_get_details)
+        details = c.fetchall()
+
+        for detail in details:
+            Prolog.add_details(detail)
+
+    def animate(self):
+        for c in itertools.cycle(['|', '/', '-', '\\']):
+            if self.done:
+                break
+            print('\rUpdating Knowledge Base... ' + c, end='', flush=True)
+            time.sleep(0.1)
+
+    def update_knowledge_base(self):
+        self.done = False
+        t = threading.Thread(target=self.animate)
+        t.start()
+
+        self.get_students()
+        self.get_modules()
+        self.get_details()
+
+        self.done = True
+        t.join()  # Wait for the animation thread to finish
+
+        print('\rKnowledge Base Updated.\n', flush=True)
+
+    def commit_changes(self):
+        try:
+            self.conn.commit()
+        except Error as e:
+            print(e)
