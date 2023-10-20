@@ -86,6 +86,17 @@ class AcademicProbationSystem:
         self.main_frame.pack_forget()
         self.report(year, gpa)
 
+    def sort_column(self, tree, col, reverse):
+        l = [(tree.set(k, col), k) for k in tree.get_children('')]
+        l.sort(reverse=reverse)
+
+        # rearrange items in sorted positions
+        for index, (val, k) in enumerate(l):
+            tree.move(k, '', index)
+
+        # reverse sort next time column is clicked
+        tree.heading(col, command=lambda: self.sort_column(tree, col, not reverse))
+
     def report(self, year, gpa):
         # Create report frame
         self.report_frame = tk.Frame(self.root)
@@ -129,7 +140,8 @@ class AcademicProbationSystem:
         # Format columns
         for col in columns:
             tree.column(col, width=len(col) * 12)
-            tree.heading(col, text=col)
+            tree.heading(col, text=col, command=lambda _col=col: self.sort_column(tree, _col, False))
+
 
         # Insert data in table
         for results in Prolog.calculate_cumulative_gpa(year):
