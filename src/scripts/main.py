@@ -1,4 +1,5 @@
 import datetime
+import os
 import threading
 import tkinter as tk
 from tkinter import messagebox
@@ -7,6 +8,13 @@ from tkinter import ttk
 from scripts.alert import send_alert
 from scripts.database import DatabaseManager
 from src.scripts.prolog_interface import PrologQueryHandler as Prolog
+
+
+def create_directory():
+    if not os.path.exists("../../logs"):
+        os.makedirs("../../logs")
+    if not os.path.exists("../../data"):
+        os.makedirs("../../data")
 
 
 class AcademicProbationSystem:
@@ -19,6 +27,7 @@ class AcademicProbationSystem:
         self.root.title('Academic Probation System')
         self.setup_window()
         self.setup_components()
+        create_directory()
         DatabaseManager()
 
     def setup_window(self):
