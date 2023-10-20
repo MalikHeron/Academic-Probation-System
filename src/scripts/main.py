@@ -97,6 +97,7 @@ class AcademicProbationSystem:
         # reverse sort next time column is clicked
         tree.heading(col, command=lambda: self.sort_column(tree, col, not reverse))
 
+
     def report(self, year, gpa):
         # Create report frame
         self.report_frame = tk.Frame(self.root)
