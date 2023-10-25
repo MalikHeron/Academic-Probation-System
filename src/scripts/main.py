@@ -5,9 +5,9 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-from scripts.alert import send_alert
-from scripts.database import DatabaseManager
-from src.scripts.prolog_interface import PrologQueryHandler as Prolog
+from alert import send_alert
+from database import DatabaseManager
+from prolog_interface import PrologQueryHandler as Prolog
 
 
 def create_directory():

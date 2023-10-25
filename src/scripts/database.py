@@ -5,8 +5,8 @@ import threading
 import time
 from sqlite3 import Error
 
-from scripts.prolog_interface import PrologQueryHandler as Prolog
-from scripts.queries import *
+from prolog_interface import PrologQueryHandler as Prolog
+from queries import *
 
 
 def create_connection(db_file):

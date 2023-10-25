@@ -7,13 +7,13 @@
 % The default GPA
 default_gpa(2.2).
 
-% Facts for student
+% Fact for student
 % student(Id, Name, Email, School, Programme).
 
-% Facts for module
+% Fact for module
 % module(Module, Credits).
 
-% Facts for module_details
+% Fact for module_details
 % module_details(Id, Module, GradePoint, Semester, Year).
 
 % Calculate grade points earned for a module
