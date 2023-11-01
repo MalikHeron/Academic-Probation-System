@@ -1,6 +1,11 @@
+import datetime
 import threading
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+from main_menu import sort_column
 from scripts.alert import send_alert
-from scripts.prolog_interface import PrologQueryHandler
+from scripts.prolog_interface import PrologQueryHandler as Prolog
 
 
 class GenerateReportFrame:
@@ -64,18 +69,7 @@ class GenerateReportFrame:
         self.main_frame.pack_forget()
         self.report(year, gpa)
 
-    def sort_column(self, tree, col, reverse):
-        column_data = [(tree.set(child_id, col), child_id) for child_id in tree.get_children('')]
-        column_data.sort(reverse=reverse)
-
-        # rearrange items in sorted positions
-        for index, (val, child_id) in enumerate(column_data):
-            tree.move(child_id, '', index)
-
-        # reverse sort next time column is clicked
-        tree.heading(col, command=lambda: self.sort_column(tree, col, not reverse))
-
-    def report(self, year, gpa):
+    def generate_report(self, year, gpa):
         # Create report frame
         self.report_frame = tk.Frame(self.window)
         self.report_frame.pack(fill='both', expand=True)
@@ -118,10 +112,10 @@ class GenerateReportFrame:
         # Format columns
         for col in columns:
             tree.column(col, width=len(col) * 12)
-            tree.heading(col, text=col, command=lambda _col=col: self.sort_column(tree, _col, False))
+            tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
         # Insert data in table
-        for results in PrologQueryHandler.calculate_cumulative_gpa(year):
+        for results in Prolog.calculate_cumulative_gpa(year):
             for student in results['Results']:
                 student_id, name, email, school, programme, gpa1, gpa2, cumulative_gpa = student
                 if not cumulative_gpa == "No GPA calculated" and cumulative_gpa <= gpa:
