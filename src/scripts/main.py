@@ -69,10 +69,10 @@ class AcademicProbationSystem:
         logo_image = ImageTk.PhotoImage(Image.open("../assets/utech-logo.png").resize((150, 200)))
         logo_label = ttk.Label(content, image=logo_image, background="")
         logo_label.image = logo_image
-        logo_label.pack(pady=20)
+        logo_label.place(relx=0.5, rely=0.4, anchor='center')  # Centered horizontally and placed at 40% of the height
 
         label1 = ttk.Label(content, text="Academic Probation System", font=("Arial", 17, "bold"), background="")
-        label1.pack()
+        label1.place(relx=0.5, rely=0.6, anchor='center')  # Centered both horizontally and vertically
 
     def run(self):
         self.window.mainloop()

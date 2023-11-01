@@ -62,9 +62,7 @@ class MainMenu(tk.Frame):
 
         # Labels
         tk.Label(self.student_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
-        tk.Label(self.student_frame, text="Academic Probation Alert System").pack()
-        tk.Label(self.student_frame, text="Academic Affairs").pack()
-        tk.Label(self.student_frame, text="Student Listing").pack()
+        tk.Label(self.student_frame, text="Student Listing").pack(pady=5)
 
         # Create Canvas in new window
         canvas = tk.Canvas(self.student_frame)
@@ -87,7 +85,7 @@ class MainMenu(tk.Frame):
         canvas.bind('<Configure>', on_configure)
 
         # Create Treeview in second frame
-        tree = ttk.Treeview(second_frame, show='headings', style="Treeview", height=20)
+        tree = ttk.Treeview(second_frame, show='headings', style="Treeview", height=23)
 
         # Add a Scrollbar to the Treeview
         scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
@@ -101,7 +99,7 @@ class MainMenu(tk.Frame):
         tree["columns"] = columns
 
         # Format columns
-        column_widths = [100, 150, 250, 250, 200]  # Adjust these values as needed
+        column_widths = [100, 150, 250, 230, 230]  # Adjust these values as needed
         for col, width in zip(columns, column_widths):
             tree.column(col, width=width)
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
