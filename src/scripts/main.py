@@ -50,7 +50,7 @@ class AcademicProbationSystem:
 
         # Place the frames in the window
         frame1.grid(row=0, column=0, sticky="nsew")
-        frame2.grid(row=0, column=1, sticky="nsew")
+        frame2.grid(row=0, column=1, sticky="ew")
 
         # background image
         img = Image.open("../assets/background.png").resize((400, 400))
