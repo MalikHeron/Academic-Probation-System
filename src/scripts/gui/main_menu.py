@@ -99,10 +99,8 @@ class MainMenu(tk.Frame):
         # Center the close button at the bottom of the window
         close_button.place(relx=0.5, rely=0.97, anchor='s')
 
-
     def add_student(self):
         print("Add Student")
-
 
     def remove_student(self):
         print("Remove Student")
