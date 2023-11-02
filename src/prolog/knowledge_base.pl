@@ -1,7 +1,7 @@
 % dynamic predicates
 :- dynamic(default_gpa/1).
 :- dynamic(student/5).
-:- dynamic(module/2).
+:- dynamic(module/3).
 :- dynamic(module_details/5).
 
 % The default GPA
@@ -11,7 +11,7 @@ default_gpa(2.2).
 % student(Id, Name, Email, School, Programme).
 
 % Fact for module
-% module(Module, Credits).
+% module(Module, Name, Credits).
 
 % Fact for module_details
 % module_details(Id, Module, GradePoint, Semester, Year).
@@ -118,6 +118,27 @@ cumulative_gpa_all_students(Year, Results) :-
         ),
         % The variable that will hold the results
         Results
+    ).
+
+remove_student(StudentID) :-
+    ( retract(student(StudentID, _, _, _, _)) ->
+        ( retract(module_details(StudentID, _, _, _, _)) ->
+            true
+        ;  true
+        )
+    ;   true
+    ).
+
+remove_module(ModuleCode) :-
+    ( retract(module(ModuleCode, _, _)) ->
+        remove_module_details(_, ModuleCode, _)
+    ;   false
+    ).
+
+remove_module_details(StudentID, ModuleCode, Semester) :-
+    ( retract(module_details(StudentID, ModuleCode, _, Semester, _)) ->
+        true
+    ;   false
     ).
 
 % Updates the default GPA

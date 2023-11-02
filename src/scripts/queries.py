@@ -9,6 +9,7 @@ sql_create_students_table = """CREATE TABLE IF NOT EXISTS student_master (
 
 sql_create_modules_table = """CREATE TABLE IF NOT EXISTS module_master (
                                     code text PRIMARY KEY,
+                                    name text NOT NULL,
                                     credits integer NOT NULL
                                 );"""
 
@@ -65,37 +66,37 @@ sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, 
 (30, 'Tina Wright', 'tina.wright@hotmail.com', 'School of Modern Languages', 'Modern Languages');"""
 
 # Inserting data into module_master
-sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, credits) VALUES
-('CS101', 3),
-('BA101', 3),
-('FA101', 4),
-('ME101', 4),
-('BI101', 3),
-('IS101', 2),
-('AC101', 1),
-('MU101', 1),
-('CE101', 2),
-('PH101', 4),
-('MAT101', 4),
-('COM101', 3),
-('PHY101', 4),
-('CHE101', 1),
-('BIO101', 4),
-('ECO101', 3),
-('HIS101', 2),
-('PHI101', 1),
-('SOC101', 4),
-('POL101', 3),
-('ENG101', 2),
-('PSY101', 1),
-('ANT101', 4),
-('AST101', 3),
-('GEO101', 2),
-('ARC101', 1),
-('MUS101', 4),
-('DRA101', 3),
-('ART101', 2),
-('LAN101', 1);"""
+sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, name, credits) VALUES
+('CS101', 'Computer Science', 3),
+('BA101', 'Business Administration', 3),
+('FA101', 'Fine Arts', 4),
+('ME101', 'Mechanical Engineering', 4),
+('BI101', 'Biology', 3),
+('IS101', 'Information Systems', 2),
+('AC101', 'Accounting', 1),
+('MU101', 'Music', 1),
+('CE101', 'Civil Engineering', 2),
+('PH101', 'Philosophy', 4),
+('MAT101', 'Mathematics', 4),
+('COM101', 'Communications', 3),
+('PHY101', 'Physics', 4),
+('CHE101', 'Chemistry', 1),
+('BIO101', 'Biotechnology', 4),
+('ECO101', 'Economics', 3),
+('HIS101', 'History', 2),
+('PHI101', 'Philosophy', 1),
+('SOC101', 'Sociology', 4),
+('POL101', 'Political Science', 3),
+('ENG101', 'English Literature', 2),
+('PSY101', 'Psychology', 1),
+('ANT101', 'Anthropology', 4),
+('AST101', 'Astronomy', 3),
+('GEO101', 'Geography Studies', 2), 
+('ARC101', 'Architecture Studies', 1), 
+('MUS101', 'Music Studies', 4), 
+('DRA101', 'Drama Studies', 3), 
+('ART101', 'Art History', 2), 
+('LAN101', 'Languages and Literature Studies', 1);"""
 
 # Inserting data into module_details
 sql_insert_details = """INSERT OR IGNORE INTO module_details(student_id, module_code, grade_points, semester, year) 

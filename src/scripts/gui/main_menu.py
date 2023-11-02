@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, simpledialog
 
-from src.scripts.prolog_interface import PrologQueryHandler
+from src.scripts.database import DatabaseManager
+
+db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
 
 def sort_column(tree, col, reverse):
@@ -20,9 +22,10 @@ class MainMenu(tk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.generate_report_button = None
+        self.add_details_button = None
         self.student_frame = None
         self.module_frame = None
-        self.details_frame = None
         self.view_modules_button = None
         self.add_student_button = None
         self.view_students_button = None
@@ -37,21 +40,29 @@ class MainMenu(tk.Frame):
         self.title.configure(foreground='black')
         self.title.pack(padx=20, pady=20, fill='x', expand=True)
 
-        # buttons
+        # student buttons
         self.view_students_button = tk.Button(self, text="View Students", command=self.view_students)
-        self.view_students_button.configure(background='#02d971', foreground='#ffffff', font=('Arial', 12, 'bold'),
+        self.view_students_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
                                             relief='groove')
         self.view_students_button.pack(padx=40, pady=5, fill='x', expand=True)
 
-        self.add_student_button = tk.Button(self, text="Add Student", command=self.add_student)
-        self.add_student_button.configure(background='#02d971', foreground='#ffffff', font=('Arial', 12, 'bold'),
-                                          relief='groove')
-        self.add_student_button.pack(padx=40, pady=5, fill='x', expand=True)
-
+        # module buttons
         self.view_modules_button = tk.Button(self, text="View Modules", command=self.view_modules)
-        self.view_modules_button.configure(background='#02d971', foreground='#ffffff', font=('Arial', 12, 'bold'),
+        self.view_modules_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
                                            relief='groove')
         self.view_modules_button.pack(padx=40, pady=5, fill='x', expand=True)
+
+        # details button
+        self.add_details_button = tk.Button(self, text="View Details", command=self.add_details)
+        self.add_details_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
+                                          relief='groove')
+        self.add_details_button.pack(padx=40, pady=5, fill='x', expand=True)
+
+        # generate report button
+        self.generate_report_button = tk.Button(self, text="Generate Report", command=self.add_student)
+        self.generate_report_button.configure(background='#936BE9', foreground='#000000', font=('Arial', 12, 'normal'),
+                                              relief='groove')
+        self.generate_report_button.pack(padx=40, pady=5, fill='x', expand=True)
 
     # View Frames
     def view_students(self):
@@ -108,28 +119,13 @@ class MainMenu(tk.Frame):
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
         # Insert data in table
-        for student in PrologQueryHandler.get_student_list():
-            student_id, name, email, school, programme = student.values()
-            tree.insert("", "end", values=(student_id, name, email, school, programme))
+        for student in db_manager.get_students():
+            tree.insert("", "end", values=(student[0], student[1], student[2], student[3], student[4]))
 
         tree.pack()
 
         # Button configurations
-        add_button = tk.Button(self.student_frame, text="Add", command=self.add_student)
-        remove_button = tk.Button(self.student_frame, text="Remove", command=lambda: self.remove_student(tree))
-        close_button = tk.Button(self.student_frame, text="Close", command=self.close_view)
-
-        button_width = 100  # width of the buttons
-        button_spacing = 40  # space between the buttons
-        total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
-
-        # Center the buttons at the bottom of the window
-        add_button.place(relx=0.5, rely=0.97, x=-total_width / 2, anchor='s', width=button_width)
-        remove_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + button_width + button_spacing, anchor='s',
-                            width=button_width)
-        close_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
-                           width=button_width)
-
+        self.button_config(self.student_frame, tree, self.add_student, self.remove_student)
 
     def view_modules(self):
         # Create module frame
@@ -175,37 +171,23 @@ class MainMenu(tk.Frame):
         tree.configure(yscrollcommand=scrollbar.set)
 
         # Define columns
-        columns = ("Module Code", "Accreditation")
+        columns = ("Module Code", "Module Name", "Accreditation")
         tree["columns"] = columns
 
         # Format columns
-        column_widths = [480, 480]  # Way to wide, leave as is for now
+        column_widths = [200, 400, 150]  # Way to wide, leave as is for now
         for col, width in zip(columns, column_widths):
             tree.column(col, width=width)
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
         # Insert data in table
-        for module in PrologQueryHandler.get_module_list():
-            code, credits = module.values()
-            tree.insert("", "end", values=(code, credits))
+        for module in db_manager.get_modules():
+            tree.insert("", "end", values=(module[0], module[1], module[2]))
 
-        tree.pack()
+        tree.pack(padx=110)
 
         # Button configurations
-        add_button = tk.Button(self.module_frame, text="Add", command=self.add_module)
-        remove_button = tk.Button(self.module_frame, text="Remove", command=lambda: self.remove_module(tree))
-        close_button = tk.Button(self.module_frame, text="Close", command=self.close_view)
-
-        button_width = 100  # width of the buttons
-        button_spacing = 40  # space between the buttons
-        total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
-
-        # Center the buttons at the bottom of the window
-        add_button.place(relx=0.5, rely=0.97, x=-total_width / 2, anchor='s', width=button_width)
-        remove_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + button_width + button_spacing, anchor='s',
-                            width=button_width)
-        close_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
-                           width=button_width)
+        self.button_config(self.module_frame, tree, self.add_module, self.remove_module)
 
     # Insert Frames
     def add_student(self):
@@ -220,7 +202,7 @@ class MainMenu(tk.Frame):
     def remove_student(self, tree):
         selected_item = tree.selection()  # Get selected item
         if selected_item:
-            student_id = tree.item(selected_item)["values"][0]
+            student_id = str(tree.item(selected_item)["values"][0]).strip()
         else:
             # Display a dialog box to request the student ID
             student_id = simpledialog.askstring("Input", "Please enter the ID of the student to be deleted:",
@@ -228,26 +210,23 @@ class MainMenu(tk.Frame):
             if student_id is None:  # If the user cancelled the dialog box
                 return
 
-        # Remove the student from the database
-        PrologQueryHandler.remove_student(student_id)  # Method does not exist yet in PrologQueryHandler
-
         # Remove the student from the table
-        if selected_item:
-            tree.delete(selected_item)
+        if db_manager.remove_student(student_id) is True:
+            if selected_item:
+                tree.delete(selected_item)
+            else:
+                for item in tree.get_children():
+                    tree_id = str(tree.item(item)["values"][0]).strip()  # Convert to string and remove spaces
+                    if tree_id == student_id:
+                        tree.delete(item)
+                        break
         else:
-            for item in tree.get_children():
-                if tree.item(item)["values"][0] == student_id:
-                    tree.delete(item)
-                    break
-
-    def remove_details(self, tree):
-        print("Remove Details")
+            print("Failed to remove student.")
 
     def remove_module(self, tree):
-        print("Remove Module")
         selected_item = tree.selection()  # Get selected item
         if selected_item:
-            module_code = tree.item(selected_item)["values"][0]
+            module_code = str(tree.item(selected_item)["values"][0]).strip()
         else:
             # Display a dialog box to request the module code
             module_code = simpledialog.askstring("Input", "Please enter the code of the module to be deleted:",
@@ -255,17 +234,37 @@ class MainMenu(tk.Frame):
             if module_code is None:  # If the user cancelled the dialog box
                 return
 
-        # Remove the module from the database
-        PrologQueryHandler.remove_module(module_code)  # Method does not exist yet in PrologQueryHandler
-
         # Remove the module from the table
-        if selected_item:
-            tree.delete(selected_item)
+        if db_manager.remove_module(module_code) is True:
+            if selected_item:
+                tree.delete(selected_item)
+            else:
+                for item in tree.get_children():
+                    tree_id = str(tree.item(item)["values"][0]).strip()  # Convert to string and remove spaces
+                    if tree_id == module_code:
+                        tree.delete(item)
+                        break
         else:
-            for item in tree.get_children():
-                if tree.item(item)["values"][0] == module_code:
-                    tree.delete(item)
-                    break
+            print("Failed to remove module.")
+
+    def remove_details(self):
+        print("Remove Details")
+
+    def button_config(self, frame, tree, add, remove):
+        add_button = tk.Button(frame, text="Add", command=add)
+        remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
+        close_button = tk.Button(frame, text="Close", command=self.close_view)
+
+        button_width = 100  # width of the buttons
+        button_spacing = 40  # space between the buttons
+        total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
+
+        # Center the buttons at the bottom of the window
+        add_button.place(relx=0.5, rely=0.97, x=-total_width / 2, anchor='s', width=button_width)
+        remove_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + button_width + button_spacing, anchor='s',
+                            width=button_width)
+        close_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
+                           width=button_width)
 
     def close_view(self):  # we can keep editing this to close respective frames as we work
         # Check which view frame exists and remove it
