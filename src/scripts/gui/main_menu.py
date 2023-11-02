@@ -22,6 +22,7 @@ class MainMenu(tk.Frame):
         super().__init__(parent)
         self.student_frame = None
         self.module_frame = None
+        self.details_frame = None
         self.view_modules_button = None
         self.add_student_button = None
         self.view_students_button = None
@@ -128,6 +129,7 @@ class MainMenu(tk.Frame):
                             width=button_width)
         close_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
                            width=button_width)
+
 
     def view_modules(self):
         # Create module frame
@@ -238,7 +240,7 @@ class MainMenu(tk.Frame):
                     tree.delete(item)
                     break
 
-    def remove_details(self):
+    def remove_details(self, tree):
         print("Remove Details")
 
     def remove_module(self, tree):
