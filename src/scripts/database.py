@@ -109,7 +109,7 @@ class DatabaseManager:
     def remove_details(self, student_id, module_code, semester):
         c = self.conn.cursor()
         sql_remove_student = f"""DELETE FROM module_details WHERE student_id = {student_id}, 
-        module_code = {module_code}, semester = {semester}"""
+        module_code = '{module_code}', semester = {semester}"""
         try:
             c.execute(sql_remove_student)
             self.commit_changes()

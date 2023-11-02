@@ -22,6 +22,8 @@ class MainMenu(tk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.generate_report_button = None
+        self.add_details_button = None
         self.student_frame = None
         self.module_frame = None
         self.view_modules_button = None
@@ -38,21 +40,29 @@ class MainMenu(tk.Frame):
         self.title.configure(foreground='black')
         self.title.pack(padx=20, pady=20, fill='x', expand=True)
 
-        # buttons
+        # student buttons
         self.view_students_button = tk.Button(self, text="View Students", command=self.view_students)
-        self.view_students_button.configure(background='#02d971', foreground='#ffffff', font=('Arial', 12, 'bold'),
+        self.view_students_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
                                             relief='groove')
         self.view_students_button.pack(padx=40, pady=5, fill='x', expand=True)
 
-        self.add_student_button = tk.Button(self, text="Add Student", command=self.add_student)
-        self.add_student_button.configure(background='#02d971', foreground='#ffffff', font=('Arial', 12, 'bold'),
-                                          relief='groove')
-        self.add_student_button.pack(padx=40, pady=5, fill='x', expand=True)
-
+        # module buttons
         self.view_modules_button = tk.Button(self, text="View Modules", command=self.view_modules)
-        self.view_modules_button.configure(background='#02d971', foreground='#ffffff', font=('Arial', 12, 'bold'),
+        self.view_modules_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
                                            relief='groove')
         self.view_modules_button.pack(padx=40, pady=5, fill='x', expand=True)
+
+        # details button
+        self.add_details_button = tk.Button(self, text="View Details", command=self.add_details)
+        self.add_details_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
+                                          relief='groove')
+        self.add_details_button.pack(padx=40, pady=5, fill='x', expand=True)
+
+        # generate report button
+        self.generate_report_button = tk.Button(self, text="Generate Report", command=self.add_student)
+        self.generate_report_button.configure(background='#936BE9', foreground='#000000', font=('Arial', 12, 'normal'),
+                                              relief='groove')
+        self.generate_report_button.pack(padx=40, pady=5, fill='x', expand=True)
 
     # View Frames
     def view_students(self):
@@ -115,20 +125,7 @@ class MainMenu(tk.Frame):
         tree.pack()
 
         # Button configurations
-        add_button = tk.Button(self.student_frame, text="Add", command=self.add_student)
-        remove_button = tk.Button(self.student_frame, text="Remove", command=lambda: self.remove_student(tree))
-        close_button = tk.Button(self.student_frame, text="Close", command=self.close_view)
-
-        button_width = 100  # width of the buttons
-        button_spacing = 40  # space between the buttons
-        total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
-
-        # Center the buttons at the bottom of the window
-        add_button.place(relx=0.5, rely=0.97, x=-total_width / 2, anchor='s', width=button_width)
-        remove_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + button_width + button_spacing, anchor='s',
-                            width=button_width)
-        close_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
-                           width=button_width)
+        self.button_config(self.student_frame, tree, self.add_student, self.remove_student)
 
     def view_modules(self):
         # Create module frame
@@ -190,20 +187,7 @@ class MainMenu(tk.Frame):
         tree.pack(padx=110)
 
         # Button configurations
-        add_button = tk.Button(self.module_frame, text="Add", command=self.add_module)
-        remove_button = tk.Button(self.module_frame, text="Remove", command=lambda: self.remove_module(tree))
-        close_button = tk.Button(self.module_frame, text="Close", command=self.close_view)
-
-        button_width = 100  # width of the buttons
-        button_spacing = 40  # space between the buttons
-        total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
-
-        # Center the buttons at the bottom of the window
-        add_button.place(relx=0.5, rely=0.97, x=-total_width / 2, anchor='s', width=button_width)
-        remove_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + button_width + button_spacing, anchor='s',
-                            width=button_width)
-        close_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
-                           width=button_width)
+        self.button_config(self.module_frame, tree, self.add_module, self.remove_module)
 
     # Insert Frames
     def add_student(self):
@@ -265,6 +249,22 @@ class MainMenu(tk.Frame):
 
     def remove_details(self):
         print("Remove Details")
+
+    def button_config(self, frame, tree, add, remove):
+        add_button = tk.Button(frame, text="Add", command=add)
+        remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
+        close_button = tk.Button(frame, text="Close", command=self.close_view)
+
+        button_width = 100  # width of the buttons
+        button_spacing = 40  # space between the buttons
+        total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
+
+        # Center the buttons at the bottom of the window
+        add_button.place(relx=0.5, rely=0.97, x=-total_width / 2, anchor='s', width=button_width)
+        remove_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + button_width + button_spacing, anchor='s',
+                            width=button_width)
+        close_button.place(relx=0.5, rely=0.97, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
+                           width=button_width)
 
     def close_view(self):  # we can keep editing this to close respective frames as we work
         # Check which view frame exists and remove it
