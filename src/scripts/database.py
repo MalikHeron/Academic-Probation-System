@@ -2,8 +2,8 @@ import logging
 import sqlite3
 from sqlite3 import Error
 
-from src.scripts.queries import *
 from src.scripts.prolog_interface import PrologQueryHandler as Prolog
+from src.scripts.queries import *
 
 
 def create_connection(db_file):
@@ -26,13 +26,14 @@ class DatabaseManager:
         self.create_table(sql_create_modules_table)
         self.create_table(sql_create_details_table)
 
-        # Insert data
-        self.insert_students()
-        self.insert_modules()
-        self.insert_details()
+        if self.get_students() and self.get_modules() and self.get_details() is None:
+            # Insert data
+            self.insert_students()
+            self.insert_modules()
+            self.insert_details()
 
-        # Commit changes
-        self.commit_changes()
+            # Commit changes
+            self.conn.commit()
 
         # Close the connection
         # self.close_connection()
@@ -93,8 +94,8 @@ class DatabaseManager:
         Prolog.add_module(c.fetchone())
 
     def update_knowledge_base(self, year):
-        c = self.conn.cursor()
         try:
+            c = self.conn.cursor()
             c.execute(f"""SELECT * FROM module_details WHERE year = {year}""")
             results = c.fetchall()
 
@@ -107,41 +108,41 @@ class DatabaseManager:
             return False
 
     def remove_student(self, student_id):
-        c = self.conn.cursor()
-        sql_remove_student = f"""DELETE FROM student_master WHERE id = {student_id}"""
         try:
-            c.execute(sql_remove_student)
-            self.commit_changes()
+            c = self.conn.cursor()
+            c.execute(f"""DELETE FROM student_master WHERE id = {student_id}""")
+            c.execute(f"""DELETE FROM module_details WHERE student_id = '{student_id}'""")
+
+            # Commit changes
+            self.conn.commit()
             return True
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return False
 
     def remove_module(self, module_code):
-        c = self.conn.cursor()
-        sql_remove_module = f"""DELETE FROM module_master WHERE code = '{module_code}'"""
         try:
-            c.execute(sql_remove_module)
-            self.commit_changes()
+            c = self.conn.cursor()
+            c.execute(f"""DELETE FROM module_master WHERE code = '{module_code}'""")
+            c.execute(f"""DELETE FROM module_details WHERE module_code = '{module_code}'""")
+
+            # Commit changes
+            self.conn.commit()
             return True
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return False
 
     def remove_details(self, student_id, module_code, semester):
-        c = self.conn.cursor()
-        sql_remove_student = f"""DELETE FROM module_details WHERE student_id = {student_id}, 
-        module_code = '{module_code}', semester = {semester}"""
+        sql_remove_student = f"""DELETE FROM module_details WHERE student_id = {student_id} 
+                            AND module_code = '{module_code}' AND semester = {semester}"""
         try:
+            c = self.conn.cursor()
             c.execute(sql_remove_student)
-            self.commit_changes()
+
+            # Commit changes
+            self.conn.commit()
             return True
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return False
-
-    def commit_changes(self):
-        try:
-            self.conn.commit()
-        except Error as e:
-            print(e)

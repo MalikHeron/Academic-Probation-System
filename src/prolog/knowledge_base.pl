@@ -119,30 +119,10 @@ cumulative_gpa_all_students(Results) :-
         % The variable that will hold the results
         Results
     ),
+    % retract all facts for student, module and module_details
     retractall(student(_, _, _, _, _)),
     retractall(module(_, _, _)),
     retractall(module_details(_, _, _, _, _)).
-
-remove_student(StudentID) :-
-    ( retract(student(StudentID, _, _, _, _)) ->
-        ( retract(module_details(StudentID, _, _, _, _)) ->
-            true
-        ;  true
-        )
-    ;   true
-    ).
-
-remove_module(ModuleCode) :-
-    ( retract(module(ModuleCode, _, _)) ->
-        remove_module_details(_, ModuleCode, _)
-    ;   false
-    ).
-
-remove_module_details(StudentID, ModuleCode, Semester) :-
-    ( retract(module_details(StudentID, ModuleCode, _, Semester, _)) ->
-        true
-    ;   false
-    ).
 
 % Updates the default GPA
 update_default_gpa(NewGPA) :-
