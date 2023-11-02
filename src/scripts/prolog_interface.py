@@ -60,8 +60,8 @@ class PrologQueryHandler:
     @staticmethod
     def add_module(module):
         try:
-            prolog.assertz(f"module('{module[0]}', {module[1]})")
-            check = list(prolog.query(f"module('{module[0]}', Credits)"))
+            prolog.assertz(f"module('{module[0]}', '{module[1]}', {module[2]})")
+            check = list(prolog.query(f"module('{module[0]}', Name, Credits)"))
             if not check:
                 logging.error("Failed to add module information.")
                 return None
@@ -100,7 +100,7 @@ class PrologQueryHandler:
     @staticmethod
     def get_module_list():
         try:
-            result = list(prolog.query("module(Code, Credits)"))
+            result = list(prolog.query("module(Code, Name, Credits)"))
             if result is None:
                 return None
             else:
@@ -119,6 +119,48 @@ class PrologQueryHandler:
             else:
                 logging.info(result)
                 return result
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def remove_student(student_id):
+        try:
+            list(prolog.query(f"remove_student({student_id})"))
+            check = list(prolog.query(f"student({student_id}, _, _, _, _)"))
+            if not check:
+                logging.error("Failed to remove student information.")
+                return None
+            else:
+                logging.info("Student Removed.")
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def remove_module(module_code):
+        try:
+            list(prolog.query(f"remove_module({module_code})"))
+            check = list(prolog.query(f"module({module_code}, _, _)"))
+            if not check:
+                logging.error("Failed to remove module information.")
+                return None
+            else:
+                logging.info("Module Removed.")
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def remove_details(student_id, module_code, semester):
+        try:
+            list(prolog.query(f"remove_module_details({student_id}, {module_code}, {semester})"))
+            check = list(prolog.query(f"module_details({student_id}, {module_code}, _, {semester}, _)"))
+            if not check:
+                logging.error("Failed to remove details information.")
+                return None
+            else:
+                logging.info("Details Removed.")
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return None

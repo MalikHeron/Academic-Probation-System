@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, simpledialog
 
-from src.scripts.prolog_interface import PrologQueryHandler
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 
 def sort_column(tree, col, reverse):
@@ -107,7 +107,7 @@ class MainMenu(tk.Frame):
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
         # Insert data in table
-        for student in PrologQueryHandler.get_student_list():
+        for student in Prolog.get_student_list():
             student_id, name, email, school, programme = student.values()
             tree.insert("", "end", values=(student_id, name, email, school, programme))
 
@@ -173,21 +173,21 @@ class MainMenu(tk.Frame):
         tree.configure(yscrollcommand=scrollbar.set)
 
         # Define columns
-        columns = ("Module Code", "Accreditation")
+        columns = ("Module Code", "Module Name", "Accreditation")
         tree["columns"] = columns
 
         # Format columns
-        column_widths = [480, 480]  # Way to wide, leave as is for now
+        column_widths = [200, 400, 150]  # Way to wide, leave as is for now
         for col, width in zip(columns, column_widths):
             tree.column(col, width=width)
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
         # Insert data in table
-        for module in PrologQueryHandler.get_module_list():
-            code, credits = module.values()
-            tree.insert("", "end", values=(code, credits))
+        for module in Prolog.get_module_list():
+            code, name, credit = module.values()
+            tree.insert("", "end", values=(code, name, credit))
 
-        tree.pack()
+        tree.pack(padx=110)
 
         # Button configurations
         add_button = tk.Button(self.module_frame, text="Add", command=self.add_module)
@@ -227,7 +227,7 @@ class MainMenu(tk.Frame):
                 return
 
         # Remove the student from the database
-        PrologQueryHandler.remove_student(student_id)  # Method does not exist yet in PrologQueryHandler
+        Prolog.remove_student(student_id)
 
         # Remove the student from the table
         if selected_item:
@@ -238,11 +238,7 @@ class MainMenu(tk.Frame):
                     tree.delete(item)
                     break
 
-    def remove_details(self):
-        print("Remove Details")
-
     def remove_module(self, tree):
-        print("Remove Module")
         selected_item = tree.selection()  # Get selected item
         if selected_item:
             module_code = tree.item(selected_item)["values"][0]
@@ -254,7 +250,7 @@ class MainMenu(tk.Frame):
                 return
 
         # Remove the module from the database
-        PrologQueryHandler.remove_module(module_code)  # Method does not exist yet in PrologQueryHandler
+        Prolog.remove_module(module_code)
 
         # Remove the module from the table
         if selected_item:
@@ -264,6 +260,9 @@ class MainMenu(tk.Frame):
                 if tree.item(item)["values"][0] == module_code:
                     tree.delete(item)
                     break
+
+    def remove_details(self):
+        print("Remove Details")
 
     def close_view(self):  # we can keep editing this to close respective frames as we work
         # Check which view frame exists and remove it
