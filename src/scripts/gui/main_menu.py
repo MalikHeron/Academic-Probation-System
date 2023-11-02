@@ -253,7 +253,7 @@ class MainMenu(tk.Frame):
             if module_code is None:  # If the user cancelled the dialog box
                 return
 
-        # Remove the student from the database
+        # Remove the module from the database
         PrologQueryHandler.remove_module(module_code)  # Method does not exist yet in PrologQueryHandler
 
         # Remove the module from the table
