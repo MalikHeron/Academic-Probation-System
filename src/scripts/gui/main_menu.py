@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, simpledialog
 
-from src.scripts.prolog_interface import PrologQueryHandler as Prolog
+from src.scripts.database import DatabaseManager
+
+db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
 
 def sort_column(tree, col, reverse):
@@ -107,9 +109,8 @@ class MainMenu(tk.Frame):
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
         # Insert data in table
-        for student in Prolog.get_student_list():
-            student_id, name, email, school, programme = student.values()
-            tree.insert("", "end", values=(student_id, name, email, school, programme))
+        for student in db_manager.get_students():
+            tree.insert("", "end", values=(student[0], student[1], student[2], student[3], student[4]))
 
         tree.pack()
 
@@ -183,9 +184,8 @@ class MainMenu(tk.Frame):
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
         # Insert data in table
-        for module in Prolog.get_module_list():
-            code, name, credit = module.values()
-            tree.insert("", "end", values=(code, name, credit))
+        for module in db_manager.get_modules():
+            tree.insert("", "end", values=(module[0], module[1], module[2]))
 
         tree.pack(padx=110)
 
@@ -218,7 +218,7 @@ class MainMenu(tk.Frame):
     def remove_student(self, tree):
         selected_item = tree.selection()  # Get selected item
         if selected_item:
-            student_id = tree.item(selected_item)["values"][0]
+            student_id = str(tree.item(selected_item)["values"][0]).strip()
         else:
             # Display a dialog box to request the student ID
             student_id = simpledialog.askstring("Input", "Please enter the ID of the student to be deleted:",
@@ -226,22 +226,23 @@ class MainMenu(tk.Frame):
             if student_id is None:  # If the user cancelled the dialog box
                 return
 
-        # Remove the student from the database
-        Prolog.remove_student(student_id)
-
         # Remove the student from the table
-        if selected_item:
-            tree.delete(selected_item)
+        if db_manager.remove_student(student_id) is True:
+            if selected_item:
+                tree.delete(selected_item)
+            else:
+                for item in tree.get_children():
+                    tree_id = str(tree.item(item)["values"][0]).strip()  # Convert to string and remove spaces
+                    if tree_id == student_id:
+                        tree.delete(item)
+                        break
         else:
-            for item in tree.get_children():
-                if tree.item(item)["values"][0] == student_id:
-                    tree.delete(item)
-                    break
+            print("Failed to remove student.")
 
     def remove_module(self, tree):
         selected_item = tree.selection()  # Get selected item
         if selected_item:
-            module_code = tree.item(selected_item)["values"][0]
+            module_code = str(tree.item(selected_item)["values"][0]).strip()
         else:
             # Display a dialog box to request the module code
             module_code = simpledialog.askstring("Input", "Please enter the code of the module to be deleted:",
@@ -249,17 +250,18 @@ class MainMenu(tk.Frame):
             if module_code is None:  # If the user cancelled the dialog box
                 return
 
-        # Remove the module from the database
-        Prolog.remove_module(module_code)
-
         # Remove the module from the table
-        if selected_item:
-            tree.delete(selected_item)
+        if db_manager.remove_module(module_code) is True:
+            if selected_item:
+                tree.delete(selected_item)
+            else:
+                for item in tree.get_children():
+                    tree_id = str(tree.item(item)["values"][0]).strip()  # Convert to string and remove spaces
+                    if tree_id == module_code:
+                        tree.delete(item)
+                        break
         else:
-            for item in tree.get_children():
-                if tree.item(item)["values"][0] == module_code:
-                    tree.delete(item)
-                    break
+            print("Failed to remove module.")
 
     def remove_details(self):
         print("Remove Details")
