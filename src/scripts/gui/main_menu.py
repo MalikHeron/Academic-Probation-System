@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, simpledialog
 
+from scripts.gui.generate_report import GenerateReportFrame
 from src.scripts.database import DatabaseManager
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
@@ -16,6 +17,10 @@ def sort_column(tree, col, reverse):
 
     # reverse sort next time column is clicked
     tree.heading(col, command=lambda: sort_column(tree, col, not reverse))
+
+
+def generate_report():
+    GenerateReportFrame(tk.Tk(), "Generate Report")
 
 
 class MainMenu(tk.Frame):
@@ -59,7 +64,7 @@ class MainMenu(tk.Frame):
         self.add_details_button.pack(padx=40, pady=5, fill='x', expand=True)
 
         # generate report button
-        self.generate_report_button = tk.Button(self, text="Generate Report", command=self.add_student)
+        self.generate_report_button = tk.Button(self, text="Generate Report", command=generate_report)
         self.generate_report_button.configure(background='#936BE9', foreground='#000000', font=('Arial', 12, 'normal'),
                                               relief='groove')
         self.generate_report_button.pack(padx=40, pady=5, fill='x', expand=True)

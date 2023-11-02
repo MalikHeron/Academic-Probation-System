@@ -27,11 +27,6 @@ sql_create_unique_index = """CREATE UNIQUE INDEX idx_module_details_unique ON
                         module_details(student_id, module_code, semester, year
                         );"""
 
-# SQL for retrieving data
-sql_get_students = """SELECT * FROM student_master"""
-sql_get_modules = """SELECT * FROM module_master"""
-sql_get_details = """SELECT * FROM module_details"""
-
 # Inserting data into student_master
 sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, school, programme) VALUES
 (1, 'John Doe', 'johndoe@gmail.com', 'School of Computing', 'Computer Science'),

@@ -2,7 +2,8 @@ import logging
 import sqlite3
 from sqlite3 import Error
 
-from queries import *
+from src.scripts.queries import *
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 
 def create_connection(db_file):
@@ -68,21 +69,42 @@ class DatabaseManager:
 
     def get_students(self):
         c = self.conn.cursor()
-        c.execute(sql_get_students)
+        c.execute("""SELECT * FROM student_master""")
         return c.fetchall()
 
     def get_modules(self):
         c = self.conn.cursor()
-        c.execute(sql_get_modules)
+        c.execute("""SELECT * FROM module_master""")
         return c.fetchall()
-
-        # for module in modules:
-        #    Prolog.add_module(module)
 
     def get_details(self):
         c = self.conn.cursor()
-        c.execute(sql_get_details)
+        c.execute("""SELECT * FROM module_details""")
         return c.fetchall()
+
+    def get_student(self, student_id):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM student_master WHERE id = {student_id}""")
+        Prolog.add_student(c.fetchone())
+
+    def get_module(self, module_code):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM module_master WHERE code = '{module_code}'""")
+        Prolog.add_module(c.fetchone())
+
+    def update_knowledge_base(self, year):
+        c = self.conn.cursor()
+        try:
+            c.execute(f"""SELECT * FROM module_details WHERE year = {year}""")
+            results = c.fetchall()
+
+            for result in results:
+                Prolog.add_details(result)
+                self.get_student(result[0])
+                self.get_module(result[1])
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
 
     def remove_student(self, student_id):
         c = self.conn.cursor()

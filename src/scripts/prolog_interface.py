@@ -45,14 +45,16 @@ class PrologQueryHandler:
     @staticmethod
     def add_student(student):
         try:
-            prolog.assertz(
-                f"student({student[0]}, '{student[1]}', "
-                f"'{student[2]}', '{student[3]}', '{student[4]}')"
-            )
-            check = list(prolog.query(f"student({student[0]}, Name, Email, School, Programme)"))
-            if not check:
-                logging.error("Failed to add student information.")
-                return None
+            print(student)
+            if not list(prolog.query(f"student({student[0]}, Name, Email, School, Programme)")):
+                prolog.assertz(
+                    f"student({student[0]}, '{student[1]}', "
+                    f"'{student[2]}', '{student[3]}', '{student[4]}')"
+                )
+                check = list(prolog.query(f"student({student[0]}, Name, Email, School, Programme)"))
+                if not check:
+                    logging.error("Failed to add student information.")
+                    return None
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return None
@@ -60,11 +62,12 @@ class PrologQueryHandler:
     @staticmethod
     def add_module(module):
         try:
-            prolog.assertz(f"module('{module[0]}', '{module[1]}', {module[2]})")
-            check = list(prolog.query(f"module('{module[0]}', Name, Credits)"))
-            if not check:
-                logging.error("Failed to add module information.")
-                return None
+            if not list(prolog.query(f"module('{module[0]}', Name, Credits)")):
+                prolog.assertz(f"module('{module[0]}', '{module[1]}', {module[2]})")
+                check = list(prolog.query(f"module('{module[0]}', Name, Credits)"))
+                if not check:
+                    logging.error("Failed to add module information.")
+                    return None
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return None
@@ -72,22 +75,64 @@ class PrologQueryHandler:
     @staticmethod
     def add_details(detail):
         try:
-            prolog.assertz(
-                f"module_details({detail[0]}, '{detail[1]}', "
-                f"{detail[2]}, {detail[3]}, {detail[4]})"
-            )
-            check = list(prolog.query(f"module_details({detail[0]}, Module, GradePoint, Semester, Year)"))
-            if not check:
-                logging.error("Failed to add detail information.")
-                return None
+            if not list(prolog.query(f"module_details({detail[0]}, '{detail[1]}', "
+                                     f"{detail[2]}, {detail[3]}, Year)")):
+                prolog.assertz(
+                    f"module_details({detail[0]}, '{detail[1]}', "
+                    f"{detail[2]}, {detail[3]}, {detail[4]})"
+                )
+                check = list(prolog.query(f"module_details({detail[0]}, '{detail[1]}', "
+                                          f"{detail[2]}, {detail[3]}, Year)"))
+                if not check:
+                    logging.error("Failed to add detail information.")
+                    return None
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return None
 
     @staticmethod
-    def calculate_cumulative_gpa(year):
+    def get_student_list():
         try:
-            result = list(prolog.query(f"cumulative_gpa_all_students({year}, Results)"))
+            result = list(prolog.query("student(Id, Name, Email, School, Programme)"))
+            if result is None:
+                return None
+            else:
+                logging.info(result)
+                return result
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def get_module_list():
+        try:
+            result = list(prolog.query("module(Code, Name, Credits)"))
+            if result is None:
+                return None
+            else:
+                logging.info(result)
+                return result
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def get_details_list():
+        try:
+            result = list(prolog.query("module_details(Id, Code, Grade_Points, Semester, Year)"))
+            if result is None:
+                return None
+            else:
+                logging.info(result)
+                return result
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return None
+
+    @staticmethod
+    def calculate_cumulative_gpa():
+        try:
+            result = list(prolog.query(f"cumulative_gpa_all_students(Results)"))
             if result is None:
                 return None
             else:

@@ -3,9 +3,11 @@ import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from main_menu import sort_column
 from scripts.alert import send_alert
 from scripts.prolog_interface import PrologQueryHandler as Prolog
+from scripts.database import DatabaseManager
+
+db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
 
 class GenerateReportFrame:
@@ -21,9 +23,11 @@ class GenerateReportFrame:
         self.button = tk.Button(self.frame, text="Generate Report", command=self.generate_report)
         self.button.pack()
 
+        self.setup_components()
+
     def setup_components(self):
         # Create main frame
-        self.main_frame = tk.Frame(self.window)
+        self.main_frame = tk.Frame(self.parent)
         self.main_frame.pack(fill='both', expand=True)
 
         # Year Selector
@@ -67,11 +71,11 @@ class GenerateReportFrame:
 
         # Hide main frame and show report frame
         self.main_frame.pack_forget()
-        self.report(year, gpa)
+        self.generate_report(year, gpa)
 
     def generate_report(self, year, gpa):
         # Create report frame
-        self.report_frame = tk.Frame(self.window)
+        self.report_frame = tk.Frame(self.parent)
         self.report_frame.pack(fill='both', expand=True)
 
         # Create a style
@@ -114,8 +118,11 @@ class GenerateReportFrame:
             tree.column(col, width=len(col) * 12)
             tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
+        # Update knowledge base
+        db_manager.update_knowledge_base(year)
+
         # Insert data in table
-        for results in Prolog.calculate_cumulative_gpa(year):
+        for results in Prolog.calculate_cumulative_gpa():
             for student in results['Results']:
                 student_id, name, email, school, programme, gpa1, gpa2, cumulative_gpa = student
                 if not cumulative_gpa == "No GPA calculated" and cumulative_gpa <= gpa:
