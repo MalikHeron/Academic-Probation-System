@@ -21,7 +21,7 @@ grade_points_earned(StudentID, Semester, Year, GradePointsEarned) :-
     % Retrieve the details of each module taken by the student in the given semester
     module_details(StudentID, Module, GradePoint, Semester, Year),
     % Retrieve the credits for each module
-    module(Module, Credits),
+    module(Module, _, Credits),
     % Calculate the grade points earned for each module (credits * grade point)
     GradePointsEarned is Credits * GradePoint.
 
@@ -30,7 +30,7 @@ module_credits(StudentID, Semester, Year, Credits) :-
     % Retrieve the details of each module taken by the student in the given semester
     module_details(StudentID, Module, _, Semester, Year),
     % Retrieve the credits for each module
-    module(Module, Credits).
+    module(Module, _, Credits).
 
 % Calculates the GPA for a given student ID and semester
 gpa(StudentID, Name, Semester, Year, GPA) :-
@@ -54,18 +54,18 @@ gpa(StudentID, Name, Semester, Year, GPA) :-
     GPA is round((TotalGradePoints / TotalCredits) * 100) / 100.
 
 % Calculates the Cumulative GPA for a given student ID
-cumulative_gpa(StudentID, Name, GPA1, GPA2, Year, CumulativeGPA) :-
+cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) :-
     % If the student has GPAs for both semesters
-    (   gpa(StudentID, Name, 1, Year, GPA1), gpa(StudentID, Name, 2, Year, GPA2) ->
+    (   gpa(StudentID, Name, 1, _, GPA1), gpa(StudentID, Name, 2, _, GPA2) ->
         % Find all total grade points earned by the student in all semesters
         findall(
             TotalGradePoints,
             (   % Retrieve the GPA for each semester
-                gpa(StudentID, Name, Semester, Year, _),
+                gpa(StudentID, Name, Semester, _, _),
                 % Find all grade points earned by the student in each semester
                 findall(
                     GradePointsEarned,
-                    grade_points_earned(StudentID, Semester, Year, GradePointsEarned),
+                    grade_points_earned(StudentID, Semester, _, GradePointsEarned),
                     GradePointsEarnedList
                 ),
                 % Calculate the total grade points earned by summing up the list
@@ -79,9 +79,9 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, Year, CumulativeGPA) :-
         findall(
             TotalCredits,
             (   % Retrieve the GPA for each semester
-                gpa(StudentID, Name, Semester, Year, _),
+                gpa(StudentID, Name, Semester, _, _),
                 % Find all credits for modules taken by the student in each semester
-                findall(Credits, module_credits(StudentID, Semester, Year, Credits), CreditsList),
+                findall(Credits, module_credits(StudentID, Semester, _, Credits), CreditsList),
                 % Calculate the total credits by summing up the list
                 sum_list(CreditsList, TotalCredits)
             ),
@@ -92,14 +92,14 @@ cumulative_gpa(StudentID, Name, GPA1, GPA2, Year, CumulativeGPA) :-
         % Calculate Cumulative GPA (total of all grade points / total of all credits), rounded to 2 decimal places
         CumulativeGPA is round((AllTotalGradePoints / AllTotalCredits) * 100) / 100
     ;   % If the student only has a GPA for semester 1
-        gpa(StudentID, Name, 1, Year, GPA1) ->
+        gpa(StudentID, Name, 1, _, GPA1) ->
         GPA2 is 0,
         % The Cumulative GPA is just GPA1 rounded to 2 decimal places
         CumulativeGPA is round(GPA1 * 100) / 100
     ).
 
 % Calculates the Cumulative GPA for all students and stores the results in a list
-cumulative_gpa_all_students(Year, Results) :-
+cumulative_gpa_all_students(Results) :-
     % find all solutions to a goal and returns them in a list
     findall(
         % The list of variables we are interested in
@@ -109,7 +109,7 @@ cumulative_gpa_all_students(Year, Results) :-
             % Retrieve the student's details
             student(StudentID, Name, Email, School, Programme),
             % If cumulative_gpa/5 succeeds then format and print the student's name and cumulative GPA
-            (   cumulative_gpa(StudentID, Name, GPA1, GPA2, Year, CumulativeGPA) ->
+            (   cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) ->
                 format('Student: ~w, Cumulative GPA: ~2f~n', [Name, CumulativeGPA])
             % If cumulative_gpa/5 fails then print that no GPA was calculated for this student
             ;   CumulativeGPA = 'No GPA calculated',
@@ -118,7 +118,10 @@ cumulative_gpa_all_students(Year, Results) :-
         ),
         % The variable that will hold the results
         Results
-    ).
+    ),
+    retractall(student(_, _, _, _, _)),
+    retractall(module(_, _, _)),
+    retractall(module_details(_, _, _, _, _)).
 
 remove_student(StudentID) :-
     ( retract(student(StudentID, _, _, _, _)) ->
