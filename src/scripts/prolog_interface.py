@@ -1,9 +1,16 @@
 import logging
+import os
 
 from pyswip import Prolog
 
 # pip install git+https://github.com/yuce/pyswip@master
 # python.exe -m pip install --upgrade pip
+
+# Create the logs and data directories if they do not exist
+if not os.path.exists("../../logs"):
+    os.makedirs("../../logs")
+if not os.path.exists("../../data"):
+    os.makedirs("../../data")
 
 # Configure the logging module
 logging.basicConfig(filename='../../logs/app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
