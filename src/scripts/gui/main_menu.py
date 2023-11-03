@@ -68,7 +68,7 @@ def remove_item(tree, remove_func, dialog_title, dialog_prompt, parent_frame, fi
                 else:
                     # Otherwise, compare all the values
                     tree_code = str(tree.item(item)["values"][1]).strip()
-                    tree_sem = str(tree.item(item)["values"][2]).strip()
+                    tree_sem = str(tree.item(item)["values"][3]).strip()
 
                     if tree_id == values[0] and tree_code == values[1] and tree_sem == values[2]:
                         tree.delete(item)
