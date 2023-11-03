@@ -2,8 +2,8 @@ import logging
 import sqlite3
 from sqlite3 import Error
 
-from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 from src.scripts.database.sql import *
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 
 def create_connection(db_file):
@@ -67,6 +67,47 @@ class DatabaseManager:
     def insert_details(self):
         c = self.conn.cursor()
         c.execute(sql_insert_details)
+
+    def insert_student(self, id, name, email, school, programme):
+        sql_insert_student = f"""INSERT INTO student_master(id, name, email, school, programme) VALUES  
+                                ({id}, '{name}', '{email}', '{school}', '{programme}');"""
+        try:
+            c = self.conn.cursor()
+            c.execute(sql_insert_student)
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_module(self, code, name, credits):
+        sql_insert_module = f"""INSERT INTO module_master(code, name, credits) VALUES  ('{code}', '{name}', {credits});"""
+        try:
+            c = self.conn.cursor()
+            c.execute(sql_insert_module)
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_detail(self, id_number, module, gpa, semester, year):
+        sql_insert_detail = f"""INSERT INTO module_details(student_id, module_code, grade_points, semester, year) VALUES 
+                                ({id_number}, '{module}', {gpa}, {semester}, {year});"""
+        try:
+            c = self.conn.cursor()
+            c.execute(sql_insert_detail)
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
 
     def get_students(self):
         c = self.conn.cursor()
