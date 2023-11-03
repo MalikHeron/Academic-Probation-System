@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, simpledialog
 
-from scripts.gui.generate_report import GenerateReportFrame
+import easygui  # pip install easygui
+
 from src.scripts.database import DatabaseManager
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
@@ -19,17 +20,14 @@ def sort_column(tree, col, reverse):
     tree.heading(col, command=lambda: sort_column(tree, col, not reverse))
 
 
-def generate_report():
-    GenerateReportFrame(tk.Tk(), "Generate Report")
-
-
 class MainMenu(tk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
         self.generate_report_button = None
-        self.add_details_button = None
+        self.view_details_button = None
         self.student_frame = None
+        self.details_frame = None
         self.module_frame = None
         self.view_modules_button = None
         self.add_student_button = None
@@ -58,18 +56,20 @@ class MainMenu(tk.Frame):
         self.view_modules_button.pack(padx=40, pady=5, fill='x', expand=True)
 
         # details button
-        self.add_details_button = tk.Button(self, text="View Details", command=self.add_details)
-        self.add_details_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
-                                          relief='groove')
-        self.add_details_button.pack(padx=40, pady=5, fill='x', expand=True)
+        self.view_details_button = tk.Button(self, text="View Details", command=self.view_details)
+        self.view_details_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
+                                           relief='groove')
+        self.view_details_button.pack(padx=40, pady=5, fill='x', expand=True)
 
         # generate report button
-        self.generate_report_button = tk.Button(self, text="Generate Report", command=generate_report)
+        self.generate_report_button = tk.Button(self, text="Generate Report", command=self.add_student)
         self.generate_report_button.configure(background='#936BE9', foreground='#000000', font=('Arial', 12, 'normal'),
                                               relief='groove')
         self.generate_report_button.pack(padx=40, pady=5, fill='x', expand=True)
 
     # View Frames
+
+
     def view_students(self):
         # Create student frame
         self.student_frame = tk.Frame(self.parent)
@@ -127,10 +127,72 @@ class MainMenu(tk.Frame):
         for student in db_manager.get_students():
             tree.insert("", "end", values=(student[0], student[1], student[2], student[3], student[4]))
 
-        tree.pack()
+        tree.pack(padx=10)
 
         # Button configurations
         self.button_config(self.student_frame, tree, self.add_student, self.remove_student)
+
+    def view_details(self):
+        # Create module frame
+        self.details_frame = tk.Frame(self.parent)
+        self.details_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+
+        # Create a style
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
+
+        # Labels
+        tk.Label(self.details_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
+        tk.Label(self.details_frame, text="Student Module Details").pack(pady=5)
+
+        # Create Canvas in new window
+        canvas = tk.Canvas(self.details_frame)
+        canvas.pack(side=tk.LEFT, fill='both', expand=True)
+
+        # Create another frame inside the canvas
+        second_frame = tk.Frame(canvas)
+
+        # Add that new frame to a new window on the canvas
+        canvas.create_window((0, 0), window=second_frame, anchor="nw")
+
+        def on_configure(event):
+            # Update scroll region after starting 'mainloop'
+            # When all widgets are in canvas
+            canvas.configure(scrollregion=canvas.bbox('all'))
+
+            # Set second frame's size to canvas's size
+            second_frame.configure(width=event.width)
+
+        canvas.bind('<Configure>', on_configure)
+
+        # Create Treeview in second frame
+        tree = ttk.Treeview(second_frame, show='headings', style="Treeview", height=23)
+
+        # Add a Scrollbar to the Treeview
+        scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
+        scrollbar.pack(side=tk.RIGHT, fill='y')
+
+        # Configure the Treeview
+        tree.configure(yscrollcommand=scrollbar.set)
+
+        # Define columns
+        columns = ("Student ID", "Module Code", "Semester", "Year")
+        tree["columns"] = columns
+
+        # Format columns
+        column_widths = [150, 250, 225, 200, 200]
+        for col, width in zip(columns, column_widths):
+            tree.column(col, width=width)
+            tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
+
+        # Insert data in table
+        for details in db_manager.get_details():
+            tree.insert("", "end", values=(details[0], details[1], details[2], details[3]))
+
+        tree.pack(padx=100)
+
+        # Button configurations
+        self.button_config(self.details_frame, tree, self.add_details, self.remove_details)
 
     def view_modules(self):
         # Create module frame
@@ -194,6 +256,7 @@ class MainMenu(tk.Frame):
         # Button configurations
         self.button_config(self.module_frame, tree, self.add_module, self.remove_module)
 
+
     # Insert Frames
     def add_student(self):
         print("Add Student")
@@ -252,9 +315,36 @@ class MainMenu(tk.Frame):
         else:
             print("Failed to remove module.")
 
-    def remove_details(self):
-        print("Remove Details")
+    def remove_details(self, tree):
+        selected_item = tree.selection()  # Get selected item
+        if selected_item:
+            student_id = str(tree.item(selected_item)["values"][0]).strip()
+            module_code = str(tree.item(selected_item)["values"][1]).strip()
+            semester = str(tree.item(selected_item)["values"][2]).strip()
+        else:
+            fields = ["Student ID", "Module Code", "Semester"]
+            values = easygui.multenterbox("Enter values for the fields.", "Input", fields)
+            if values is None:  # If the user cancelled the dialog box
+                return
+            student_id, module_code, semester = values
 
+        # Remove the module from the table
+        if db_manager.remove_details(student_id, module_code, semester) is True:
+            if selected_item:
+                tree.delete(selected_item)
+            else:
+                for item in tree.get_children():
+                    tree_id = str(tree.item(item)["values"][0]).strip()
+                    tree_code = str(tree.item(item)["values"][1]).strip()
+                    tree_sem = str(tree.item(item)["values"][2]).strip()
+                    # Convert to string and remove spaces
+                    if tree_id == student_id and tree_code == module_code and tree_sem == semester:
+                        tree.delete(item)
+                        break
+        else:
+            print("Failed to remove details.")
+
+    # Helper Methods
     def button_config(self, frame, tree, add, remove):
         add_button = tk.Button(frame, text="Add", command=add)
         remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
@@ -277,6 +367,10 @@ class MainMenu(tk.Frame):
             self.student_frame.grid_forget()
             self.student_frame = None
 
-        if self.module_frame is not None:
+        elif self.module_frame is not None:
             self.module_frame.grid_forget()
             self.module_frame = None
+
+        elif self.details_frame is not None:
+            self.details_frame.grid_forget()
+            self.details_frame = None
