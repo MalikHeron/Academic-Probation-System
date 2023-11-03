@@ -65,3 +65,20 @@ def create_treeview(frame, columns, column_widths, pad, height=23, data=None):
     tree.pack(padx=pad)
 
     return tree
+
+
+def button_config(frame, tree, add, remove, back):
+    add_button = tk.Button(frame, text="Add", command=add)
+    remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
+    back_button = tk.Button(frame, text="Back", command=back)
+
+    button_width = 100  # width of the buttons
+    button_spacing = 40  # space between the buttons
+    total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
+
+    # Center the buttons at the bottom of the window
+    add_button.place(relx=0.5, rely=0.98, x=-total_width / 2, anchor='s', width=button_width)
+    remove_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + button_width + button_spacing, anchor='s',
+                        width=button_width)
+    back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
+                      width=button_width)

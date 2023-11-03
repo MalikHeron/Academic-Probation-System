@@ -4,7 +4,7 @@ from tkinter import simpledialog
 import easygui  # pip install easygui
 
 from scripts.gui.generate_report import GenerateReportFrame
-from scripts.gui.helpers import create_treeview
+from scripts.gui.helpers import create_treeview, button_config
 from scripts.database.queries import DatabaseManager
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
@@ -80,7 +80,7 @@ class MainMenu(tk.Frame):
         tree = create_treeview(self.student_frame, columns, column_widths, 10, data=data)
 
         # Button configurations
-        self.button_config(self.student_frame, tree, self.add_student, self.remove_student)
+        button_config(self.student_frame, tree, self.add_student, self.remove_student, self.close_view)
 
     def view_modules(self):
         # Create module frame
@@ -102,7 +102,7 @@ class MainMenu(tk.Frame):
         tree = create_treeview(self.module_frame, columns, column_widths, 115, data=data)
 
         # Button configurations
-        self.button_config(self.module_frame, tree, self.add_module, self.remove_module)
+        button_config(self.module_frame, tree, self.add_module, self.remove_module, self.close_view)
 
     def view_details(self):
         # Create module frame
@@ -124,7 +124,7 @@ class MainMenu(tk.Frame):
         tree = create_treeview(self.details_frame, columns, column_widths, 115, data=data)
 
         # Button configurations
-        self.button_config(self.details_frame, tree, self.add_details, self.remove_details)
+        button_config(self.details_frame, tree, self.add_details, self.remove_details, self.close_view)
 
     # Insert Frames
     def add_student(self):
@@ -212,23 +212,6 @@ class MainMenu(tk.Frame):
                         break
         else:
             print("Failed to remove details.")
-
-    # Helper Methods
-    def button_config(self, frame, tree, add, remove):
-        add_button = tk.Button(frame, text="Add", command=add)
-        remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
-        back_button = tk.Button(frame, text="Back", command=self.close_view)
-
-        button_width = 100  # width of the buttons
-        button_spacing = 40  # space between the buttons
-        total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
-
-        # Center the buttons at the bottom of the window
-        add_button.place(relx=0.5, rely=0.98, x=-total_width / 2, anchor='s', width=button_width)
-        remove_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + button_width + button_spacing, anchor='s',
-                            width=button_width)
-        back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
-                          width=button_width)
 
     def close_view(self):  # we can keep editing this to close respective frames as we work
         # Check which view frame exists and remove it
