@@ -3,10 +3,10 @@ import threading
 import tkinter as tk
 from tkinter import messagebox
 
-from scripts.alert import send_alert
-from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import create_treeview
-from scripts.prolog_interface import PrologQueryHandler as Prolog
+from src.scripts.alert import send_alert
+from src.scripts.database.queries import DatabaseManager
+from src.scripts.gui.helpers import create_treeview
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 

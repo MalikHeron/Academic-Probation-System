@@ -3,9 +3,9 @@ from tkinter import simpledialog
 
 import easygui  # pip install easygui
 
-from scripts.gui.generate_report import GenerateReportFrame
-from scripts.gui.helpers import create_treeview, button_config
-from scripts.database.queries import DatabaseManager
+from src.scripts.gui.generate_report import GenerateReportFrame
+from src.scripts.gui.helpers import create_treeview, button_config
+from src.scripts.database.queries import DatabaseManager
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 

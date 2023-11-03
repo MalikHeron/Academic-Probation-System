@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from PIL import ImageTk, Image
 
-from scripts.database.queries import DatabaseManager
+from src.scripts.database.queries import DatabaseManager
 from gui.main_menu import MainMenu
 
 
