@@ -23,7 +23,7 @@ def remove_item(tree, remove_func, dialog_title, dialog_prompt, parent_frame, fi
             # Otherwise, get all the values
             student_id = str(tree.item(selected_item)["values"][0]).strip()
             module_code = str(tree.item(selected_item)["values"][1]).strip()
-            semester = str(tree.item(selected_item)["values"][2]).strip()
+            semester = str(tree.item(selected_item)["values"][3]).strip()
             values = [student_id, module_code, semester]
     else:
         # If no item is selected, display a dialog box to request the values
