@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from PIL import ImageTk, Image
 
-from database import DatabaseManager
+from scripts.database.queries import DatabaseManager
 from gui.main_menu import MainMenu
 
 
@@ -47,7 +47,7 @@ class AcademicProbationSystem:
         frame2.grid(row=0, column=1, sticky="ew")
 
         # background image
-        img = Image.open("../assets/background.png").resize((500, 600))
+        img = Image.open("../../res/background.png").resize((500, 600))
         background_image = ImageTk.PhotoImage(img)
 
         background = tk.Label(frame1, image=background_image, width=500, height=600)
@@ -57,7 +57,7 @@ class AcademicProbationSystem:
         content = tk.Frame(background, background='', width=500, height=600)
         content.place(x=0, y=0, width=500, height=600)
 
-        logo_image = ImageTk.PhotoImage(Image.open("../assets/utech-logo.png").resize((150, 200)))
+        logo_image = ImageTk.PhotoImage(Image.open("../../res/utech-logo.png").resize((150, 200)))
         logo_label = ttk.Label(content, image=logo_image, background="")
         logo_label.image = logo_image
         logo_label.place(relx=0.5, rely=0.4, anchor='center')  # Centered horizontally and placed at 40% of the height

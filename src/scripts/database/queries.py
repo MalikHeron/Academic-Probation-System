@@ -3,7 +3,7 @@ import sqlite3
 from sqlite3 import Error
 
 from src.scripts.prolog_interface import PrologQueryHandler as Prolog
-from src.scripts.queries import *
+from scripts.database.sql import *
 
 
 def create_connection(db_file):

@@ -1,29 +1,20 @@
 import tkinter as tk
-from tkinter import ttk, simpledialog
+from tkinter import simpledialog
 
 import easygui  # pip install easygui
 
-from src.scripts.database import DatabaseManager
+from scripts.gui.generate_report import GenerateReportFrame
+from scripts.gui.helpers import create_treeview
+from scripts.database.queries import DatabaseManager
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
-
-
-def sort_column(tree, col, reverse):
-    column_data = [(tree.set(child_id, col), child_id) for child_id in tree.get_children('')]
-    column_data.sort(reverse=reverse)
-
-    # rearrange items in sorted positions
-    for index, (val, child_id) in enumerate(column_data):
-        tree.move(child_id, '', index)
-
-    # reverse sort next time column is clicked
-    tree.heading(col, command=lambda: sort_column(tree, col, not reverse))
 
 
 class MainMenu(tk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.report_frame = None
         self.generate_report_button = None
         self.view_details_button = None
         self.student_frame = None
@@ -62,71 +53,31 @@ class MainMenu(tk.Frame):
         self.view_details_button.pack(padx=40, pady=5, fill='x', expand=True)
 
         # generate report button
-        self.generate_report_button = tk.Button(self, text="Generate Report", command=self.add_student)
+        self.generate_report_button = tk.Button(self, text="Generate Report",
+                                                command=lambda: GenerateReportFrame(self.parent))
         self.generate_report_button.configure(background='#936BE9', foreground='#000000', font=('Arial', 12, 'normal'),
                                               relief='groove')
         self.generate_report_button.pack(padx=40, pady=5, fill='x', expand=True)
 
     # View Frames
-
     def view_students(self):
         # Create student frame
         self.student_frame = tk.Frame(self.parent)
         self.student_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
-        # Create a style
-        style = ttk.Style()
-        style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
-
         # Labels
         tk.Label(self.student_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
         tk.Label(self.student_frame, text="Student Listing").pack(pady=5)
 
-        # Create Canvas in new window
-        canvas = tk.Canvas(self.student_frame)
-        canvas.pack(side=tk.LEFT, fill='both', expand=True)
-
-        # Create another frame inside the canvas
-        second_frame = tk.Frame(canvas)
-
-        # Add that new frame to a new window on the canvas
-        canvas.create_window((0, 0), window=second_frame, anchor="nw")
-
-        def on_configure(event):
-            # Update scroll region after starting 'mainloop'
-            # When all widgets are in canvas
-            canvas.configure(scrollregion=canvas.bbox('all'))
-
-            # Set second frame's size to canvas's size
-            second_frame.configure(width=event.width)
-
-        canvas.bind('<Configure>', on_configure)
-
-        # Create Treeview in second frame
-        tree = ttk.Treeview(second_frame, show='headings', style="Treeview", height=23)
-
-        # Add a Scrollbar to the Treeview
-        scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
-        scrollbar.pack(side=tk.RIGHT, fill='y')
-
-        # Configure the Treeview
-        tree.configure(yscrollcommand=scrollbar.set)
-
         # Define columns
         columns = ("Student ID", "Student Name", "Student Email", "School", "Programme")
-        tree["columns"] = columns
+        column_widths = [100, 150, 250, 230, 230]
 
-        # Format columns
-        column_widths = [100, 150, 250, 230, 230]  # Adjust these values as needed
-        for col, width in zip(columns, column_widths):
-            tree.column(col, width=width)
-            tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
+        # Get data
+        data = db_manager.get_students()
 
-        # Insert data in table
-        for student in db_manager.get_students():
-            tree.insert("", "end", values=(student[0], student[1], student[2], student[3], student[4]))
-
-        tree.pack(padx=10)
+        # Create Treeview
+        tree = create_treeview(self.student_frame, columns, column_widths, 10, data=data)
 
         # Button configurations
         self.button_config(self.student_frame, tree, self.add_student, self.remove_student)
@@ -136,59 +87,19 @@ class MainMenu(tk.Frame):
         self.module_frame = tk.Frame(self.parent)
         self.module_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
-        # Create a style
-        style = ttk.Style()
-        style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
-
         # Labels
         tk.Label(self.module_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
         tk.Label(self.module_frame, text="Module Listing").pack(pady=5)
 
-        # Create Canvas in new window
-        canvas = tk.Canvas(self.module_frame)
-        canvas.pack(side=tk.LEFT, fill='both', expand=True)
-
-        # Create another frame inside the canvas
-        second_frame = tk.Frame(canvas)
-
-        # Add that new frame to a new window on the canvas
-        canvas.create_window((0, 0), window=second_frame, anchor="nw")
-
-        def on_configure(event):
-            # Update scroll region after starting 'mainloop'
-            # When all widgets are in canvas
-            canvas.configure(scrollregion=canvas.bbox('all'))
-
-            # Set second frame's size to canvas's size
-            second_frame.configure(width=event.width)
-
-        canvas.bind('<Configure>', on_configure)
-
-        # Create Treeview in second frame
-        tree = ttk.Treeview(second_frame, show='headings', style="Treeview", height=23)
-
-        # Add a Scrollbar to the Treeview
-        scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
-        scrollbar.pack(side=tk.RIGHT, fill='y')
-
-        # Configure the Treeview
-        tree.configure(yscrollcommand=scrollbar.set)
-
         # Define columns
         columns = ("Module Code", "Module Name", "Accreditation")
-        tree["columns"] = columns
+        column_widths = [200, 400, 150]
 
-        # Format columns
-        column_widths = [200, 400, 150]  # Way to wide, leave as is for now
-        for col, width in zip(columns, column_widths):
-            tree.column(col, width=width)
-            tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
+        # Get data
+        data = db_manager.get_modules()
 
-        # Insert data in table
-        for module in db_manager.get_modules():
-            tree.insert("", "end", values=(module[0], module[1], module[2]))
-
-        tree.pack(padx=115)
+        # Create Treeview
+        tree = create_treeview(self.module_frame, columns, column_widths, 115, data=data)
 
         # Button configurations
         self.button_config(self.module_frame, tree, self.add_module, self.remove_module)
@@ -198,59 +109,19 @@ class MainMenu(tk.Frame):
         self.details_frame = tk.Frame(self.parent)
         self.details_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
-        # Create a style
-        style = ttk.Style()
-        style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
-
         # Labels
         tk.Label(self.details_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
         tk.Label(self.details_frame, text="Student Module Details").pack(pady=5)
 
-        # Create Canvas in new window
-        canvas = tk.Canvas(self.details_frame)
-        canvas.pack(side=tk.LEFT, fill='both', expand=True)
-
-        # Create another frame inside the canvas
-        second_frame = tk.Frame(canvas)
-
-        # Add that new frame to a new window on the canvas
-        canvas.create_window((0, 0), window=second_frame, anchor="nw")
-
-        def on_configure(event):
-            # Update scroll region after starting 'mainloop'
-            # When all widgets are in canvas
-            canvas.configure(scrollregion=canvas.bbox('all'))
-
-            # Set second frame's size to canvas's size
-            second_frame.configure(width=event.width)
-
-        canvas.bind('<Configure>', on_configure)
-
-        # Create Treeview in second frame
-        tree = ttk.Treeview(second_frame, show='headings', style="Treeview", height=23)
-
-        # Add a Scrollbar to the Treeview
-        scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
-        scrollbar.pack(side=tk.RIGHT, fill='y')
-
-        # Configure the Treeview
-        tree.configure(yscrollcommand=scrollbar.set)
-
         # Define columns
         columns = ("Student ID", "Module Code", "Grade Point", "Semester", "Year")
-        tree["columns"] = columns
-
-        # Format columns
         column_widths = [100, 200, 150, 150, 150]
-        for col, width in zip(columns, column_widths):
-            tree.column(col, width=width)
-            tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
-        # Insert data in table
-        for details in db_manager.get_details():
-            tree.insert("", "end", values=(details[0], details[1], details[2], details[3], details[4]))
+        # Get data
+        data = db_manager.get_details()
 
-        tree.pack(padx=115)
+        # Create Treeview
+        tree = create_treeview(self.details_frame, columns, column_widths, 115, data=data)
 
         # Button configurations
         self.button_config(self.details_frame, tree, self.add_details, self.remove_details)
@@ -346,7 +217,7 @@ class MainMenu(tk.Frame):
     def button_config(self, frame, tree, add, remove):
         add_button = tk.Button(frame, text="Add", command=add)
         remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
-        close_button = tk.Button(frame, text="Close", command=self.close_view)
+        back_button = tk.Button(frame, text="Back", command=self.close_view)
 
         button_width = 100  # width of the buttons
         button_spacing = 40  # space between the buttons
@@ -356,8 +227,8 @@ class MainMenu(tk.Frame):
         add_button.place(relx=0.5, rely=0.98, x=-total_width / 2, anchor='s', width=button_width)
         remove_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + button_width + button_spacing, anchor='s',
                             width=button_width)
-        close_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
-                           width=button_width)
+        back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
+                          width=button_width)
 
     def close_view(self):  # we can keep editing this to close respective frames as we work
         # Check which view frame exists and remove it

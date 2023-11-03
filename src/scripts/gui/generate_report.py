@@ -1,52 +1,61 @@
 import datetime
 import threading
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox
 
 from scripts.alert import send_alert
+from scripts.database.queries import DatabaseManager
+from scripts.gui.helpers import create_treeview
 from scripts.prolog_interface import PrologQueryHandler as Prolog
-from scripts.database import DatabaseManager
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
 
 class GenerateReportFrame:
-    def __init__(self, parent, title):
+
+    def __init__(self, parent):
+        self.select_year = None
+        self.generate_frame = None
+        self.title = None
+        self.gpa_entry = None
+        self.year_selector = None
+        self.report_frame = None
         self.parent = parent
-        self.title = title
-        self.frame = tk.Frame(self.parent)
-        self.frame.pack()
-
-        self.label = tk.Label(self.frame, text=self.title)
-        self.label.pack()
-
-        self.button = tk.Button(self.frame, text="Generate Report", command=self.generate_report)
-        self.button.pack()
 
         self.setup_components()
 
     def setup_components(self):
-        # Create main frame
-        self.main_frame = tk.Frame(self.parent)
-        self.main_frame.pack(fill='both', expand=True)
+        # Create report frame
+        self.generate_frame = tk.Frame(self.parent)
+        self.generate_frame.grid(row=0, column=1, columnspan=1, sticky="nsew")
+
+        # title
+        self.title = tk.Label(self.generate_frame, text="Generate Report", font=('Arial', 16, 'bold'))
+        self.title.configure(foreground='black')
+        self.title.pack(padx=20, pady=20, fill='x', expand=True)
 
         # Year Selector
         current_year = datetime.datetime.now().year  # Get the current year
-        tk.Label(self.main_frame, text="Select Year:").pack()
-        self.year_selector = tk.Spinbox(self.main_frame, from_=2016, to=current_year)
-        self.year_selector.pack(pady=5)
+        self.select_year = tk.Label(self.generate_frame, text="Select Year:", font=('Arial', 12, 'normal'))
+        self.select_year.pack()
+        self.year_selector = tk.Spinbox(self.generate_frame, font=('Arial', 11, 'normal'), from_=2016, to=current_year)
+        self.year_selector.pack(padx=150, pady=5, fill='x', expand=True)
 
         # Optional Label
-        tk.Label(self.main_frame, text="OR", font=("Helvetica", 10, "bold")).pack(pady=5)
-
+        tk.Label(self.generate_frame, text="OR", font=("Helvetica", 12, "bold")).pack(padx=80, pady=5, fill='x',
+                                                                                      expand=True)
         # GPA Entry
-        tk.Label(self.main_frame, text="Enter GPA:").pack()
-        self.gpa_entry = tk.Entry(self.main_frame)
-        self.gpa_entry.pack(pady=5)
+        tk.Label(self.generate_frame, text="Enter GPA:", font=('Arial', 12, 'normal')).pack()
+        self.gpa_entry = tk.Entry(self.generate_frame, font=('Arial', 11, 'normal'))
+        self.gpa_entry.pack(padx=80, pady=5, fill='x', expand=True)
 
         # Submit Button
-        submit_button = tk.Button(self.main_frame, text="Submit", command=self.submit)
-        submit_button.pack(pady=5)
+        submit_button = tk.Button(self.generate_frame, text="Generate Report", command=self.submit)
+        submit_button.pack(padx=150, pady=5, fill='x', expand=True)
+
+        # Back Button
+        back_button = tk.Button(self.generate_frame, text="Back", command=self.generate_frame.grid_forget)
+        back_button.pack(padx=150, pady=5, fill='x', expand=True)
 
     def submit(self):
         # Get data
@@ -70,17 +79,12 @@ class GenerateReportFrame:
         messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
 
         # Hide main frame and show report frame
-        self.main_frame.pack_forget()
-        self.generate_report(year, gpa)
+        self.view_report(year, gpa)
 
-    def generate_report(self, year, gpa):
+    def view_report(self, year, gpa):
         # Create report frame
         self.report_frame = tk.Frame(self.parent)
-        self.report_frame.pack(fill='both', expand=True)
-
-        # Create a style
-        style = ttk.Style()
-        style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
+        self.report_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Labels
         tk.Label(self.report_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
@@ -88,38 +92,15 @@ class GenerateReportFrame:
         tk.Label(self.report_frame, text=f"Year: {year}").pack()
         tk.Label(self.report_frame, text=f"GPA: {gpa}").pack(pady=5)
 
-        # Create Canvas in new window
-        canvas = tk.Canvas(self.report_frame)
-        canvas.pack(side=tk.LEFT, fill='both', expand=True)
-
-        # Add a Scrollbar to the Canvas
-        scrollbar = ttk.Scrollbar(self.report_frame, orient="vertical", command=canvas.yview)
-        scrollbar.pack(side=tk.RIGHT, fill='y')
-
-        # Configure the canvas
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-
-        # Create another frame inside the canvas
-        second_frame = tk.Frame(canvas)
-
-        # Add that new frame to a new window on the canvas
-        canvas.create_window((0, 0), window=second_frame, anchor="nw")
-
-        # Create Treeview in second frame
-        tree = ttk.Treeview(second_frame, show='headings', style="Treeview")  # Apply the style
-
         # Define columns
         columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
-        tree["columns"] = columns
-
-        # Format columns
-        for col in columns:
-            tree.column(col, width=len(col) * 12)
-            tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
+        column_widths = [100, 200, 200, 200, 150]
 
         # Update knowledge base
         db_manager.update_knowledge_base(year)
+
+        # Create Treeview
+        tree = create_treeview(self.report_frame, columns, column_widths, 60, height=20)
 
         # Insert data in table
         for results in Prolog.calculate_cumulative_gpa():
@@ -131,14 +112,7 @@ class GenerateReportFrame:
                     t = threading.Thread(target=send_alert, args=(name, email, school, programme, cumulative_gpa, gpa))
                     t.start()
 
-        tree.pack()
-
-        close_button = tk.Button(self.report_frame, text="Close", command=self.close_report)
+        close_button = tk.Button(self.report_frame, text="Close", command=self.report_frame.grid_forget)
 
         # Center the close button at the bottom of the window
         close_button.place(relx=0.5, rely=0.97, anchor='s')
-
-    def close_report(self):
-        # Hide report frame and show main frame
-        self.report_frame.pack_forget()
-        self.main_frame.pack(fill='both', expand=True)
