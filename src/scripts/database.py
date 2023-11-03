@@ -26,7 +26,7 @@ class DatabaseManager:
         self.create_table(sql_create_modules_table)
         self.create_table(sql_create_details_table)
 
-        if self.get_students() and self.get_modules() and self.get_details() is None:
+        if not self.get_students() and not self.get_modules() and not self.get_details():
             # Insert data
             self.insert_students()
             self.insert_modules()
