@@ -1,4 +1,3 @@
-import os
 import tkinter as tk
 from tkinter import ttk
 
@@ -6,13 +5,6 @@ from PIL import ImageTk, Image
 
 from database import DatabaseManager
 from gui.main_menu import MainMenu
-
-
-def create_directory():
-    if not os.path.exists("../../logs"):
-        os.makedirs("../../logs")
-    if not os.path.exists("../../data"):
-        os.makedirs("../../data")
 
 
 class AcademicProbationSystem:
@@ -23,7 +15,6 @@ class AcademicProbationSystem:
         self.window.title('Academic Probation System')
         self.setup_window()
         self.setup_components()
-        create_directory()
         DatabaseManager()
 
     def setup_window(self):
