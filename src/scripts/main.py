@@ -8,6 +8,7 @@ from gui.main_menu import MainMenu
 
 
 class AcademicProbationSystem:
+
     def __init__(self):
         self.window_height = None
         self.window_width = None
