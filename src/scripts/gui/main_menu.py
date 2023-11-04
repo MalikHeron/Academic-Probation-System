@@ -288,7 +288,7 @@ class MainMenu(tk.Frame):
         remove_item(tree, db_manager.remove_details, "Input", "Enter values for the fields.", self.details_frame,
                     ["Student ID", "Module Code", "Semester"])
 
-    #Optimize method
+    #Do not touch this method
     def validate_and_submit(self, id_field, module_field, gpa_field, semester_field, year_field):
         try:
             # validate id
