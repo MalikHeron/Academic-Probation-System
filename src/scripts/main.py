@@ -1,3 +1,7 @@
+import sys
+# setting path
+sys.path.append('../../src')
+
 import tkinter as tk
 from tkinter import ttk
 

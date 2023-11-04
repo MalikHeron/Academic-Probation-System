@@ -27,7 +27,7 @@ class GenerateReportFrame:
     def setup_components(self):
         # Create report frame
         self.generate_frame = tk.Frame(self.parent)
-        self.generate_frame.grid(row=0, column=1, columnspan=1, sticky="nsew")
+        self.generate_frame.grid(row=0, column=1, columnspan=1, sticky="ew")
 
         # title
         self.title = tk.Label(self.generate_frame, text="Generate Report", font=('Arial', 16, 'bold'))
@@ -37,20 +37,25 @@ class GenerateReportFrame:
         # Year Selector
         current_year = datetime.datetime.now().year  # Get the current year
         self.select_year = tk.Label(self.generate_frame, text="Select Year:", font=('Arial', 12, 'normal'))
-        self.select_year.pack()
+        self.select_year.pack(padx=150, anchor="w")
         self.year_selector = tk.Spinbox(self.generate_frame, font=('Arial', 11, 'normal'), from_=2016, to=current_year)
         self.year_selector.pack(padx=150, pady=5, fill='x', expand=True)
 
         # Optional Label
-        tk.Label(self.generate_frame, text="OR", font=("Helvetica", 12, "bold")).pack(padx=80, pady=5, fill='x',
-                                                                                      expand=True)
+        tk.Label(self.generate_frame, text="OR", font=("Helvetica", 12, "bold"), foreground="#7a7a7a")\
+            .pack(padx=80, pady=5, fill='x', expand=True)
+        
         # GPA Entry
-        tk.Label(self.generate_frame, text="Enter GPA:", font=('Arial', 12, 'normal')).pack()
+        tk.Label(self.generate_frame, text="Enter GPA:", font=('Arial', 12, 'normal')).pack(padx=150, anchor="w")
         self.gpa_entry = tk.Entry(self.generate_frame, font=('Arial', 11, 'normal'))
-        self.gpa_entry.pack(padx=80, pady=5, fill='x', expand=True)
+        self.gpa_entry.pack(padx=150, pady=5, fill='x', expand=True)
+
+        # spacing
+        tk.Label(self.generate_frame, text="", font=('Arial', 12, 'normal')).pack()
 
         # Submit Button
         submit_button = tk.Button(self.generate_frame, text="Generate Report", command=self.submit)
+        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Arial', 12, 'bold'))
         submit_button.pack(padx=150, pady=5, fill='x', expand=True)
 
         # Back Button
