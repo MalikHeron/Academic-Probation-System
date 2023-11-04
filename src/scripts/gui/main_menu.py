@@ -7,7 +7,7 @@ import easygui  # pip install easygui
 
 from src.scripts.database.queries import DatabaseManager
 from src.scripts.gui.generate_report import GenerateReportFrame
-from src.scripts.gui.helpers import create_treeview, button_config
+from src.scripts.gui.helpers import create_treeview, button_config, create_button
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
