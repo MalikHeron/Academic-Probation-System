@@ -1,180 +1,85 @@
-import datetime
-import os
-import threading
+import sys
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-from alert import send_alert
-from database import DatabaseManager
-from prolog_interface import PrologQueryHandler as Prolog
+from PIL import ImageTk, Image
 
+from gui.main_menu import MainMenu
+from scripts.database.queries import DatabaseManager
 
-def create_directory():
-    if not os.path.exists("../../logs"):
-        os.makedirs("../../logs")
-    if not os.path.exists("../../data"):
-        os.makedirs("../../data")
+# setting path
+sys.path.append('../../src')
 
 
 class AcademicProbationSystem:
+
     def __init__(self):
-        self.report_frame = None
-        self.main_frame = None
-        self.year_selector = None
-        self.gpa_entry = None
-        self.root = tk.Tk()
-        self.root.title('Academic Probation System')
+        self.window_height = None
+        self.window_width = None
+        self.window = tk.Tk()
+        self.window.title('Academic Probation System')
         self.setup_window()
         self.setup_components()
-        create_directory()
         DatabaseManager()
 
     def setup_window(self):
         # Set window size
-        window_width = 800
-        window_height = 400
+        self.window_width = 1000
+        self.window_height = 600
 
         # Get screen width and height
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
 
         # Calculate position
-        position_top = int(screen_height / 2 - window_height / 2)
-        position_right = int(screen_width / 2 - window_width / 2)
+        position_top = int(screen_height / 2 - self.window_height / 2)
+        position_right = int(screen_width / 2 - self.window_width / 2)
 
         # Set window size and position
-        self.root.geometry(f"{window_width}x{window_height}+{position_right}+{position_top}")
-        self.root.resizable(False, False)
+        self.window.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
+        self.window.resizable(False, False)
+
+        # Make the columns equal width
+        self.window.columnconfigure(0, weight=1, minsize=500)
+        self.window.columnconfigure(1, weight=1, minsize=500)
+
+        # window close event
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            self.window.destroy()
 
     def setup_components(self):
-        # Create main frame
-        self.main_frame = tk.Frame(self.root)
-        self.main_frame.pack(fill='both', expand=True)
+        frame1 = ttk.Frame(self.window)
+        frame2 = MainMenu(self.window)
 
-        # Year Selector
-        current_year = datetime.datetime.now().year  # Get the current year
-        tk.Label(self.main_frame, text="Select Year:").pack()
-        self.year_selector = tk.Spinbox(self.main_frame, from_=2016, to=current_year)
-        self.year_selector.pack(pady=5)
+        # Place the frames in the window
+        frame1.grid(row=0, column=0, sticky="nsew")
+        frame2.grid(row=0, column=1, sticky="ew")
 
-        # Optional Label
-        tk.Label(self.main_frame, text="OR", font=("Helvetica", 10, "bold")).pack(pady=5)
+        # background image
+        img = Image.open("../../res/background.png").resize((500, 600))
+        background_image = ImageTk.PhotoImage(img)
 
-        # GPA Entry
-        tk.Label(self.main_frame, text="Enter GPA:").pack()
-        self.gpa_entry = tk.Entry(self.main_frame)
-        self.gpa_entry.pack(pady=5)
+        background = tk.Label(frame1, image=background_image, width=500, height=600)
+        background.image = background_image
+        background.pack(fill=tk.BOTH, expand=True)
 
-        # Submit Button
-        submit_button = tk.Button(self.main_frame, text="Submit", command=self.submit)
-        submit_button.pack(pady=5)
+        content = tk.Frame(background, background='', width=500, height=600)
+        content.place(x=0, y=0, width=500, height=600)
 
-    def submit(self):
-        # Get data
-        year = self.year_selector.get()
-        gpa = self.gpa_entry.get()
+        logo_image = ImageTk.PhotoImage(Image.open("../../res/utech-logo.png").resize((150, 200)))
+        logo_label = ttk.Label(content, image=logo_image, background="")
+        logo_label.image = logo_image
+        logo_label.place(relx=0.5, rely=0.4, anchor='center')  # Centered horizontally and placed at 40% of the height
 
-        if gpa != "":
-            # Validate GPA
-            try:
-                gpa = float(gpa)
-                if not 0.0 <= gpa <= 4.0:
-                    raise ValueError("GPA must be between 0.0 and 4.0")
-                else:
-                    Prolog.update_gpa(gpa)  # update default GPA
-            except ValueError as e:
-                messagebox.showerror("Invalid Input", str(e))
-                return
-        else:
-            gpa = Prolog.get_default_gpa()  # get default gpa
-
-        messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
-
-        # Hide main frame and show report frame
-        self.main_frame.pack_forget()
-        self.report(year, gpa)
-
-    def sort_column(self, tree, col, reverse):
-        column_data = [(tree.set(child_id, col), child_id) for child_id in tree.get_children('')]
-        column_data.sort(reverse=reverse)
-
-        # rearrange items in sorted positions
-        for index, (val, child_id) in enumerate(column_data):
-            tree.move(child_id, '', index)
-
-        # reverse sort next time column is clicked
-        tree.heading(col, command=lambda: self.sort_column(tree, col, not reverse))
-
-    def report(self, year, gpa):
-        # Create report frame
-        self.report_frame = tk.Frame(self.root)
-        self.report_frame.pack(fill='both', expand=True)
-
-        # Create a style
-        style = ttk.Style()
-        style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
-
-        # Labels
-        tk.Label(self.report_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
-        tk.Label(self.report_frame, text="Academic Probation Alert GPA Report").pack()
-        tk.Label(self.report_frame, text=f"Year: {year}").pack()
-        tk.Label(self.report_frame, text=f"GPA: {gpa}").pack(pady=5)
-
-        # Create Canvas in new window
-        canvas = tk.Canvas(self.report_frame)
-        canvas.pack(side=tk.LEFT, fill='both', expand=True)
-
-        # Add a Scrollbar to the Canvas
-        scrollbar = ttk.Scrollbar(self.report_frame, orient="vertical", command=canvas.yview)
-        scrollbar.pack(side=tk.RIGHT, fill='y')
-
-        # Configure the canvas
-        canvas.configure(yscrollcommand=scrollbar.set)
-        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-
-        # Create another frame inside the canvas
-        second_frame = tk.Frame(canvas)
-
-        # Add that new frame to a new window on the canvas
-        canvas.create_window((0, 0), window=second_frame, anchor="nw")
-
-        # Create Treeview in second frame
-        tree = ttk.Treeview(second_frame, show='headings', style="Treeview")  # Apply the style
-
-        # Define columns
-        columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
-        tree["columns"] = columns
-
-        # Format columns
-        for col in columns:
-            tree.column(col, width=len(col) * 12)
-            tree.heading(col, text=col, command=lambda _col=col: self.sort_column(tree, _col, False))
-
-        # Insert data in table
-        for results in Prolog.calculate_cumulative_gpa(year):
-            for student in results['Results']:
-                student_id, name, email, school, programme, gpa1, gpa2, cumulative_gpa = student
-                if not cumulative_gpa == "No GPA calculated" and cumulative_gpa <= gpa:
-                    tree.insert("", "end", values=(student_id, name, gpa1, gpa2, cumulative_gpa))
-                    # Create a thread for the send_alert function
-                    t = threading.Thread(target=send_alert, args=(name, email, school, programme, cumulative_gpa, gpa))
-                    t.start()
-
-        tree.pack()
-
-        close_button = tk.Button(self.report_frame, text="Close", command=self.close_report)
-
-        # Center the close button at the bottom of the window
-        close_button.place(relx=0.5, rely=0.97, anchor='s')
-
-    def close_report(self):
-        # Hide report frame and show main frame
-        self.report_frame.pack_forget()
-        self.main_frame.pack(fill='both', expand=True)
+        label1 = ttk.Label(content, text="Academic Probation System", font=("Arial", 17, "bold"), background="")
+        label1.place(relx=0.5, rely=0.6, anchor='center')  # Centered both horizontally and vertically
 
     def run(self):
-        self.root.mainloop()
+        self.window.mainloop()
 
 
 # Create and run the application
