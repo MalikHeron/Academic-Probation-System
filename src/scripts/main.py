@@ -1,14 +1,14 @@
 import sys
-# setting path
-sys.path.append('../../src')
-
 import tkinter as tk
 from tkinter import ttk
 
 from PIL import ImageTk, Image
 
-from scripts.database.queries import DatabaseManager
 from gui.main_menu import MainMenu
+from scripts.database.queries import DatabaseManager
+
+# setting path
+sys.path.append('../../src')
 
 
 class AcademicProbationSystem:
