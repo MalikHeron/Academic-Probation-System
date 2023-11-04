@@ -1,4 +1,5 @@
 import sys
+from tkinter import messagebox
 # setting path
 sys.path.append('../../src')
 
@@ -42,6 +43,13 @@ class AcademicProbationSystem:
         # Make the columns equal width
         self.window.columnconfigure(0, weight=1, minsize=500)
         self.window.columnconfigure(1, weight=1, minsize=500)
+
+        # window close event
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            self.window.destroy()
 
     def setup_components(self):
         frame1 = ttk.Frame(self.window)
