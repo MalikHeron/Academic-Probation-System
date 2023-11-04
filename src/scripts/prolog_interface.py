@@ -50,9 +50,8 @@ class PrologQueryHandler:
             return None
 
     @staticmethod
-    def add_student(student):
+    def assert_student(student):
         try:
-            print(student)
             if not list(prolog.query(f"student({student[0]}, Name, Email, School, Programme)")):
                 prolog.assertz(
                     f"student({student[0]}, '{student[1]}', "
@@ -67,7 +66,7 @@ class PrologQueryHandler:
             return None
 
     @staticmethod
-    def add_module(module):
+    def assert_module(module):
         try:
             if not list(prolog.query(f"module('{module[0]}', Name, Credits)")):
                 prolog.assertz(f"module('{module[0]}', '{module[1]}', {module[2]})")
@@ -80,7 +79,7 @@ class PrologQueryHandler:
             return None
 
     @staticmethod
-    def add_details(detail):
+    def assert_details(detail):
         try:
             if not list(prolog.query(f"module_details({detail[0]}, '{detail[1]}', "
                                      f"{detail[2]}, {detail[3]}, Year)")):

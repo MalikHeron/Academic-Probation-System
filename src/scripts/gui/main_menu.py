@@ -1,6 +1,7 @@
 import tkinter as tk
 from datetime import datetime
 from tkinter import simpledialog
+from tkinter import simpledialog, messagebox
 
 import easygui  # pip install easygui
 
@@ -9,6 +10,77 @@ from src.scripts.gui.generate_report import GenerateReportFrame
 from src.scripts.gui.helpers import create_treeview, button_config
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
+
+
+def remove_item(tree, remove_func, dialog_title, dialog_prompt, parent_frame, fields=None):
+    # Get the selected item from the tree
+    selected_item = tree.selection()
+
+    # If an item is selected, get its values
+    if selected_item:
+        # If fields is None, get the first value
+        if fields is None:
+            values = str(tree.item(selected_item)["values"][0]).strip()
+        else:
+            # Otherwise, get all the values
+            student_id = str(tree.item(selected_item)["values"][0]).strip()
+            module_code = str(tree.item(selected_item)["values"][1]).strip()
+            semester = str(tree.item(selected_item)["values"][3]).strip()
+            values = [student_id, module_code, semester]
+    else:
+        # If no item is selected, display a dialog box to request the values
+        if fields is None:
+            # Display a dialog box to request the student ID
+            values = simpledialog.askstring(dialog_title, dialog_prompt, parent=parent_frame)
+
+            # If the user cancelled the dialog box, return
+            if values is None:
+                return
+        else:
+            # Display a dialog box to request multiple values
+            values = easygui.multenterbox(dialog_prompt, dialog_title, fields)
+
+            # If the user cancelled the dialog box, return
+            if values is None:
+                return
+
+    # If fields is None, call the remove function with a single argument
+    # Otherwise, unpack the values and pass them as arguments
+    if fields is None:
+        removed = remove_func(values)
+    else:
+        removed = remove_func(*values)
+
+    # If the item was successfully removed
+    if removed is True:
+        # If an item was selected, delete it from the tree
+        if selected_item:
+            tree.delete(selected_item)
+        else:
+            # If no item was selected, find and delete the item from the tree
+            for item in tree.get_children():
+                # Get the first value of the item
+                tree_id = str(tree.item(item)["values"][0]).strip()
+
+                # If fields is None, compare the first value
+                if fields is None:
+                    if tree_id == values:
+                        tree.delete(item)
+                        break
+                else:
+                    # Otherwise, compare all the values
+                    tree_code = str(tree.item(item)["values"][1]).strip()
+                    tree_sem = str(tree.item(item)["values"][3]).strip()
+
+                    if tree_id == values[0] and tree_code == values[1] and tree_sem == values[2]:
+                        tree.delete(item)
+                        break
+
+        # Refresh the tree view
+        tree.update_idletasks()
+    else:
+        # Display an error message
+        messagebox.showerror("Error", "Failed to remove item.")
 
 
 class MainMenu(tk.Frame):
@@ -37,29 +109,17 @@ class MainMenu(tk.Frame):
         self.title.pack(padx=20, pady=20, fill='x', expand=True)
 
         # student buttons
-        self.view_students_button = tk.Button(self, text="View Students", command=self.view_students)
-        self.view_students_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
-                                            relief='groove')
-        self.view_students_button.pack(padx=40, pady=5, fill='x', expand=True)
+        self.view_students_button = create_button(self, "View Students", self.view_students)
 
         # module buttons
-        self.view_modules_button = tk.Button(self, text="View Modules", command=self.view_modules)
-        self.view_modules_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
-                                           relief='groove')
-        self.view_modules_button.pack(padx=40, pady=5, fill='x', expand=True)
+        self.view_modules_button = create_button(self, "View Modules", self.view_modules)
 
         # details button
-        self.view_details_button = tk.Button(self, text="View Details", command=self.view_details)
-        self.view_details_button.configure(background='#61CBEC', foreground='#000000', font=('Arial', 12, 'normal'),
-                                           relief='groove')
-        self.view_details_button.pack(padx=40, pady=5, fill='x', expand=True)
+        self.view_details_button = create_button(self, "View Details", self.view_details)
 
         # generate report button
-        self.generate_report_button = tk.Button(self, text="Generate Report",
-                                                command=lambda: GenerateReportFrame(self.parent))
-        self.generate_report_button.configure(background='#936BE9', foreground='#000000', font=('Arial', 12, 'normal'),
-                                              relief='groove')
-        self.generate_report_button.pack(padx=40, pady=5, fill='x', expand=True)
+        self.generate_report_button = create_button(self, "Generate Report", lambda: GenerateReportFrame(self.parent),
+                                                    bg_color='#936BE9')
 
     # View Frames
     def view_students(self):
@@ -217,81 +277,16 @@ class MainMenu(tk.Frame):
         print("Add Module")
 
     def remove_student(self, tree):
-        selected_item = tree.selection()  # Get selected item
-        if selected_item:
-            student_id = str(tree.item(selected_item)["values"][0]).strip()
-        else:
-            # Display a dialog box to request the student ID
-            student_id = simpledialog.askstring("Input", "Please enter the ID of the student to be deleted:",
-                                                parent=self.student_frame)
-            if student_id is None:  # If the user cancelled the dialog box
-                return
-
-        # Remove the student from the table
-        if db_manager.remove_student(student_id) is True:
-            if selected_item:
-                tree.delete(selected_item)
-            else:
-                for item in tree.get_children():
-                    tree_id = str(tree.item(item)["values"][0]).strip()  # Convert to string and remove spaces
-                    if tree_id == student_id:
-                        tree.delete(item)
-                        break
-        else:
-            print("Failed to remove student.")
+        remove_item(tree, db_manager.remove_student, "Input", "Please enter the ID of the student to be deleted:",
+                    self.student_frame)
 
     def remove_module(self, tree):
-        selected_item = tree.selection()  # Get selected item
-        if selected_item:
-            module_code = str(tree.item(selected_item)["values"][0]).strip()
-        else:
-            # Display a dialog box to request the module code
-            module_code = simpledialog.askstring("Input", "Please enter the code of the module to be deleted:",
-                                                 parent=self.module_frame)
-            if module_code is None:  # If the user cancelled the dialog box
-                return
-
-        # Remove the module from the table
-        if db_manager.remove_module(module_code) is True:
-            if selected_item:
-                tree.delete(selected_item)
-            else:
-                for item in tree.get_children():
-                    tree_id = str(tree.item(item)["values"][0]).strip()  # Convert to string and remove spaces
-                    if tree_id == module_code:
-                        tree.delete(item)
-                        break
-        else:
-            print("Failed to remove module.")
+        remove_item(tree, db_manager.remove_module, "Input", "Please enter the code of the module to be deleted:",
+                    self.module_frame)
 
     def remove_details(self, tree):
-        selected_item = tree.selection()  # Get selected item
-        if selected_item:
-            student_id = str(tree.item(selected_item)["values"][0]).strip()
-            module_code = str(tree.item(selected_item)["values"][1]).strip()
-            semester = str(tree.item(selected_item)["values"][2]).strip()
-        else:
-            fields = ["Student ID", "Module Code", "Semester"]
-            values = easygui.multenterbox("Enter values for the fields.", "Input", fields)
-            if values is None:  # If the user cancelled the dialog box
-                return
-            student_id, module_code, semester = values
-
-        # Remove the module from the table
-        if db_manager.remove_details(student_id, module_code, semester) is True:
-            if selected_item:
-                tree.delete(selected_item)
-            else:
-                for item in tree.get_children():
-                    tree_id = str(tree.item(item)["values"][0]).strip()
-                    tree_code = str(tree.item(item)["values"][1]).strip()
-                    tree_sem = str(tree.item(item)["values"][2]).strip()
-                    # Convert to string and remove spaces
-                    if tree_id == student_id and tree_code == module_code and tree_sem == semester:
-                        tree.delete(item)
-                        break
-        else:
-            print("Failed to remove details.")
+        remove_item(tree, db_manager.remove_details, "Input", "Enter values for the fields.", self.details_frame,
+                    ["Student ID", "Module Code", "Semester"])
 
     #Optimize method
     def validate_and_submit(self, id_field, module_field, gpa_field, semester_field, year_field):

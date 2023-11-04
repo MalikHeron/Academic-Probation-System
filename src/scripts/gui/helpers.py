@@ -67,6 +67,14 @@ def create_treeview(frame, columns, column_widths, pad, height=23, data=None):
     return tree
 
 
+def create_button(frame, text, command, bg_color='#61CBEC', fg_color='#000000', font=('Arial', 12, 'normal'),
+                  relief='groove'):
+    button = tk.Button(frame, text=text, command=command)
+    button.configure(background=bg_color, foreground=fg_color, font=font, relief=relief)
+    button.pack(padx=40, pady=5, fill='x', expand=True)
+    return button
+
+
 def button_config(frame, tree, add, remove, back):
     add_button = tk.Button(frame, text="Add", command=add)
     remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))

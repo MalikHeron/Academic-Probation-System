@@ -127,12 +127,12 @@ class DatabaseManager:
     def get_student(self, student_id):
         c = self.conn.cursor()
         c.execute(f"""SELECT * FROM student_master WHERE id = {student_id}""")
-        Prolog.add_student(c.fetchone())
+        Prolog.assert_student(c.fetchone())
 
     def get_module(self, module_code):
         c = self.conn.cursor()
         c.execute(f"""SELECT * FROM module_master WHERE code = '{module_code}'""")
-        Prolog.add_module(c.fetchone())
+        Prolog.assert_module(c.fetchone())
 
     def update_knowledge_base(self, year):
         try:
@@ -141,7 +141,7 @@ class DatabaseManager:
             results = c.fetchall()
 
             for result in results:
-                Prolog.add_details(result)
+                Prolog.assert_details(result)
                 self.get_student(result[0])
                 self.get_module(result[1])
         except Exception as e:
