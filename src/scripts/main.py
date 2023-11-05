@@ -1,15 +1,15 @@
 import sys
-from tkinter import messagebox
-# setting path
-sys.path.append('../../src')
-
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
 
 from PIL import ImageTk, Image
 
-from scripts.database.queries import DatabaseManager
 from gui.main_menu import MainMenu
+from scripts.database.queries import DatabaseManager
+
+# setting path
+sys.path.append('../../src')
 
 
 class AcademicProbationSystem:
@@ -21,7 +21,7 @@ class AcademicProbationSystem:
         self.window.title('Academic Probation System')
         self.setup_window()
         self.setup_components()
-        DatabaseManager()
+        DatabaseManager()  # initialize database connection
 
     def setup_window(self):
         # Set window size
@@ -49,6 +49,7 @@ class AcademicProbationSystem:
 
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            DatabaseManager().close_connection()  # close database connection
             self.window.destroy()
 
     def setup_components(self):
@@ -70,7 +71,7 @@ class AcademicProbationSystem:
         content = tk.Frame(background, background='', width=500, height=600)
         content.place(x=0, y=0, width=500, height=600)
 
-        logo_image = ImageTk.PhotoImage(Image.open("../../res/utech-logo.png").resize((150, 200)))
+        logo_image = ImageTk.PhotoImage(Image.open("../../res/logo.png").resize((150, 200)))
         logo_label = ttk.Label(content, image=logo_image, background="")
         logo_label.image = logo_image
         logo_label.place(relx=0.5, rely=0.4, anchor='center')  # Centered horizontally and placed at 40% of the height

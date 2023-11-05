@@ -54,8 +54,8 @@ class GenerateReportFrame:
         tk.Label(self.generate_frame, text="", font=('Arial', 12, 'normal')).pack()
 
         # Submit Button
-        submit_button = tk.Button(self.generate_frame, text="Generate Report", command=self.submit)
-        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Arial', 12, 'bold'))
+        submit_button = tk.Button(self.generate_frame, text="Generate", command=self.submit)
+        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Arial', 12, 'normal'))
         submit_button.pack(padx=150, pady=5, fill='x', expand=True)
 
         # Back Button

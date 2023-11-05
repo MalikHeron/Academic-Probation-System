@@ -2,30 +2,25 @@ import logging
 import sqlite3
 from sqlite3 import Error
 
-from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 from scripts.database.sql import *
-
-
-def create_connection(db_file):
-    connection = None
-    try:
-        connection = sqlite3.connect(db_file)
-    except Error as e:
-        print(e)
-    return connection
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 
 class DatabaseManager:
+
     def __init__(self):
+        # Database file path
+        self.db_file = '../../data/student_grades.db'
+
         # Create database connection
-        self.done = None
-        self.conn = create_connection('../../data/student_grades.db')
+        self.conn = self.create_connection()
 
         # Create tables
         self.create_table(sql_create_students_table)
         self.create_table(sql_create_modules_table)
         self.create_table(sql_create_details_table)
 
+        # Check if database is empty
         if not self.get_students() and not self.get_modules() and not self.get_details():
             # Insert data
             self.insert_students()
@@ -35,8 +30,13 @@ class DatabaseManager:
             # Commit changes
             self.conn.commit()
 
-        # Close the connection
-        # self.close_connection()
+    def create_connection(self):
+        connection = None
+        try:
+            connection = sqlite3.connect(self.db_file)
+        except Error as e:
+            print(e)
+        return connection
 
     def close_connection(self):
         try:
