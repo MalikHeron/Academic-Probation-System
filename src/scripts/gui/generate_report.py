@@ -97,6 +97,7 @@ class GenerateReportFrame:
         else:
             gpa = Prolog.get_default_gpa()  # get default gpa
 
+        # Show submitted message
         messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
 
         # Hide main frame and show report frame
@@ -147,7 +148,7 @@ class GenerateReportFrame:
             self.alert_label.place(relx=0.15, rely=0.96, anchor='s')
 
             # Progress bar
-            self.progressbar = Progressbar(self.report_frame, mode='determinate')
+            self.progressbar = Progressbar(self.report_frame, mode='indeterminate')
             self.progressbar.place(relx=0.3, rely=0.96, anchor='s')
             self.progressbar.start(3)
 
@@ -223,11 +224,10 @@ class GenerateReportFrame:
             if self.alerts_to_send == 0:
                 # Destroy the progress bar
                 self.progressbar.destroy()
-                # Update the label
+                # Update the label with a success message in green
                 self.alert_var.set("Email alerts sent!")
-                # Change the color of the label to green
                 self.alert_label.config(fg='green')
-                # Schedule the removal of the label and progress bar
+                # Schedule the removal of the label
                 self.report_frame.after(2000, self.remove_alerts)  # 2000 milliseconds = 2 seconds
         except Exception as e:
             logging.error(f'Error sending alert: {e}')

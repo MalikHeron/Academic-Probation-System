@@ -27,9 +27,7 @@ class MainMenu(tk.Frame):
         self.view_students_button = None
         self.title = None
         self.parent = parent
-
         self.record_count_var = tk.StringVar()
-
         self.setup_components()
 
     def setup_components(self):
