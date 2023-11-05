@@ -10,7 +10,6 @@
     ├── scripts/                # python source files
         ├── database/           # database functions
         ├── GUI/                # UI components
-        ├── alert.py            # sending alerts to students
         ├── prolog_interface.py # bridge between prolog and python
         └── main.py             # app entry point
 └── README.md

@@ -23,9 +23,9 @@ class DatabaseManager:
         # Check if database is empty
         if not self.get_students() and not self.get_modules() and not self.get_details():
             # Insert data
-            self.insert_students()
-            self.insert_modules()
-            self.insert_details()
+            self.insert_data(sql_insert_students)
+            self.insert_data(sql_insert_modules)
+            self.insert_data(sql_insert_details)
 
             # Commit changes
             self.conn.commit()
@@ -56,17 +56,9 @@ class DatabaseManager:
         except Error as e:
             print(e)
 
-    def insert_students(self):
+    def insert_data(self, insert_data_sql):
         c = self.conn.cursor()
-        c.execute(sql_insert_students)
-
-    def insert_modules(self):
-        c = self.conn.cursor()
-        c.execute(sql_insert_modules)
-
-    def insert_details(self):
-        c = self.conn.cursor()
-        c.execute(sql_insert_details)
+        c.execute(insert_data_sql)
 
     def get_students(self):
         c = self.conn.cursor()
