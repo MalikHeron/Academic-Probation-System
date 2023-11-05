@@ -139,8 +139,9 @@ class GenerateReportFrame:
                                          args=(name, email, school, programme, cumulative_gpa, gpa))
                     t.start()
 
+        # If there are alerts to send, show the label and progress bar
         if self.alerts_to_send > 0:
-            # Label to show the number of alerts sent
+            # Label
             self.alert_var.set(f"Sending alerts")
             self.alert_label = tk.Label(self.report_frame, textvariable=self.alert_var)
             self.alert_label.place(relx=0.15, rely=0.96, anchor='s')
