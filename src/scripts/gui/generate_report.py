@@ -139,14 +139,15 @@ class GenerateReportFrame:
                                          args=(name, email, school, programme, cumulative_gpa, gpa))
                     t.start()
 
-        # Label to show the number of alerts sent
-        self.alert_var.set(f"Sending alerts")
-        self.alert_label = tk.Label(self.report_frame, textvariable=self.alert_var)
-        self.alert_label.place(relx=0.15, rely=0.96, anchor='s')
+        if self.alerts_to_send > 0:
+            # Label to show the number of alerts sent
+            self.alert_var.set(f"Sending alerts")
+            self.alert_label = tk.Label(self.report_frame, textvariable=self.alert_var)
+            self.alert_label.place(relx=0.15, rely=0.96, anchor='s')
 
-        # Progress bar
-        self.progressbar = Progressbar(self.report_frame, mode='determinate', maximum=self.alerts_to_send)
-        self.progressbar.place(relx=0.3, rely=0.96, anchor='s')
+            # Progress bar
+            self.progressbar = Progressbar(self.report_frame, mode='determinate', maximum=self.alerts_to_send)
+            self.progressbar.place(relx=0.3, rely=0.96, anchor='s')
 
         # Close button
         close_button = tk.Button(self.report_frame, text="Close", command=self.report_frame.grid_forget)
