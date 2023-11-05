@@ -16,27 +16,36 @@ def create_connection(db_file):
 
 
 class DatabaseManager:
+
     def __init__(self):
+        # Database file path
+        self.db_file = '../../data/student_grades.db'
+
         # Create database connection
-        self.done = None
-        self.conn = create_connection('../../data/student_grades.db')
+        self.conn = self.create_connection()
 
         # Create tables
         self.create_table(sql_create_students_table)
         self.create_table(sql_create_modules_table)
         self.create_table(sql_create_details_table)
 
+        # Check if database is empty
         if not self.get_students() and not self.get_modules() and not self.get_details():
             # Insert data
-            self.insert_students()
-            self.insert_modules()
-            self.insert_details()
+            self.insert_data(sql_insert_students)
+            self.insert_data(sql_insert_modules)
+            self.insert_data(sql_insert_details)
 
             # Commit changes
             self.conn.commit()
 
-        # Close the connection
-        # self.close_connection()
+    def create_connection(self):
+        connection = None
+        try:
+            connection = sqlite3.connect(self.db_file)
+        except Error as e:
+            print(e)
+        return connection
 
     def close_connection(self):
         try:
@@ -56,17 +65,9 @@ class DatabaseManager:
         except Error as e:
             print(e)
 
-    def insert_students(self):
+    def insert_data(self, insert_data_sql):
         c = self.conn.cursor()
-        c.execute(sql_insert_students)
-
-    def insert_modules(self):
-        c = self.conn.cursor()
-        c.execute(sql_insert_modules)
-
-    def insert_details(self):
-        c = self.conn.cursor()
-        c.execute(sql_insert_details)
+        c.execute(insert_data_sql)
 
     def insert_student(self, id, name, email, school, programme):
         sql_insert_student = f"""INSERT INTO student_master(id, name, email, school, programme) VALUES  
