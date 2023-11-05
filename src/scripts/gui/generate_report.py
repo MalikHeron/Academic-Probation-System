@@ -146,8 +146,9 @@ class GenerateReportFrame:
             self.alert_label.place(relx=0.15, rely=0.96, anchor='s')
 
             # Progress bar
-            self.progressbar = Progressbar(self.report_frame, mode='determinate', maximum=self.alerts_to_send)
+            self.progressbar = Progressbar(self.report_frame, mode='determinate')
             self.progressbar.place(relx=0.3, rely=0.96, anchor='s')
+            self.progressbar.start(3)
 
         # Close button
         close_button = tk.Button(self.report_frame, text="Close", command=self.report_frame.grid_forget)
@@ -216,26 +217,25 @@ class GenerateReportFrame:
 
             # Decrement the counter
             self.alerts_to_send -= 1
-            # Update the progress bar
-            self.progressbar['value'] += 1
 
             # If all alerts have been sent, update the label and remove the progress bar
             if self.alerts_to_send == 0:
+                # Destroy the progress bar
+                self.progressbar.destroy()
                 # Update the label
-                self.alert_var.set("Alerts sent")
+                self.alert_var.set("Email alerts sent!")
                 # Change the color of the label to green
                 self.alert_label.config(fg='green')
                 # Schedule the removal of the label and progress bar
                 self.report_frame.after(2000, self.remove_alerts)  # 2000 milliseconds = 2 seconds
         except Exception as e:
             logging.error(f'Error sending alert: {e}')
-            # Update the label with a failure message in red
-            self.alert_var.set(f"Error sending alerts")
-            self.alert_label.config(fg='red')
             # Destroy the progress bar
             self.progressbar.destroy()
+            # Update the label with a failure message in red
+            self.alert_var.set(f"Error sending email alerts!")
+            self.alert_label.config(fg='red')
 
     def remove_alerts(self):
-        # Remove the label and progress bar
+        # Remove the label
         self.alert_var.set("")
-        self.progressbar.destroy()

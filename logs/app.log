@@ -2,5 +2,26 @@ root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - INFO - [{'GPA': 2.2}]
-root - INFO - [{'Results': []}]
+root - INFO - [{'Results': [[6, 'David Jones', 'davidjones@gmail.com', 'School of Computing', 'Information Systems', 1.45, 2.24, 1.84], [18, 'Harry Moore', 'harry.moore@yahoo.com', 'School of Philosophy', 'Philosophy', 2.18, 0, 2.18], [21, 'Kathy Thomas', 'kathy.thomas@hotmail.com', 'School of English Literature', 'English Literature', 1.15, 2.04, 1.62], [22, 'Larry Jackson', 'larry.jackson@hotmail.com', 'School of Psychology', 'Psychology', 1.51, 0, 1.51], [23, 'Mia White', 'mia.white@hotmail.com', 'School of Anthropology', 'Anthropology', 1.51, 1.93, 1.72], [24, 'Nick Harris', 'nick.harris@hotmail.com', 'School of Astronomy', 'Astronomy', 2.09, 2.18, 2.14]]}]
+root - INFO - Alert sent to kathy.thomas@hotmail.com
+root - INFO - Alert sent to larry.jackson@hotmail.com
+root - INFO - Alert sent to mia.white@hotmail.com
+root - INFO - Alert sent to nick.harris@hotmail.com
+root - INFO - Alert sent to davidjones@gmail.com
+root - INFO - Alert sent to harry.moore@yahoo.com
+root - INFO - [{'GPA': 2.2}]
+root - INFO - [{'Results': [[3, 'Robert Johnson', 'robertjohnson@gmail.com', 'School of Arts', 'Fine Arts', 3.45, 1.84, 2.81], [5, 'Sarah Brown', 'sarahbrown@gmail.com', 'School of Science', 'Biology', 2.67, 2.69, 2.68], [19, 'Ivy Taylor', 'ivy.taylor@yahoo.com', 'School of Sociology', 'Sociology', 2.21, 0, 2.21], [25, 'Olivia Martin', 'olivia.martin@hotmail.com', 'School of Geography', 'Geography', 2.28, 2.12, 2.2]]}]
+root - INFO - Alert sent to olivia.martin@hotmail.com
+root - INFO - [{'GPA': 2.2}]
+root - INFO - [{'Results': [[2, 'Jane Smith', 'janesmith@gmail.com', 'School of Business', 'Business Administration', 2.48, 2.82, 2.58], [7, 'Emily Davis', 'emilydavis@gmail.com', 'School of Business', 'Accounting', 1.45, 2.24, 1.84], [20, 'Jack Anderson', 'jack.anderson@yahoo.com', 'School of Political Science', 'Political Science', 2.11, 0, 2.11], [26, 'Peter Thompson', 'peter.thompson@hotmail.com', 'School of Archaeology', 'Archaeology', 1.55, 2.85, 2.17]]}]
+root - INFO - Alert sent to jack.anderson@yahoo.com
+root - INFO - Alert sent to peter.thompson@hotmail.com
+root - INFO - Alert sent to emilydavis@gmail.com
+root - INFO - [{'GPA': 2.2}]
+root - INFO - [{'Results': [[13, 'Charlie Brown', 'charlie.brown@yahoo.com', 'School of Mathematics', 'Mathematics', 1.5, 2.25, 1.9]]}]
+root - INFO - Alert sent to charlie.brown@yahoo.com
+root - INFO - [{'GPA': 2.2}]
+root - INFO - [{'Results': [[9, 'Jessica Wilson', 'jessicawilson@gmail.com', 'School of Engineering', 'Civil Engineering', 1.78, 1.48, 1.63], [10, 'Thomas Moore', 'thomasmoore@gmail.com', 'School of Science', 'Physics', 2.46, 2.83, 2.64], [11, 'Alice Johnson', 'alice.johnson@yahoo.com', 'School of Computing', 'Computer Science', 2.24, 2.71, 2.49], [12, 'Bob Smith', 'bob.smith@yahoo.com', 'School of Physics', 'Physics', 1.9, 1.89, 1.89], [14, 'David Williams', 'david.williams@yahoo.com', 'School of Chemistry', 'Chemistry', 2.37, 0, 2.37]]}]
+root - INFO - Alert sent to bob.smith@yahoo.com
+root - INFO - Alert sent to jessicawilson@gmail.com
 root - WARNING - index idx_module_details_unique already exists
