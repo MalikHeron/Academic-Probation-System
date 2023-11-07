@@ -99,6 +99,17 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
+    def add_student(self, student_id, name, email, school, programme):
+        try:
+            c = self.conn.cursor()
+            c.execute(f"""INSERT INTO student_master VALUES ({student_id}, '{name}', '{email}', '{school}', '{programme}
+            ')""")
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
     def remove_student(self, student_id):
         try:
             c = self.conn.cursor()
