@@ -200,11 +200,11 @@ class MainMenu(tk.Frame):
         self.close_view()
 
         # Create details frame
-        self.add_details_frame = tk.Frame(self.parent)
+        self.add_details_frame = tk.Frame(self.parent, padx=40, pady=20)
         self.add_details_frame.grid(row=0, column=1, sticky="nsew")
 
         # Padding
-        x_padding, y_padding, f_width, l_width = 30, 20, 20, 11
+        x_padding, y_padding, f_width, l_width = 5, 20, 20, 11
 
         # Labels
         tk.Label(self.add_details_frame, text="Add Details",
