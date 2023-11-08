@@ -154,13 +154,13 @@ class MainMenu(tk.Frame):
                  font=("Helvetica", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
         # Student ID label and field
-        student_id_field = create_label_and_field(self.add_student_frame, "Student ID", 2)
+        student_id_field = create_label_and_field(self.add_student_frame, "ID Number", 2)
 
         # Student Name label and field
-        student_name_field = create_label_and_field(self.add_student_frame, "Student Name", 3)
+        student_name_field = create_label_and_field(self.add_student_frame, "Full Name", 3)
 
         # Student Email label and field
-        student_email_field = create_label_and_field(self.add_student_frame, "Student Email", 4)
+        student_email_field = create_label_and_field(self.add_student_frame, "Email", 4)
 
         # School label and field
         school_field = create_label_and_field(self.add_student_frame, "School", 5)
@@ -218,7 +218,11 @@ class MainMenu(tk.Frame):
         mod_name_field = create_label_and_field(self.add_module_frame, "Module Name", 3)
 
         # Credits label and field
-        mod_credits_field = create_label_and_field(self.add_module_frame, "Credits", 4)
+        tk.Label(self.add_module_frame, text="Credits", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding, pady=y_padding)
+        mod_credits_field = ttk.Combobox(self.add_module_frame, font=("Helvetica", 12), state="readonly",
+                                         values=["1", "2", "3", "4"], width=f_width-2)
+        mod_credits_field.grid(row=4, column=1)
 
         # Submit and Cancel buttons
         button_frame = tk.Frame(self.add_module_frame)
