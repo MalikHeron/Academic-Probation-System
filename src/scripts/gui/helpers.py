@@ -67,10 +67,9 @@ def create_treeview(frame, columns, column_widths, pad, height=23, data=None):
     return tree
 
 
-def create_button(frame, text, command, bg_color='#61CBEC', fg_color='#000000', font=('Arial', 12, 'normal'),
-                  relief='groove'):
+def create_button(frame, text, command, bg_color='#61CBEC', fg_color='#000000', font=('Arial', 12, 'normal')):
     button = tk.Button(frame, text=text, command=command)
-    button.configure(background=bg_color, foreground=fg_color, font=font, relief=relief)
+    button.configure(background=bg_color, foreground=fg_color, font=font, relief='groove')
     button.pack(padx=40, pady=5, fill='x', expand=True)
     return button
 
