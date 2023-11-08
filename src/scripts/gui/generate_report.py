@@ -64,6 +64,10 @@ class GenerateReportFrame:
                                         width=18)
         self.year_selector.pack(side='left', padx=10)
 
+        # Optional Label
+        tk.Label(self.generate_frame, text="OR", font=("Helvetica", 12, "bold"), foreground="#7a7a7a") \
+            .pack(padx=80, pady=5, fill='x', expand=True)
+
         # GPA Entry Frame
         self.gpa_frame = tk.Frame(self.generate_frame)
         self.gpa_frame.pack(padx=60, pady=10, fill='x', expand=True)
