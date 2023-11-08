@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import simpledialog, messagebox
+from tkinter import simpledialog, messagebox, ttk
 
 import easygui
 
@@ -141,9 +141,6 @@ class MainMenu(tk.Frame):
         # Close the existing frame
         self.close_view()
 
-        # Testing purposes
-        print("Add student")
-
         # Create the student frame
         self.add_student_frame = tk.Frame(self.parent, padx=40, pady=20)
         self.add_student_frame.grid(row=0, column=1, sticky="nsew")
@@ -212,18 +209,6 @@ class MainMenu(tk.Frame):
                                 command=lambda: self.close_view())
         back_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
 
-    @staticmethod
-    def clear_fields(*fields):
-        # Clear all fields and set to default values
-        for field in fields:
-            if isinstance(field, tk.Text):
-                field.delete("1.0", tk.END)
-            elif isinstance(field, tk.Entry):
-                field.delete(0, tk.END)
-            elif isinstance(field, tk.StringVar):
-                field.set("")
-
-
 
     def add_student_to_db(self, student_id, name, email, school, programme):
         # Insert the student record into the database
@@ -243,9 +228,6 @@ class MainMenu(tk.Frame):
     def add_module(self):
         # Close the existing frame
         self.close_view()
-
-        # Testing purposes
-        print("Add module")
 
         # Create the module frame
         self.add_module_frame = tk.Frame(self.parent, padx=40, pady=20)
@@ -276,7 +258,8 @@ class MainMenu(tk.Frame):
         # Credits label and field
         tk.Label(self.add_module_frame, text="Credits", width=l_width, anchor="w",
                  font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding, pady=y_padding)
-        mod_credits_field = tk.Entry(self.add_module_frame, font=("Helvetica", 12), width=f_width)
+        mod_credits_field = ttk.Combobox(self.add_module_frame, font=("Helvetica", 12), state="readonly",
+                                         values=["1", "2", "3", "4"], width=f_width-2)
         mod_credits_field.grid(row=4, column=1)
 
         # Submit and Cancel buttons
@@ -286,7 +269,7 @@ class MainMenu(tk.Frame):
         submit_button = tk.Button(button_frame, text="Submit", font=("Helvetica", 12), width=10,
                                   command=lambda: [self.add_module_to_db(mod_code_field.get(),
                                                                           mod_name_field.get(),
-                                                                          mod_credits_field.get()),
+                                                                          int(mod_credits_field.get())),
                                                    # Clear input fields
                                                    self.clear_fields(mod_code_field, mod_name_field,
                                                                      mod_credits_field)])
@@ -310,6 +293,20 @@ class MainMenu(tk.Frame):
         else:
             # Display an error message
             messagebox.showerror("Error", "Failed to add student record.")
+
+
+    @staticmethod
+    def clear_fields(*fields):
+        # Clear all fields and set to default values
+        for field in fields:
+            if isinstance(field, tk.Text):
+                field.delete("1.0", tk.END)
+            elif isinstance(field, tk.ttk.Combobox):
+                field.set("")
+            elif isinstance(field, tk.Entry):
+                field.delete(0, tk.END)
+            elif isinstance(field, tk.StringVar):
+                field.set("")
 
 
     def remove_item(self, tree, remove_func, dialog_title, dialog_prompt, parent_frame, fields=None):
