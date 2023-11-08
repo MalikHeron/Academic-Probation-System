@@ -136,38 +136,6 @@ class MainMenu(tk.Frame):
         button_config(self.details_frame, tree, self.add_details, self.remove_details, self.close_view)
 
     # Insert Frames
-    # def add_student(self,tree):
-    #     print("Add Student") # Log
-    #
-    #     # Set global record count
-    #     global record_count
-    #
-    #     # Prompt the user for student information
-    #     student_id = simpledialog.askstring("Add Student", "Enter Student ID:", parent=self.parent)
-    #     student_name = simpledialog.askstring("Add Student", "Enter Student Name:", parent=self.parent)
-    #     student_email = simpledialog.askstring("Add Student", "Enter Student Email:", parent=self.parent)
-    #     school = simpledialog.askstring("Add Student", "Enter School:", parent=self.parent)
-    #     programme = simpledialog.askstring("Add Student", "Enter Program:", parent=self.parent)
-    #
-    #     # Check if the user canceled the input dialog
-    #     if student_id is None or student_name is None or student_email is None or school is None or programme is None:
-    #         return
-    #
-    #     # Insert the student record into the database using the DatabaseManager
-    #     success = db_manager.add_student(student_id, student_name, student_email, school, programme)
-    #
-    #     # Check if the insertion was successful
-    #     if success:
-    #         # Update the Treeview with the new record
-    #         tree.insert("", "end", values=(student_id, student_name, student_email, school, programme))
-    #         # Increment the record count
-    #         record_count += 1
-    #         # Update the record count label
-    #         self.record_count_var.set(f"Number of Records: {record_count}")
-    #     else:
-    #         # Display an error message if the insertion failed
-    #         messagebox.showerror("Error", "Failed to add student.")
-
     def add_student(self):
         # Close the existing frame
         self.close_view()
