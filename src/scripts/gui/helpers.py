@@ -75,7 +75,7 @@ def create_button(frame, text, command, bg_color='#61CBEC', fg_color='#000000', 
 
 
 def button_config(frame, tree, add, remove, back):
-    add_button = tk.Button(frame, text="Add", command=lambda: add(tree))
+    add_button = tk.Button(frame, text="Add", command=add)
     remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
     back_button = tk.Button(frame, text="Back", command=back)
 

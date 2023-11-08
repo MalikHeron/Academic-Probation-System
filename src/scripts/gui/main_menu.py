@@ -24,6 +24,7 @@ class MainMenu(tk.Frame):
         self.module_frame = None
         self.view_modules_button = None
         self.add_student_button = None
+        self.add_student_frame = None
         self.view_students_button = None
         self.title = None
         self.parent = parent
@@ -135,37 +136,135 @@ class MainMenu(tk.Frame):
         button_config(self.details_frame, tree, self.add_details, self.remove_details, self.close_view)
 
     # Insert Frames
-    def add_student(self,tree):
-        print("Add Student") # Log
+    # def add_student(self,tree):
+    #     print("Add Student") # Log
+    #
+    #     # Set global record count
+    #     global record_count
+    #
+    #     # Prompt the user for student information
+    #     student_id = simpledialog.askstring("Add Student", "Enter Student ID:", parent=self.parent)
+    #     student_name = simpledialog.askstring("Add Student", "Enter Student Name:", parent=self.parent)
+    #     student_email = simpledialog.askstring("Add Student", "Enter Student Email:", parent=self.parent)
+    #     school = simpledialog.askstring("Add Student", "Enter School:", parent=self.parent)
+    #     programme = simpledialog.askstring("Add Student", "Enter Program:", parent=self.parent)
+    #
+    #     # Check if the user canceled the input dialog
+    #     if student_id is None or student_name is None or student_email is None or school is None or programme is None:
+    #         return
+    #
+    #     # Insert the student record into the database using the DatabaseManager
+    #     success = db_manager.add_student(student_id, student_name, student_email, school, programme)
+    #
+    #     # Check if the insertion was successful
+    #     if success:
+    #         # Update the Treeview with the new record
+    #         tree.insert("", "end", values=(student_id, student_name, student_email, school, programme))
+    #         # Increment the record count
+    #         record_count += 1
+    #         # Update the record count label
+    #         self.record_count_var.set(f"Number of Records: {record_count}")
+    #     else:
+    #         # Display an error message if the insertion failed
+    #         messagebox.showerror("Error", "Failed to add student.")
 
-        # Set global record count
-        global record_count
+    def add_student(self):
+        # Close the existing frame
+        self.close_view()
 
-        # Prompt the user for student information
-        student_id = simpledialog.askstring("Add Student", "Enter Student ID:", parent=self.parent)
-        student_name = simpledialog.askstring("Add Student", "Enter Student Name:", parent=self.parent)
-        student_email = simpledialog.askstring("Add Student", "Enter Student Email:", parent=self.parent)
-        school = simpledialog.askstring("Add Student", "Enter School:", parent=self.parent)
-        programme = simpledialog.askstring("Add Student", "Enter Program:", parent=self.parent)
+        # Testing purposes
+        print("Add student")
 
-        # Check if the user canceled the input dialog
-        if student_id is None or student_name is None or student_email is None or school is None or programme is None:
-            return
+        # Create the student frame
+        self.add_student_frame = tk.Frame(self.parent)
+        self.add_student_frame.grid(row=0, column=1, sticky="nsew")
 
-        # Insert the student record into the database using the DatabaseManager
-        success = db_manager.add_student(student_id, student_name, student_email, school, programme)
+        # Padding and field dimensions
+        x_padding, y_padding, f_width, f_height = 15, 20, 25, 2
 
-        # Check if the insertion was successful
+        # Labels
+        tk.Label(self.add_student_frame, text="University of Technology",
+                 font=("Helvetica", 14, "bold")).grid(row=0,column=0,columnspan=2,pady=15)
+        tk.Label(self.add_student_frame, text="Add Student",
+                 font=("Helvetica", 12)).grid(row=1, column=0, columnspan=2,pady=5)
+
+        # Student ID label and field
+        tk.Label(self.add_student_frame, text="Student ID",
+                 font=("Helvetica", 12)).grid(row=2, column=0, padx=x_padding,pady=y_padding)
+        student_id_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
+        student_id_field.grid(row=2, column=1)
+
+        # Student Name label and field
+        tk.Label(self.add_student_frame, text="Student Name", font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding,
+                                                                                           pady=y_padding)
+        student_name_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
+        student_name_field.grid(row=3, column=1)
+
+        # Student Email label and field
+        tk.Label(self.add_student_frame, text="Student Email", font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding,
+                                                                                            pady=y_padding)
+        student_email_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
+        student_email_field.grid(row=4, column=1)
+
+        # School label and field
+        tk.Label(self.add_student_frame, text="School", font=("Helvetica", 12)).grid(row=5, column=0, padx=x_padding,
+                                                                                     pady=y_padding)
+        school_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
+        school_field.grid(row=5, column=1)
+
+        # Programme label and field
+        tk.Label(self.add_student_frame, text="Programme", font=("Helvetica", 12)).grid(row=6, column=0, padx=x_padding,
+                                                                                        pady=y_padding)
+        programme_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
+        programme_field.grid(row=6, column=1)
+
+        # Submit and Cancel buttons
+        button_frame = tk.Frame(self.add_student_frame)
+        button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
+
+        submit_button = tk.Button(button_frame, text="Submit", font=("Helvetica", 12), width=10,
+                                  command=lambda: [self.add_student_to_db(student_id_field.get(),
+                                                                          student_name_field.get(),
+                                                                         student_email_field.get(), school_field.get(),
+                                                                         programme_field.get()),
+                                                   # Clear input fields
+                                                   self.clear_fields(student_id_field, student_name_field,
+                                                                     student_email_field, school_field,
+                                                                     programme_field)])
+        submit_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+
+        clear_button = tk.Button(button_frame, text="Clear", font=("Helvetica", 12), width=10,
+                                 command=lambda: self.clear_fields(student_id_field, student_name_field,
+                                                                   student_email_field, school_field, programme_field))
+        clear_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+
+        back_button = tk.Button(button_frame, text="Back", font=("Helvetica", 12), width=10,
+                                command=lambda: self.close_view())
+        back_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+
+    @staticmethod
+    def clear_fields(*fields):
+        # Clear all fields and set to default values
+        for field in fields:
+            if isinstance(field, tk.Text):
+                field.delete("1.0", tk.END)
+            elif isinstance(field, tk.Entry):
+                field.delete(0, tk.END)
+            elif isinstance(field, tk.StringVar):
+                field.set("")
+
+
+
+    def add_student_to_db(self, student_id, name, email, school, programme):
+        # Insert the student record into the database
+        success = db_manager.add_student(student_id, name, email, school, programme)
         if success:
-            # Update the Treeview with the new record
-            tree.insert("", "end", values=(student_id, student_name, student_email, school, programme))
-            # Increment the record count
-            record_count += 1
-            # Update the record count label
-            self.record_count_var.set(f"Number of Records: {record_count}")
+            # Display a success message
+            messagebox.showinfo("Success", "Student record added successfully.")
         else:
-            # Display an error message if the insertion failed
-            messagebox.showerror("Error", "Failed to add student.")
+            # Display an error message
+            messagebox.showerror("Error", "Failed to add student record.")
+
 
 
     def add_details(self):
@@ -279,3 +378,7 @@ class MainMenu(tk.Frame):
         elif self.details_frame is not None:
             self.details_frame.grid_forget()
             self.details_frame = None
+
+        elif self.add_student_frame is not None:
+            self.add_student_frame.grid_forget()
+            self.add_student_frame = None
