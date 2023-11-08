@@ -50,38 +50,38 @@ class GenerateReportFrame:
         self.generate_frame.grid(row=0, column=1, columnspan=1, sticky="ew")
 
         # title
-        self.title = tk.Label(self.generate_frame, text="Generate Report", font=('Arial', 16, 'bold'))
+        self.title = tk.Label(self.generate_frame, text="Generate Report", font=('Helvetica', 14, 'bold'))
         self.title.configure(foreground='black')
         self.title.pack(padx=20, pady=20, fill='x', expand=True)
 
         # Year Selector Frame
         self.year_frame = tk.Frame(self.generate_frame)
         self.year_frame.pack(padx=60, pady=10, fill='x', expand=True)
-        self.select_year = tk.Label(self.year_frame, text="Select Year:", font=('Arial', 12, 'normal'))
+        self.select_year = tk.Label(self.year_frame, text="Select Year:", font=('Helvetica', 12, 'normal'))
         self.select_year.pack(side='left', padx=10)
         current_year = datetime.datetime.now().year  # Get the current year
-        self.year_selector = tk.Spinbox(self.year_frame, font=('Arial', 11, 'normal'), from_=2016, to=current_year,
+        self.year_selector = tk.Spinbox(self.year_frame, font=('Helvetica', 11, 'normal'), from_=2016, to=current_year,
                                         width=18)
         self.year_selector.pack(side='left', padx=10)
 
         # GPA Entry Frame
         self.gpa_frame = tk.Frame(self.generate_frame)
         self.gpa_frame.pack(padx=60, pady=10, fill='x', expand=True)
-        self.gpa_label = tk.Label(self.gpa_frame, text="Enter GPA:", font=('Arial', 12, 'normal'))
+        self.gpa_label = tk.Label(self.gpa_frame, text="Enter GPA:", font=('Helvetica', 12, 'normal'))
         self.gpa_label.pack(side='left', padx=10)
-        self.gpa_entry = tk.Entry(self.gpa_frame, font=('Arial', 11, 'normal'), width=19)
+        self.gpa_entry = tk.Entry(self.gpa_frame, font=('Helvetica', 11, 'normal'), width=19)
         self.gpa_entry.pack(side='left', padx=18)
 
         # Submit Button
         self.button_frame = tk.Frame(self.generate_frame)
         self.button_frame.pack(padx=150, pady=30, fill='x', expand=True)
         submit_button = tk.Button(self.button_frame, text="Generate", command=self.submit)
-        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Arial', 12, 'normal')),
+        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Helvetica', 12, 'normal')),
         submit_button.pack(side='left', padx=10)
 
         # Back Button
         back_button = tk.Button(self.button_frame, text="Back", command=self.generate_frame.grid_forget)
-        back_button.configure(font=('Arial', 12, 'normal')),
+        back_button.configure(font=('Helvetica', 12, 'normal')),
         back_button.pack(side='left', padx=10)
 
     def submit(self):
