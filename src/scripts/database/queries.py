@@ -104,6 +104,20 @@ class DatabaseManager:
             c = self.conn.cursor()
             c.execute(f"""INSERT INTO student_master VALUES ({student_id}, '{name}', '{email}', '{school}', '{programme}
             ')""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def add_module(self, mod_code, mod_name, credit):
+        try:
+            c = self.conn.cursor()
+            c.execute(f"""INSERT INTO module_master VALUES ('{mod_code}', '{mod_name}', {credit})""")
+
+            # Commit changes
             self.conn.commit()
             return True
         except Exception as e:
@@ -122,17 +136,6 @@ class DatabaseManager:
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return False
-
-    def add_module(self, mod_code, mod_name, credits):
-        try:
-            c = self.conn.cursor()
-            c.execute(f"""INSERT INTO module_master VALUES ('{mod_code}', '{mod_name}', {credits})""")
-            self.conn.commit()
-            return True
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return False
-
 
     def remove_module(self, module_code):
         try:

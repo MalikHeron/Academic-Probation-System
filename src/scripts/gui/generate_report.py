@@ -56,19 +56,20 @@ class GenerateReportFrame:
 
         # Year Selector Frame
         self.year_frame = tk.Frame(self.generate_frame)
-        self.year_frame.pack(padx=30, pady=10, fill='x', expand=True)
+        self.year_frame.pack(padx=60, pady=10, fill='x', expand=True)
         self.select_year = tk.Label(self.year_frame, text="Select Year:", font=('Arial', 12, 'normal'))
         self.select_year.pack(side='left', padx=10)
         current_year = datetime.datetime.now().year  # Get the current year
-        self.year_selector = tk.Spinbox(self.year_frame, font=('Arial', 11, 'normal'), from_=2016, to=current_year)
+        self.year_selector = tk.Spinbox(self.year_frame, font=('Arial', 11, 'normal'), from_=2016, to=current_year,
+                                        width=18)
         self.year_selector.pack(side='left', padx=10)
 
         # GPA Entry Frame
         self.gpa_frame = tk.Frame(self.generate_frame)
-        self.gpa_frame.pack(padx=30, pady=10, fill='x', expand=True)
+        self.gpa_frame.pack(padx=60, pady=10, fill='x', expand=True)
         self.gpa_label = tk.Label(self.gpa_frame, text="Enter GPA:", font=('Arial', 12, 'normal'))
         self.gpa_label.pack(side='left', padx=10)
-        self.gpa_entry = tk.Entry(self.gpa_frame, font=('Arial', 11, 'normal'))
+        self.gpa_entry = tk.Entry(self.gpa_frame, font=('Arial', 11, 'normal'), width=19)
         self.gpa_entry.pack(side='left', padx=18)
 
         # Submit Button

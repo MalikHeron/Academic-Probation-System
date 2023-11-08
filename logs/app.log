@@ -1,7 +1,4 @@
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
-root - INFO - [{'GPA': 2.2}]
-root - INFO - [{'Results': [[3, 'Robert Johnson', 'robertjohnson@gmail.com', 'School of Arts', 'Fine Arts', 3.45, 1.84, 2.81], [5, 'Sarah Brown', 'sarahbrown@gmail.com', 'School of Science', 'Biology', 2.67, 2.69, 2.68], [19, 'Ivy Taylor', 'ivy.taylor@yahoo.com', 'School of Sociology', 'Sociology', 2.21, 0, 2.21], [25, 'Olivia Martin', 'olivia.martin@hotmail.com', 'School of Geography', 'Geography', 2.28, 2.12, 2.2]]}]
-root - INFO - Alert sent to olivia.martin@hotmail.com
 root - WARNING - index idx_module_details_unique already exists

@@ -5,7 +5,8 @@ import easygui
 
 from scripts.database.queries import DatabaseManager
 from scripts.gui.generate_report import GenerateReportFrame
-from scripts.gui.helpers import create_treeview, button_config, create_button
+from scripts.gui.helpers import create_treeview, button_config, create_button, create_label_and_field, \
+    create_button_widget
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 global record_count  # global variable to keep track of the number of records
@@ -145,82 +146,52 @@ class MainMenu(tk.Frame):
         self.add_student_frame = tk.Frame(self.parent, padx=40, pady=20)
         self.add_student_frame.grid(row=0, column=1, sticky="nsew")
 
-
         # Padding and field dimensions
-        x_padding, y_padding, f_width, f_height, l_width = 15, 20, 25, 2, 11
+        x_padding, y_padding, f_width, f_height, l_width = 5, 20, 25, 2, 11
 
         # Labels
-        tk.Label(self.add_student_frame, text="University of Technology",
-                 font=("Helvetica", 14, "bold")).grid(row=0,column=0,columnspan=2,pady=15)
         tk.Label(self.add_student_frame, text="Add Student",
-                 font=("Helvetica", 12)).grid(row=1, column=0, columnspan=2,pady=5)
+                 font=("Helvetica", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
         # Student ID label and field
-        tk.Label(self.add_student_frame, text="Student ID", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=2, column=0, padx=x_padding,pady=y_padding)
-        student_id_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
-        student_id_field.grid(row=2, column=1)
+        student_id_field = create_label_and_field(self.add_student_frame, "Student ID", 2)
 
         # Student Name label and field
-        tk.Label(self.add_student_frame, text="Student Name", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding, pady=y_padding)
-        student_name_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
-        student_name_field.grid(row=3, column=1)
+        student_name_field = create_label_and_field(self.add_student_frame, "Student Name", 3)
 
         # Student Email label and field
-        tk.Label(self.add_student_frame, text="Student Email", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding, pady=y_padding)
-        student_email_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
-        student_email_field.grid(row=4, column=1)
+        student_email_field = create_label_and_field(self.add_student_frame, "Student Email", 4)
 
         # School label and field
-        tk.Label(self.add_student_frame, text="School", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=5, column=0, padx=x_padding, pady=y_padding)
-        school_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
-        school_field.grid(row=5, column=1)
+        school_field = create_label_and_field(self.add_student_frame, "School", 5)
 
         # Programme label and field
-        tk.Label(self.add_student_frame, text="Programme", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=6, column=0, padx=x_padding, pady=y_padding)
-        programme_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
-        programme_field.grid(row=6, column=1)
+        programme_field = create_label_and_field(self.add_student_frame, "Programme", 6)
 
         # Submit and Cancel buttons
         button_frame = tk.Frame(self.add_student_frame)
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
 
-        submit_button = tk.Button(button_frame, text="Submit", font=("Helvetica", 12), width=10,
-                                  command=lambda: [self.add_student_to_db(student_id_field.get(),
-                                                                          student_name_field.get(),
-                                                                         student_email_field.get(), school_field.get(),
-                                                                         programme_field.get()),
-                                                   # Clear input fields
-                                                   self.clear_fields(student_id_field, student_name_field,
-                                                                     student_email_field, school_field,
-                                                                     programme_field)])
-        submit_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+        create_button_widget(button_frame, "Submit",
+                             lambda: [self.add_student_to_db(student_id_field.get(),
+                                                             student_name_field.get(),
+                                                             student_email_field.get(),
+                                                             school_field.get(),
+                                                             programme_field.get()),
+                                      # Clear input fields
+                                      self.clear_fields(student_id_field,
+                                                        student_name_field,
+                                                        student_email_field,
+                                                        school_field,
+                                                        programme_field)])
 
-        clear_button = tk.Button(button_frame, text="Clear", font=("Helvetica", 12), width=10,
-                                 command=lambda: self.clear_fields(student_id_field, student_name_field,
-                                                                   student_email_field, school_field, programme_field))
-        clear_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+        create_button_widget(button_frame, "Clear", lambda: self.clear_fields(student_id_field,
+                                                                              student_name_field,
+                                                                              student_email_field,
+                                                                              school_field,
+                                                                              programme_field))
 
-        back_button = tk.Button(button_frame, text="Back", font=("Helvetica", 12), width=10,
-                                command=lambda: self.close_view())
-        back_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
-
-
-    def add_student_to_db(self, student_id, name, email, school, programme):
-        # Insert the student record into the database
-        success = db_manager.add_student(student_id, name, email, school, programme)
-        if success:
-            # Display a success message
-            messagebox.showinfo("Success", "Student record added successfully.")
-        else:
-            # Display an error message
-            messagebox.showerror("Error", "Failed to add student record.")
-
-
+        create_button_widget(button_frame, "Back", lambda: self.close_view())
 
     def add_details(self):
         print("Add Details")
@@ -233,67 +204,40 @@ class MainMenu(tk.Frame):
         self.add_module_frame = tk.Frame(self.parent, padx=40, pady=20)
         self.add_module_frame.grid(row=0, column=1, sticky="nsew")
 
-
         # Padding and field dimensions
-        x_padding, y_padding, f_width, f_height, l_width = 15, 20, 25, 2, 11
+        x_padding, y_padding, f_width, f_height, l_width = 5, 20, 25, 2, 11
 
         # Labels
-        tk.Label(self.add_module_frame, text="University of Technology",
-                 font=("Helvetica", 14, "bold")).grid(row=0,column=0,columnspan=2,pady=15)
         tk.Label(self.add_module_frame, text="Add Module",
-                 font=("Helvetica", 12)).grid(row=1, column=0, columnspan=2,pady=5)
+                 font=("Helvetica", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
         # Module Code label and field
-        tk.Label(self.add_module_frame, text="Module Code", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=2, column=0, padx=x_padding,pady=y_padding)
-        mod_code_field = tk.Entry(self.add_module_frame, font=("Helvetica", 12), width=f_width)
-        mod_code_field.grid(row=2, column=1)
+        mod_code_field = create_label_and_field(self.add_module_frame, "Module Code", 2)
 
         # Module Name label and field
-        tk.Label(self.add_module_frame, text="Module Name", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding, pady=y_padding)
-        mod_name_field = tk.Entry(self.add_module_frame, font=("Helvetica", 12), width=f_width)
-        mod_name_field.grid(row=3, column=1)
+        mod_name_field = create_label_and_field(self.add_module_frame, "Module Name", 3)
 
         # Credits label and field
-        tk.Label(self.add_module_frame, text="Credits", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding, pady=y_padding)
-        mod_credits_field = ttk.Combobox(self.add_module_frame, font=("Helvetica", 12), state="readonly",
-                                         values=["1", "2", "3", "4"], width=f_width-2)
-        mod_credits_field.grid(row=4, column=1)
+        mod_credits_field = create_label_and_field(self.add_module_frame, "Credits", 4)
 
         # Submit and Cancel buttons
         button_frame = tk.Frame(self.add_module_frame)
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
 
-        submit_button = tk.Button(button_frame, text="Submit", font=("Helvetica", 12), width=10,
-                                  command=lambda: [self.add_module_to_db(mod_code_field.get(),
-                                                                          mod_name_field.get(),
-                                                                          int(mod_credits_field.get())),
-                                                   # Clear input fields
-                                                   self.clear_fields(mod_code_field, mod_name_field,
-                                                                     mod_credits_field)])
-        submit_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+        create_button_widget(button_frame, "Submit",
+                             lambda: [self.add_module_to_db(mod_code_field.get(),
+                                                            mod_name_field.get(),
+                                                            int(mod_credits_field.get())),
+                                      # Clear input fields
+                                      self.clear_fields(mod_code_field,
+                                                        mod_name_field,
+                                                        mod_credits_field)])
 
-        clear_button = tk.Button(button_frame, text="Clear", font=("Helvetica", 12), width=10,
-                                 command=lambda: self.clear_fields(mod_code_field, mod_name_field,
-                                                                   mod_credits_field))
-        clear_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+        create_button_widget(button_frame, "Clear", lambda: self.clear_fields(mod_code_field,
+                                                                              mod_name_field,
+                                                                              mod_credits_field))
 
-        back_button = tk.Button(button_frame, text="Back", font=("Helvetica", 12), width=10,
-                                command=lambda: self.close_view())
-        back_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
-
-    def add_module_to_db(self, mod_code, mod_name, mod_credits):
-        # Insert the module record into the database
-        success = db_manager.add_module(mod_code,mod_name,mod_credits)
-        if success:
-            # Display a success message
-            messagebox.showinfo("Success", "Module record added successfully.")
-        else:
-            # Display an error message
-            messagebox.showerror("Error", "Failed to add student record.")
-
+        create_button_widget(button_frame, "Back", lambda: self.close_view())
 
     @staticmethod
     def clear_fields(*fields):
@@ -308,6 +252,24 @@ class MainMenu(tk.Frame):
             elif isinstance(field, tk.StringVar):
                 field.set("")
 
+    @staticmethod
+    def add_to_db(add_record, data, success_message, error_message):
+        # Insert the record into the database
+        success = add_record(data)
+        if success:
+            # Display a success message
+            messagebox.showinfo("Success", success_message)
+        else:
+            # Display an error message
+            messagebox.showerror("Error", error_message)
+
+    def add_student_to_db(self, student_id, name, email, school, programme):
+        self.add_to_db(db_manager.add_student, (student_id, name, email, school, programme),
+                       "Student record added successfully.", "Failed to add student record.")
+
+    def add_module_to_db(self, mod_code, mod_name, mod_credits):
+        self.add_to_db(db_manager.add_module, (mod_code, mod_name, mod_credits),
+                       "Module record added successfully.", "Failed to add module record.")
 
     def remove_item(self, tree, remove_func, dialog_title, dialog_prompt, parent_frame, fields=None):
         # Set global record count

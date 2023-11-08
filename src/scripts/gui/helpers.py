@@ -74,6 +74,12 @@ def create_button(frame, text, command, bg_color='#61CBEC', fg_color='#000000', 
     return button
 
 
+def create_button_widget(frame, text, command, padx=5, pady=20, width=10):
+    button = tk.Button(frame, text=text, font=("Helvetica", 12), width=width, command=command)
+    button.pack(side="left", padx=padx, pady=pady, anchor='center')
+    return button
+
+
 def button_config(frame, tree, add, remove, back):
     add_button = tk.Button(frame, text="Add", command=add)
     remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
@@ -89,3 +95,11 @@ def button_config(frame, tree, add, remove, back):
                         width=button_width)
     back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
                       width=button_width)
+
+
+def create_label_and_field(frame, text, row, padx=5, pady=20, f_width=25, l_width=11):
+    tk.Label(frame, text=text, width=l_width, anchor="w", font=("Helvetica", 12)).grid(row=row, column=0, padx=padx,
+                                                                                       pady=pady)
+    field = tk.Entry(frame, font=("Helvetica", 12), width=f_width)
+    field.grid(row=row, column=1)
+    return field
