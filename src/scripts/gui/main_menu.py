@@ -144,11 +144,12 @@ class MainMenu(tk.Frame):
         print("Add student")
 
         # Create the student frame
-        self.add_student_frame = tk.Frame(self.parent)
+        self.add_student_frame = tk.Frame(self.parent, padx=40, pady=20)
         self.add_student_frame.grid(row=0, column=1, sticky="nsew")
 
+
         # Padding and field dimensions
-        x_padding, y_padding, f_width, f_height = 15, 20, 25, 2
+        x_padding, y_padding, f_width, f_height, l_width = 15, 20, 25, 2, 11
 
         # Labels
         tk.Label(self.add_student_frame, text="University of Technology",
@@ -157,32 +158,32 @@ class MainMenu(tk.Frame):
                  font=("Helvetica", 12)).grid(row=1, column=0, columnspan=2,pady=5)
 
         # Student ID label and field
-        tk.Label(self.add_student_frame, text="Student ID",
+        tk.Label(self.add_student_frame, text="Student ID", width=l_width, anchor="w",
                  font=("Helvetica", 12)).grid(row=2, column=0, padx=x_padding,pady=y_padding)
         student_id_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
         student_id_field.grid(row=2, column=1)
 
         # Student Name label and field
-        tk.Label(self.add_student_frame, text="Student Name", font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding,
-                                                                                           pady=y_padding)
+        tk.Label(self.add_student_frame, text="Student Name", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding, pady=y_padding)
         student_name_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
         student_name_field.grid(row=3, column=1)
 
         # Student Email label and field
-        tk.Label(self.add_student_frame, text="Student Email", font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding,
-                                                                                            pady=y_padding)
+        tk.Label(self.add_student_frame, text="Student Email", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding, pady=y_padding)
         student_email_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
         student_email_field.grid(row=4, column=1)
 
         # School label and field
-        tk.Label(self.add_student_frame, text="School", font=("Helvetica", 12)).grid(row=5, column=0, padx=x_padding,
-                                                                                     pady=y_padding)
+        tk.Label(self.add_student_frame, text="School", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=5, column=0, padx=x_padding, pady=y_padding)
         school_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
         school_field.grid(row=5, column=1)
 
         # Programme label and field
-        tk.Label(self.add_student_frame, text="Programme", font=("Helvetica", 12)).grid(row=6, column=0, padx=x_padding,
-                                                                                        pady=y_padding)
+        tk.Label(self.add_student_frame, text="Programme", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=6, column=0, padx=x_padding, pady=y_padding)
         programme_field = tk.Entry(self.add_student_frame, font=("Helvetica", 12), width=f_width)
         programme_field.grid(row=6, column=1)
 
