@@ -204,7 +204,7 @@ class MainMenu(tk.Frame):
         self.add_details_frame.grid(row=0, column=1, sticky="nsew")
 
         # Padding
-        x_padding, y_padding, f_width, l_width = 15, 20, 20, 11
+        x_padding, y_padding, f_width, l_width = 30, 20, 20, 11
 
         # Labels
         tk.Label(self.add_details_frame, text="Add Details",
@@ -243,19 +243,16 @@ class MainMenu(tk.Frame):
         # Submit and Cancel buttons
         button_frame = tk.Frame(self.add_details_frame)
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
-        submit_button = tk.Button(button_frame, text="Submit", font=("Helvetica", 12), width=10,
-                                  command=lambda: self.validate_and_submit(id_field, module_field, gpa_field,
-                                                                           semester_field, year_field))
 
-        submit_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
-        clear_button = tk.Button(button_frame, text="Clear", font=("Helvetica", 12), width=10,
-                                 command=lambda: self.clear_fields(id_field, gpa_field, module_field, semester_field,
-                                                                   year_field))
+        create_button_widget(button_frame, "Submit",
+                             lambda: self.validate_and_submit(id_field, module_field, gpa_field,
+                                                              semester_field, year_field))
 
-        clear_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
-        back_button = tk.Button(button_frame, text="Back", font=("Helvetica", 12), width=10,
-                                command=lambda: self.close_view())
-        back_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+        create_button_widget(button_frame, "Clear",
+                             lambda: self.clear_fields(id_field, gpa_field, module_field, semester_field,
+                                                       year_field))
+
+        create_button_widget(button_frame, "Back", lambda: self.close_view())
 
     def add_module(self):
         # Close the existing frame
@@ -443,6 +440,15 @@ class MainMenu(tk.Frame):
                 tk.messagebox.showerror("Error", "ID number must be a positive integer.")
                 return
 
+            # Validate module
+            try:
+                module = str(module_field.get())
+                if module == "":
+                    raise ValueError
+            except ValueError:
+                tk.messagebox.showerror("Error", "Module code cannot be empty.")
+                return
+
             # Validate GPA
             try:
                 gpa = float(gpa_field.get())
@@ -452,8 +458,15 @@ class MainMenu(tk.Frame):
                 tk.messagebox.showerror("Error", "GPA must be a decimal number between 0 and 4.")
                 return
 
-            module = str(module_field.get())
-            semester = int(semester_field.get())
+            # Validate semester
+            try:
+                semester = str(semester_field.get())
+                if semester == "":
+                    raise ValueError
+            except ValueError:
+                tk.messagebox.showerror("Error", "Semester cannot be empty.")
+                return
+
             year = int(year_field.get())
 
             # Create a tuple with the values
@@ -462,7 +475,6 @@ class MainMenu(tk.Frame):
 
             # Check if the record already exists in the database
             if details_tuple in details_list:
-                print("found")
                 tk.messagebox.showerror("Error", "Record already exists in the database.")
                 return
 
