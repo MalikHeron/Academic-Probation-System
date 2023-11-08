@@ -1,3 +1,4 @@
+from datetime import datetime
 import tkinter as tk
 from tkinter import simpledialog, messagebox, ttk
 
@@ -22,6 +23,7 @@ class MainMenu(tk.Frame):
         self.view_details_button = None
         self.student_frame = None
         self.details_frame = None
+        self.add_details_frame = None
         self.module_frame = None
         self.view_modules_button = None
         self.add_module_frame = None
@@ -193,8 +195,86 @@ class MainMenu(tk.Frame):
 
         create_button_widget(button_frame, "Back", lambda: self.close_view())
 
-    def add_details(self):
-        print("Add Details")
+    def add_details(self):  # Do not touch this method yet, needs to be optimized
+        self.close_view()
+
+        # Create details frame
+        self.add_details_frame = tk.Frame(self.parent)
+        self.add_details_frame.grid(row=0, column=1, sticky="nsew")
+
+        # Padding
+        x_padding, y_padding, f_width, f_height = 15, 20, 25, 2
+
+        # Labels
+        tk.Label(self.add_details_frame, text="University of Technology", font=("Helvetica", 14, "bold")).grid(row=0,
+                                                                                                               column=0,
+                                                                                                               columnspan=2,
+                                                                                                               pady=15)
+        tk.Label(self.add_details_frame, text="Student Module Details", font=("Helvetica", 12)).grid(row=1, column=0,
+                                                                                                     columnspan=2,
+                                                                                                     pady=5)
+
+        # ID number label and field
+        tk.Label(self.add_details_frame, text="ID number", font=("Helvetica", 12)).grid(row=2, column=0, padx=x_padding,
+                                                                                        pady=y_padding)
+        id_field = tk.Text(self.add_details_frame, font=("Helvetica", 12), width=f_width, height=f_height)
+        id_field.grid(row=2, column=1)
+
+        # Module label and field
+        tk.Label(self.add_details_frame, text="Module", font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding,
+                                                                                     pady=y_padding)
+        module_list = db_manager.get_modules()
+        module_codes = [module[0] for module in module_list]  # Extract module codes
+        module_field = tk.StringVar(self.add_details_frame)
+        module_field.set(module_codes[0])  # default value
+        module_menu = tk.OptionMenu(self.add_details_frame, module_field, *module_codes)
+        module_menu.config(width=20)
+        module_menu.grid(row=3, column=1, padx=x_padding, pady=y_padding)
+
+        # Grade Point label and field
+        tk.Label(self.add_details_frame, text="Grade Point Average", font=("Helvetica", 12)).grid(row=4, column=0,
+                                                                                                  padx=x_padding,
+                                                                                                  pady=y_padding)
+        gpa_field = tk.Text(self.add_details_frame, font=("Helvetica", 12), width=f_width, height=f_height)
+        gpa_field.grid(row=4, column=1)
+
+        # Semester label and field
+        tk.Label(self.add_details_frame, text="Semester", font=("Helvetica", 12)).grid(row=5, column=0, padx=x_padding,
+                                                                                       pady=y_padding)
+        semester_list = [1, 2]
+        semester_field = tk.StringVar(self.add_details_frame)
+        semester_field.set(semester_list[0])  # default value
+        semester_menu = tk.OptionMenu(self.add_details_frame, semester_field, *semester_list)
+        semester_menu.config(width=20)
+        semester_menu.grid(row=5, column=1, padx=x_padding, pady=y_padding)
+
+        # Year label and field
+        tk.Label(self.add_details_frame, text="Year", font=("Helvetica", 12)).grid(row=6, column=0, padx=x_padding,
+                                                                                   pady=y_padding)
+        current_year = datetime.now().year
+        year_list = list(range(2016, current_year + 1))
+        year_field = tk.StringVar(self.add_details_frame)
+        year_field.set(year_list[0])
+        year_menu = tk.OptionMenu(self.add_details_frame, year_field, *year_list)
+        year_menu.config(width=20)
+        year_menu.grid(row=6, column=1, padx=x_padding, pady=y_padding)
+
+        # Submit and Cancel buttons
+        button_frame = tk.Frame(self.add_details_frame)
+        button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
+        submit_button = tk.Button(button_frame, text="Submit", font=("Helvetica", 12), width=10,
+                                  command=lambda: self.validate_and_submit(id_field, module_field, gpa_field,
+                                                                           semester_field, year_field))
+
+        submit_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+        clear_button = tk.Button(button_frame, text="Clear", font=("Helvetica", 12), width=10,
+                                 command=lambda: self.clear_fields(id_field, gpa_field, module_field, semester_field,
+                                                                   year_field))
+
+        clear_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+        back_button = tk.Button(button_frame, text="Back", font=("Helvetica", 12), width=10,
+                                command=lambda: self.close_view())
+        back_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
 
     def add_module(self):
         # Close the existing frame
@@ -367,6 +447,56 @@ class MainMenu(tk.Frame):
         self.remove_item(tree, db_manager.remove_details, "Input", "Enter values for the fields.", self.details_frame,
                          ["Student ID", "Module Code", "Semester"])
 
+    #Do not touch this method
+    def validate_and_submit(self, id_field, module_field, gpa_field, semester_field, year_field):
+        try:
+            # validate id
+            try:
+                id_number = int(id_field.get("1.0", "end"))
+                if id_number < 0:
+                    raise ValueError
+            except ValueError:
+                tk.messagebox.showerror("Error", "ID number must be a positive integer.")
+                return
+
+            # Validate GPA
+            try:
+                gpa = float(gpa_field.get("1.0", "end"))
+                if gpa < 0 or gpa > 4:
+                    raise ValueError
+            except ValueError:
+                tk.messagebox.showerror("Error", "GPA must be a decimal number between 0 and 4.")
+                return
+
+            module = str(module_field.get()).strip()
+            semester = int(semester_field.get())
+            year = int(year_field.get())
+
+            # Create a tuple with the values
+            details_list = db_manager.get_details()
+            details_tuple = (id_number, module, gpa, semester, year)
+
+            # Check if the record already exists in the database
+            if details_tuple in details_list:
+                print("found")
+                tk.messagebox.showerror("Error", "Record already exists in the database.")
+                return
+
+            # Insert the new record
+            db_manager.insert_detail(id_number, module, gpa, semester, year)
+            print("Data submitted:", id_number, module, gpa, semester, year)
+
+        except Exception as e:
+            print("An error occurred in validating submissions:", e)
+
+    def clear_fields(self, id_field, gpa_field, module_field, semester_field, year_field):
+        # Clear all fields and set to default values
+        id_field.delete(1.0, 'end')
+        gpa_field.delete(1.0, 'end')
+        module_field.set(db_manager.get_modules()[0][0])
+        semester_field.set(1)
+        year_field.set(list(range(2016, datetime.now().year + 1))[0])
+
     def close_view(self):  # we can keep editing this to close respective frames as we work
         # Check which view frame exists and remove it
         if self.student_frame is not None:
@@ -388,3 +518,8 @@ class MainMenu(tk.Frame):
         elif self.add_module_frame is not None:
             self.add_module_frame.grid_forget()
             self.add_module_frame = None
+
+        elif self.add_details_frame is not None:
+            self.add_details_frame.grid_forget()
+            self.add_details_frame = None
+            self.view_details()
