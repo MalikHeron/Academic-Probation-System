@@ -23,6 +23,7 @@ class MainMenu(tk.Frame):
         self.details_frame = None
         self.module_frame = None
         self.view_modules_button = None
+        self.add_module_frame = None
         self.add_student_button = None
         self.add_student_frame = None
         self.view_students_button = None
@@ -240,7 +241,76 @@ class MainMenu(tk.Frame):
         print("Add Details")
 
     def add_module(self):
-        print("Add Module")
+        # Close the existing frame
+        self.close_view()
+
+        # Testing purposes
+        print("Add module")
+
+        # Create the module frame
+        self.add_module_frame = tk.Frame(self.parent, padx=40, pady=20)
+        self.add_module_frame.grid(row=0, column=1, sticky="nsew")
+
+
+        # Padding and field dimensions
+        x_padding, y_padding, f_width, f_height, l_width = 15, 20, 25, 2, 11
+
+        # Labels
+        tk.Label(self.add_module_frame, text="University of Technology",
+                 font=("Helvetica", 14, "bold")).grid(row=0,column=0,columnspan=2,pady=15)
+        tk.Label(self.add_module_frame, text="Add Module",
+                 font=("Helvetica", 12)).grid(row=1, column=0, columnspan=2,pady=5)
+
+        # Module Code label and field
+        tk.Label(self.add_module_frame, text="Module Code", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=2, column=0, padx=x_padding,pady=y_padding)
+        mod_code_field = tk.Entry(self.add_module_frame, font=("Helvetica", 12), width=f_width)
+        mod_code_field.grid(row=2, column=1)
+
+        # Module Name label and field
+        tk.Label(self.add_module_frame, text="Module Name", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding, pady=y_padding)
+        mod_name_field = tk.Entry(self.add_module_frame, font=("Helvetica", 12), width=f_width)
+        mod_name_field.grid(row=3, column=1)
+
+        # Credits label and field
+        tk.Label(self.add_module_frame, text="Credits", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=4, column=0, padx=x_padding, pady=y_padding)
+        mod_credits_field = tk.Entry(self.add_module_frame, font=("Helvetica", 12), width=f_width)
+        mod_credits_field.grid(row=4, column=1)
+
+        # Submit and Cancel buttons
+        button_frame = tk.Frame(self.add_module_frame)
+        button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
+
+        submit_button = tk.Button(button_frame, text="Submit", font=("Helvetica", 12), width=10,
+                                  command=lambda: [self.add_module_to_db(mod_code_field.get(),
+                                                                          mod_name_field.get(),
+                                                                          mod_credits_field.get()),
+                                                   # Clear input fields
+                                                   self.clear_fields(mod_code_field, mod_name_field,
+                                                                     mod_credits_field)])
+        submit_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+
+        clear_button = tk.Button(button_frame, text="Clear", font=("Helvetica", 12), width=10,
+                                 command=lambda: self.clear_fields(mod_code_field, mod_name_field,
+                                                                   mod_credits_field))
+        clear_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+
+        back_button = tk.Button(button_frame, text="Back", font=("Helvetica", 12), width=10,
+                                command=lambda: self.close_view())
+        back_button.pack(side="left", padx=x_padding, pady=y_padding, anchor='center')
+
+    def add_module_to_db(self, mod_code, mod_name, mod_credits):
+        # Insert the module record into the database
+        success = db_manager.add_module(mod_code,mod_name,mod_credits)
+        if success:
+            # Display a success message
+            messagebox.showinfo("Success", "Module record added successfully.")
+        else:
+            # Display an error message
+            messagebox.showerror("Error", "Failed to add student record.")
+
 
     def remove_item(self, tree, remove_func, dialog_title, dialog_prompt, parent_frame, fields=None):
         # Set global record count
@@ -351,3 +421,7 @@ class MainMenu(tk.Frame):
         elif self.add_student_frame is not None:
             self.add_student_frame.grid_forget()
             self.add_student_frame = None
+
+        elif self.add_module_frame is not None:
+            self.add_module_frame.grid_forget()
+            self.add_module_frame = None
