@@ -1,12 +1,4 @@
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
-root - INFO - [{'GPA': 2.2}]
-root - INFO - [{'Results': [[6, 'David Jones', 'davidjones@gmail.com', 'School of Computing', 'Information Systems', 1.45, 2.24, 1.84], [18, 'Harry Moore', 'harry.moore@yahoo.com', 'School of Philosophy', 'Philosophy', 2.18, 0, 2.18], [21, 'Kathy Thomas', 'kathy.thomas@hotmail.com', 'School of English Literature', 'English Literature', 1.15, 2.04, 1.62], [22, 'Larry Jackson', 'larry.jackson@hotmail.com', 'School of Psychology', 'Psychology', 1.51, 0, 1.51], [23, 'Mia White', 'mia.white@hotmail.com', 'School of Anthropology', 'Anthropology', 1.51, 1.93, 1.72], [24, 'Nick Harris', 'nick.harris@hotmail.com', 'School of Astronomy', 'Astronomy', 2.09, 2.18, 2.14]]}]
-root - INFO - Alert sent to nick.harris@hotmail.com
-root - INFO - Alert sent to mia.white@hotmail.com
-root - INFO - Alert sent to kathy.thomas@hotmail.com
-root - INFO - Alert sent to harry.moore@yahoo.com
-root - INFO - Alert sent to davidjones@gmail.com
-root - INFO - Alert sent to larry.jackson@hotmail.com
 root - WARNING - index idx_module_details_unique already exists
