@@ -317,7 +317,7 @@ class MainMenu(tk.Frame):
     @staticmethod
     def add_to_db(add_record, data, success_message, error_message):
         # Insert the record into the database
-        success = add_record(data)
+        success = add_record(*data)
         if success:
             # Display a success message
             messagebox.showinfo("Success", success_message)
@@ -480,6 +480,9 @@ class MainMenu(tk.Frame):
 
             # Insert the new record
             self.add_detail_to_db(id_number, module, gpa, semester, year)
+
+            # Clear input fields
+            self.clear_fields(id_field, module_field, gpa_field, semester_field, year_field)
         except Exception as e:
             tk.messagebox.showerror("Error", "Failed to add record.")
             logging.error("An error occurred in validating submissions:", e)

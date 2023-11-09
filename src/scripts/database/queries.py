@@ -135,10 +135,10 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_module(self, mod_code, mod_name, credit):
+    def insert_module(self, module_code, module_name, credit):
         try:
             c = self.conn.cursor()
-            c.execute(f"""INSERT INTO module_master VALUES ('{mod_code}', '{mod_name}', {credit})""")
+            c.execute(f"""INSERT INTO module_master VALUES ('{module_code}', '{module_name}', {credit})""")
 
             # Commit changes
             self.conn.commit()
