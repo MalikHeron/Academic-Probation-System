@@ -69,47 +69,6 @@ class DatabaseManager:
         c = self.conn.cursor()
         c.execute(insert_data_sql)
 
-    def insert_student(self, id, name, email, school, programme):
-        sql_insert_student = f"""INSERT INTO student_master(id, name, email, school, programme) VALUES  
-                                ({id}, '{name}', '{email}', '{school}', '{programme}');"""
-        try:
-            c = self.conn.cursor()
-            c.execute(sql_insert_student)
-
-            # Commit changes
-            self.conn.commit()
-            return True
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return False
-
-    def insert_module(self, code, name, credits):
-        sql_insert_module = f"""INSERT INTO module_master(code, name, credits) VALUES  ('{code}', '{name}', {credits});"""
-        try:
-            c = self.conn.cursor()
-            c.execute(sql_insert_module)
-
-            # Commit changes
-            self.conn.commit()
-            return True
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return False
-
-    def insert_detail(self, id_number, module, gpa, semester, year):
-        sql_insert_detail = f"""INSERT INTO module_details(student_id, module_code, grade_points, semester, year) VALUES 
-                                ({id_number}, '{module}', {gpa}, {semester}, {year});"""
-        try:
-            c = self.conn.cursor()
-            c.execute(sql_insert_detail)
-
-            # Commit changes
-            self.conn.commit()
-            return True
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return False
-
     def get_students(self):
         c = self.conn.cursor()
         c.execute("""SELECT * FROM student_master""")
@@ -145,6 +104,45 @@ class DatabaseManager:
                 Prolog.assert_details(result)
                 self.get_student(result[0])
                 self.get_module(result[1])
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_detail(self, id_number, module, gpa, semester, year):
+        sql_insert_detail = f"""INSERT INTO module_details(student_id, module_code, grade_points, semester, year) VALUES 
+                                ({id_number}, '{module}', {gpa}, {semester}, {year});"""
+        try:
+            c = self.conn.cursor()
+            c.execute(sql_insert_detail)
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_student(self, student_id, name, email, school, programme):
+        try:
+            c = self.conn.cursor()
+            c.execute(f"""INSERT INTO student_master VALUES ({student_id}, '{name}', '{email}', '{school}', '{programme}
+            ')""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_module(self, mod_code, mod_name, credit):
+        try:
+            c = self.conn.cursor()
+            c.execute(f"""INSERT INTO module_master VALUES ('{mod_code}', '{mod_name}', {credit})""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return False

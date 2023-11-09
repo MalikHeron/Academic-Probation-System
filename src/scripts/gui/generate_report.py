@@ -27,6 +27,10 @@ def animate(done):
 class GenerateReportFrame:
 
     def __init__(self, parent):
+        self.button_frame = None
+        self.gpa_label = None
+        self.year_frame = None
+        self.gpa_frame = None
         self.alert_label = None
         self.alerts_to_send = None
         self.progressbar = None
@@ -46,37 +50,43 @@ class GenerateReportFrame:
         self.generate_frame.grid(row=0, column=1, columnspan=1, sticky="ew")
 
         # title
-        self.title = tk.Label(self.generate_frame, text="Generate Report", font=('Arial', 16, 'bold'))
+        self.title = tk.Label(self.generate_frame, text="Generate Report", font=('Helvetica', 14, 'bold'))
         self.title.configure(foreground='black')
         self.title.pack(padx=20, pady=20, fill='x', expand=True)
 
-        # Year Selector
+        # Year Selector Frame
+        self.year_frame = tk.Frame(self.generate_frame)
+        self.year_frame.pack(padx=60, pady=10, fill='x', expand=True)
+        self.select_year = tk.Label(self.year_frame, text="Select Year:", font=('Helvetica', 12, 'normal'))
+        self.select_year.pack(side='left', padx=10)
         current_year = datetime.datetime.now().year  # Get the current year
-        self.select_year = tk.Label(self.generate_frame, text="Select Year:", font=('Arial', 12, 'normal'))
-        self.select_year.pack(padx=150, anchor="w")
-        self.year_selector = tk.Spinbox(self.generate_frame, font=('Arial', 11, 'normal'), from_=2016, to=current_year)
-        self.year_selector.pack(padx=150, pady=5, fill='x', expand=True)
+        self.year_selector = tk.Spinbox(self.year_frame, font=('Helvetica', 11, 'normal'), from_=2016, to=current_year,
+                                        width=18)
+        self.year_selector.pack(side='left', padx=10)
 
         # Optional Label
         tk.Label(self.generate_frame, text="OR", font=("Helvetica", 12, "bold"), foreground="#7a7a7a") \
             .pack(padx=80, pady=5, fill='x', expand=True)
 
-        # GPA Entry
-        tk.Label(self.generate_frame, text="Enter GPA:", font=('Arial', 12, 'normal')).pack(padx=150, anchor="w")
-        self.gpa_entry = tk.Entry(self.generate_frame, font=('Arial', 11, 'normal'))
-        self.gpa_entry.pack(padx=150, pady=5, fill='x', expand=True)
-
-        # spacing
-        tk.Label(self.generate_frame, text="", font=('Arial', 12, 'normal')).pack()
+        # GPA Entry Frame
+        self.gpa_frame = tk.Frame(self.generate_frame)
+        self.gpa_frame.pack(padx=60, pady=10, fill='x', expand=True)
+        self.gpa_label = tk.Label(self.gpa_frame, text="Enter GPA:", font=('Helvetica', 12, 'normal'))
+        self.gpa_label.pack(side='left', padx=10)
+        self.gpa_entry = tk.Entry(self.gpa_frame, font=('Helvetica', 11, 'normal'), width=19)
+        self.gpa_entry.pack(side='left', padx=18)
 
         # Submit Button
-        submit_button = tk.Button(self.generate_frame, text="Generate", command=self.submit)
-        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Arial', 12, 'normal'))
-        submit_button.pack(padx=150, pady=5, fill='x', expand=True)
+        self.button_frame = tk.Frame(self.generate_frame)
+        self.button_frame.pack(padx=150, pady=30, fill='x', expand=True)
+        submit_button = tk.Button(self.button_frame, text="Generate", command=self.submit)
+        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Helvetica', 12, 'normal')),
+        submit_button.pack(side='left', padx=10)
 
         # Back Button
-        back_button = tk.Button(self.generate_frame, text="Back", command=self.generate_frame.grid_forget)
-        back_button.pack(padx=150, pady=5, fill='x', expand=True)
+        back_button = tk.Button(self.button_frame, text="Back", command=self.generate_frame.grid_forget)
+        back_button.configure(font=('Helvetica', 12, 'normal')),
+        back_button.pack(side='left', padx=10)
 
     def submit(self):
         # Get data
@@ -98,7 +108,7 @@ class GenerateReportFrame:
             gpa = Prolog.get_default_gpa()  # get default gpa
 
         # Show submitted message
-        messagebox.showinfo("Submitted", f"Year: {year}, GPA: {gpa}")
+        messagebox.showinfo("Summary", f"Requesting students from {year}\nwith a maximum GPA of {gpa}")
 
         # Hide main frame and show report frame
         self.view_report(year, gpa)
