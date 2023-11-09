@@ -6,7 +6,7 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 
 from gui.main_menu import MainMenu
-from scripts.database.queries import DatabaseManager
+from src.scripts.database.queries import DatabaseManager
 
 # setting path
 sys.path.append('../../src')

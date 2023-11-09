@@ -9,9 +9,9 @@ from email.message import EmailMessage
 from tkinter import messagebox
 from tkinter.ttk import Progressbar
 
-from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import create_treeview
-from scripts.prolog_interface import PrologQueryHandler as Prolog
+from src.scripts.database.queries import DatabaseManager
+from src.scripts.gui.helpers import create_treeview
+from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
