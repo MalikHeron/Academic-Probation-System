@@ -313,6 +313,9 @@ class MainMenu(tk.Frame):
                 field.delete(0, tk.END)
             elif isinstance(field, tk.StringVar):
                 field.set("")
+            elif isinstance(field, tk.Spinbox):
+                field.delete(0, tk.END)
+                field.insert(0, "2016")
 
     @staticmethod
     def add_to_db(add_record, data, success_message, error_message):

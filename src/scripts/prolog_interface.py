@@ -97,45 +97,6 @@ class PrologQueryHandler:
             return None
 
     @staticmethod
-    def get_student_list():
-        try:
-            result = list(prolog.query("student(Id, Name, Email, School, Programme)"))
-            if result is None:
-                return None
-            else:
-                logging.info(result)
-                return result
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return None
-
-    @staticmethod
-    def get_module_list():
-        try:
-            result = list(prolog.query("module(Code, Name, Credits)"))
-            if result is None:
-                return None
-            else:
-                logging.info(result)
-                return result
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return None
-
-    @staticmethod
-    def get_details_list():
-        try:
-            result = list(prolog.query("module_details(Id, Code, Grade_Points, Semester, Year)"))
-            if result is None:
-                return None
-            else:
-                logging.info(result)
-                return result
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return None
-
-    @staticmethod
     def calculate_cumulative_gpa():
         try:
             result = list(prolog.query(f"cumulative_gpa_all_students(Results)"))
