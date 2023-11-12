@@ -176,11 +176,12 @@ class MainMenu(tk.Frame):
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
 
         create_button_widget(button_frame, "Submit",
-                             lambda: [self.add_student_to_db(student_id_field.get(),
-                                                             student_name_field.get(),
-                                                             student_email_field.get(),
-                                                             school_field.get(),
-                                                             programme_field.get()),
+                             lambda: [self.validate({"Student ID": (student_id_field, "int"),
+                                                    "Student Name": (student_name_field, "str"),
+                                                    "Student Email": (student_email_field, "str"),
+                                                    "School": (school_field, "str"),
+                                                    "Programme": (programme_field, "str")}, self.add_student_to_db),
+
                                       # Clear input fields
                                       self.clear_fields(student_id_field,
                                                         student_name_field,
@@ -286,10 +287,14 @@ class MainMenu(tk.Frame):
         button_frame = tk.Frame(self.add_module_frame)
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
 
+
         create_button_widget(button_frame, "Submit",
-                             lambda: [self.add_module_to_db(mod_code_field.get(),
-                                                            mod_name_field.get(),
-                                                            int(mod_credits_field.get())),
+                             lambda: [self.validate({
+                                                "Module Code": (mod_code_field, "int"),
+                                                "Module Name": (mod_name_field, "str"),
+                                                "Credits": (mod_credits_field, "int")
+                                                }, self.add_module_to_db),
+
                                       # Clear input fields
                                       self.clear_fields(mod_code_field,
                                                         mod_name_field,
@@ -325,17 +330,23 @@ class MainMenu(tk.Frame):
             # Display an error message
             messagebox.showerror("Error", error_message)
 
-    def add_student_to_db(self, student_id, name, email, school, programme):
-        self.add_to_db(db_manager.insert_student, (student_id, name, email, school, programme),
+    def add_student_to_db(self, validated_fields):
+        self.add_to_db(db_manager.insert_student, (validated_fields["Student ID"],validated_fields["Student Name"],
+                                                   validated_fields["Student Email"],validated_fields["School"],
+                                                   validated_fields["Programme"]),
                        "Student record added successfully.", "Failed to add student record.")
 
     def add_detail_to_db(self, id_number, module, gpa, semester, year):
         self.add_to_db(db_manager.insert_detail, (id_number, module, gpa, semester, year),
                        "Detail record added successfully.", "Failed to add detail record.")
 
-    def add_module_to_db(self, mod_code, mod_name, mod_credits):
-        self.add_to_db(db_manager.insert_module, (mod_code, mod_name, mod_credits),
-                       "Module record added successfully.", "Failed to add module record.")
+    # def add_module_to_db(self, mod_code, mod_name, mod_credits):
+    def add_module_to_db(self, validated_data):
+        self.add_to_db(db_manager.insert_module, (validated_data["Module Code"],validated_data["Module Name"],
+                                        validated_data["Credits"]), "Module record added successfully.",
+                       "Failed to add module record.")
+        # self.add_to_db(db_manager.insert_module, (mod_code, mod_name, mod_credits),
+        #                "Module record added successfully.", "Failed to add module record.")
 
     def remove_item(self, tree, remove_func, dialog_title, dialog_prompt, parent_frame, fields=None):
         # Set global record count
@@ -428,6 +439,45 @@ class MainMenu(tk.Frame):
     def remove_details(self, tree):
         self.remove_item(tree, db_manager.remove_details, "Input", "Enter values for the fields.", self.details_frame,
                          ["Student ID", "Module Code", "Semester"])
+
+
+    def validate(self, fields, submit_func):
+        validated_fields = {}  # Store the validated fields
+
+        for field_name, (input_field, validation_type) in fields.items():
+            try:
+                input_value = input_field.get()
+                if validation_type == "int":
+                    # Validate as an integer
+                    if input_value.isdigit():
+                        validated_fields[field_name] = input_value
+                    else:
+                        raise ValueError(f"{field_name} is not a valid integer.")
+                elif validation_type == "str":
+                    # Validate as a non-empty string
+                    if input_value.strip():
+                        validated_fields[field_name] = input_value
+                    else:
+                        raise ValueError(f"{field_name} cannot be empty.")
+                # Add more validation types as needed
+                else:
+                    # Unknown validation type
+                    raise ValueError(f"Unknown validation type for {field_name}.")
+
+            except ValueError as e:
+                # If validation fails, show an error message and return
+                tk.messagebox.showerror("Error", f"{field_name}: {e}")
+                return
+            except Exception as e:
+                # Handle any unexpected errors
+                tk.messagebox.showerror("Error", "Failed to validate input.")
+                logging.error("An error occurred in validating input:", e)
+                return
+
+        # If all fields are successfully validated, call the submit function
+        submit_func(validated_fields)
+
+
 
     def validate_and_submit(self, id_field, module_field, gpa_field, semester_field, year_field):
         try:
