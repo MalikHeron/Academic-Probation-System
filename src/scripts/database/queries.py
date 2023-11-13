@@ -135,6 +135,34 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
+    def update_record(self, data, table_name):
+        try:
+            c = self.conn.cursor()
+            match table_name:
+                case "student":
+                    c.execute(f"""UPDATE student_master SET name='{data[1]}', email='{data[2]}', school='{data[3]}', 
+                    programme='{data[4]}' WHERE id={data[0]}""")
+                case "module":
+                    c.execute(f"""UPDATE module_master SET name='{data[1]}', credits={data[2]} 
+                    WHERE code='{data[0]}'""")
+                case "details":
+                    c.execute(f"""UPDATE module_details SET grade_points={data[2]}, semester={data[3]}, year={data[4]}
+                    WHERE student_id={data[0]} AND module_code='{data[1]}'""")
+                case _:
+                    print("Record could not be updated.")
+
+
+            c.execute(f"""INSERT INTO student_master VALUES ({data[0]}, '{data[1]}', '{data[2]}', '{data[3]}', 
+            '{data[4]}')""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+
     def insert_module(self, data):
         try:
             c = self.conn.cursor()

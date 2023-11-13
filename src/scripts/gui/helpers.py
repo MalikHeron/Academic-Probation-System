@@ -80,22 +80,24 @@ def create_button_widget(frame, text, command, padx=5, pady=20, width=10):
     return button
 
 
-def button_config(frame, tree, add, remove, back):
+def button_config(frame, tree, add, update, remove, back):
     add_button = tk.Button(frame, text="Add", command=add)
+    update_button = tk.Button(frame, text="Update", command=update)
     remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
     back_button = tk.Button(frame, text="Back", command=back)
 
     button_width = 100  # width of the buttons
     button_spacing = 40  # space between the buttons
-    total_width = 3 * button_width + 2 * button_spacing  # total width of all buttons and spaces
+    total_width = 4 * button_width + 2 * button_spacing  # total width of all buttons and spaces
 
     # Center the buttons at the bottom of the window
     add_button.place(relx=0.5, rely=0.98, x=-total_width / 2, anchor='s', width=button_width)
-    remove_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + button_width + button_spacing, anchor='s',
+    update_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + button_width + button_spacing, anchor='s',
                         width=button_width)
-    back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
+    remove_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
+                        width=button_width)
+    back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 3 * (button_width + button_spacing), anchor='s',
                       width=button_width)
-
 
 def create_label_and_field(frame, text, row, padx=5, pady=20, f_width=25, l_width=11):
     tk.Label(frame, text=text, width=l_width, anchor="w", font=("Helvetica", 12)).grid(row=row, column=0, padx=padx,

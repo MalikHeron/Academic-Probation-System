@@ -82,7 +82,8 @@ class MainMenu(tk.Frame):
         tree = create_treeview(self.student_frame, columns, column_widths, 10, data=data)
 
         # Button configurations
-        button_config(self.student_frame, tree, self.add_student, self.remove_student, self.close_view)
+        button_config(self.student_frame, tree, self.add_student, self.update_student, self.remove_student,
+                      self.close_view)
 
     def view_modules(self):
         # Create module frame
@@ -110,7 +111,8 @@ class MainMenu(tk.Frame):
         tree = create_treeview(self.module_frame, columns, column_widths, 115, data=data)
 
         # Button configurations
-        button_config(self.module_frame, tree, self.add_module, self.remove_module, self.close_view)
+        button_config(self.module_frame, tree, self.add_module, self.update_module, self.remove_module,
+                      self.close_view)
 
     def view_details(self):
         # Create module frame
@@ -138,7 +140,8 @@ class MainMenu(tk.Frame):
         tree = create_treeview(self.details_frame, columns, column_widths, 115, data=data)
 
         # Button configurations
-        button_config(self.details_frame, tree, self.add_details, self.remove_details, self.close_view)
+        button_config(self.details_frame, tree, self.add_details, self.update_details, self.remove_details,
+                      self.close_view)
 
     # Insert Frames
     def add_student(self):
@@ -196,6 +199,63 @@ class MainMenu(tk.Frame):
                                                                               programme_field))
 
         create_button_widget(button_frame, "Back", lambda: self.close_view())
+
+    def update_student(self):
+        # Close the existing frame
+        self.close_view()
+
+        # Create the student frame
+        self.add_student_frame = tk.Frame(self.parent, padx=40, pady=20)
+        self.add_student_frame.grid(row=0, column=1, sticky="nsew")
+
+        # Padding and field dimensions
+        x_padding, y_padding = 5, 20
+
+        # Labels
+        tk.Label(self.add_student_frame, text="Add Student",
+                 font=("Helvetica", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
+
+        # Student ID label and field
+        student_id_field = create_label_and_field(self.add_student_frame, "ID Number", 2)
+
+        # Student Name label and field
+        student_name_field = create_label_and_field(self.add_student_frame, "Full Name", 3)
+
+        # Student Email label and field
+        student_email_field = create_label_and_field(self.add_student_frame, "Email", 4)
+
+        # School label and field
+        school_field = create_label_and_field(self.add_student_frame, "School", 5)
+
+        # Programme label and field
+        programme_field = create_label_and_field(self.add_student_frame, "Programme", 6)
+
+        # Submit and Cancel buttons
+        button_frame = tk.Frame(self.add_student_frame)
+        button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
+
+        create_button_widget(button_frame, "Submit",
+                             lambda: [self.validate({"Student ID": (student_id_field, "int"),
+                                                     "Student Name": (student_name_field, "str"),
+                                                     "Student Email": (student_email_field, "str"),
+                                                     "School": (school_field, "str"),
+                                                     "Programme": (programme_field, "str")}, self.add_student_to_db),
+
+                                      # Clear input fields
+                                      self.clear_fields(student_id_field,
+                                                        student_name_field,
+                                                        student_email_field,
+                                                        school_field,
+                                                        programme_field)])
+
+        create_button_widget(button_frame, "Clear", lambda: self.clear_fields(student_id_field,
+                                                                              student_name_field,
+                                                                              student_email_field,
+                                                                              school_field,
+                                                                              programme_field))
+
+        create_button_widget(button_frame, "Back", lambda: self.close_view())
+
 
     def add_details(self):  # Do not touch this method yet, needs to be optimized
         self.close_view()
@@ -255,6 +315,9 @@ class MainMenu(tk.Frame):
 
         create_button_widget(button_frame, "Back", lambda: self.close_view())
 
+    def update_details(self):
+        print("Update details")
+
     def add_module(self):
         # Close the existing frame
         self.close_view()
@@ -306,6 +369,10 @@ class MainMenu(tk.Frame):
 
         create_button_widget(button_frame, "Back", lambda: self.close_view())
 
+
+    def update_module(self):
+        print("Update module")
+
     @staticmethod
     def clear_fields(*fields):
         # Clear all fields and set to default values
@@ -330,10 +397,27 @@ class MainMenu(tk.Frame):
             # Display an error message
             messagebox.showerror("Error", error_message)
 
+    @staticmethod
+    def update_in_db(update_record, data, success_message, error_message):
+        # Insert the record into the database
+        success = update_record(data)
+        if success:
+            # Display a success message
+            messagebox.showinfo("Success", success_message)
+        else:
+            # Display an error message
+            messagebox.showerror("Error", error_message)
+
     def add_student_to_db(self, validated_fields):
         self.add_to_db(db_manager.insert_student, (validated_fields["Student ID"],validated_fields["Student Name"],
                                                    validated_fields["Student Email"],validated_fields["School"],
                                                    validated_fields["Programme"]),
+                       "Student record added successfully.", "Failed to add student record.")
+
+    def update_student_in_db(self, validated_fields):
+        self.update_in_db(db_manager.update_student, (validated_fields["Student ID"],
+                                                      validated_fields["Student Name"],validated_fields["Student Email"],
+                                                      validated_fields["School"],validated_fields["Programme"]),
                        "Student record added successfully.", "Failed to add student record.")
 
     def add_detail_to_db(self, id_number, module, gpa, semester, year):
@@ -343,7 +427,7 @@ class MainMenu(tk.Frame):
     # def add_module_to_db(self, mod_code, mod_name, mod_credits):
     def add_module_to_db(self, validated_data):
         self.add_to_db(db_manager.insert_module, (validated_data["Module Code"],validated_data["Module Name"],
-                                        validated_data["Credits"]), "Module record added successfully.",
+                                                  validated_data["Credits"]), "Module record added successfully.",
                        "Failed to add module record.")
         # self.add_to_db(db_manager.insert_module, (mod_code, mod_name, mod_credits),
         #                "Module record added successfully.", "Failed to add module record.")
