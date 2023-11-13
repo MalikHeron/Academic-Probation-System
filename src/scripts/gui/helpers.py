@@ -82,7 +82,7 @@ def create_button_widget(frame, text, command, padx=5, pady=20, width=10):
 
 def button_config(frame, tree, add, update, remove, back):
     add_button = tk.Button(frame, text="Add", command=add)
-    update_button = tk.Button(frame, text="Update", command=update)
+    update_button = tk.Button(frame, text="Update", command=lambda: update(tree))
     remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
     back_button = tk.Button(frame, text="Back", command=back)
 

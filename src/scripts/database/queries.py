@@ -151,10 +151,6 @@ class DatabaseManager:
                 case _:
                     print("Record could not be updated.")
 
-
-            c.execute(f"""INSERT INTO student_master VALUES ({data[0]}, '{data[1]}', '{data[2]}', '{data[3]}', 
-            '{data[4]}')""")
-
             # Commit changes
             self.conn.commit()
             return True
