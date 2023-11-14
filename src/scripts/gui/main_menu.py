@@ -57,6 +57,9 @@ class MainMenu(tk.Frame):
 
     # View Frames
     def view_students(self):
+        # Close the existing frame
+        self.close_view()
+
         # Create student frame
         self.student_frame = tk.Frame(self.parent)
         self.student_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
@@ -86,6 +89,9 @@ class MainMenu(tk.Frame):
                       self.close_view)
 
     def view_modules(self):
+        # Close the existing frame
+        self.close_view()
+
         # Create module frame
         self.module_frame = tk.Frame(self.parent)
         self.module_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
@@ -115,6 +121,9 @@ class MainMenu(tk.Frame):
                       self.close_view)
 
     def view_details(self):
+        # Close the existing frame
+        self.close_view()
+
         # Create module frame
         self.details_frame = tk.Frame(self.parent)
         self.details_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
@@ -180,17 +189,11 @@ class MainMenu(tk.Frame):
 
         create_button_widget(button_frame, "Submit",
                              lambda: [self.validate({"Student ID": (student_id_field, "int"),
-                                                    "Student Name": (student_name_field, "str"),
-                                                    "Student Email": (student_email_field, "str"),
-                                                    "School": (school_field, "str"),
-                                                    "Programme": (programme_field, "str")}, self.add_student_to_db),
-
-                                      # Clear input fields
-                                      self.clear_fields(student_id_field,
-                                                        student_name_field,
-                                                        student_email_field,
-                                                        school_field,
-                                                        programme_field)])
+                                                     "Student Name": (student_name_field, "str"),
+                                                     "Student Email": (student_email_field, "str"),
+                                                     "School": (school_field, "str"),
+                                                     "Programme": (programme_field, "str")},
+                                                    self.add_student_to_db)])
 
         create_button_widget(button_frame, "Clear", lambda: self.clear_fields(student_id_field,
                                                                               student_name_field,
@@ -250,14 +253,8 @@ class MainMenu(tk.Frame):
                                                      "Student Name": (student_name_field, "str"),
                                                      "Student Email": (student_email_field, "str"),
                                                      "School": (school_field, "str"),
-                                                     "Programme": (programme_field, "str")}, self.update_student_in_db),
-
-                                      # Clear input fields
-                                      self.clear_fields(student_id_field,
-                                                        student_name_field,
-                                                        student_email_field,
-                                                        school_field,
-                                                        programme_field)])
+                                                     "Programme": (programme_field, "str")},
+                                                    self.update_student_in_db)])
 
         create_button_widget(button_frame, "Clear", lambda: self.clear_fields(student_id_field,
                                                                               student_name_field,
@@ -266,7 +263,6 @@ class MainMenu(tk.Frame):
                                                                               programme_field))
 
         create_button_widget(button_frame, "Back", lambda: self.close_view())
-
 
     def add_details(self):  # Do not touch this method yet, needs to be optimized
         self.close_view()
@@ -317,8 +313,13 @@ class MainMenu(tk.Frame):
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
 
         create_button_widget(button_frame, "Submit",
-                             lambda: self.validate_and_submit(id_field, module_field, gpa_field,
-                                                              semester_field, year_field))
+                             lambda: [self.validate({
+                                 "ID": (id_field, "int"),
+                                 "Module Code": (module_field, "str"),
+                                 "GPA": (gpa_field, "float"),
+                                 "Semester": (semester_field, "int"),
+                                 "Year": (year_field, "int")
+                             }, self.add_detail_to_db)])
 
         create_button_widget(button_frame, "Clear",
                              lambda: self.clear_fields(id_field, gpa_field, module_field, semester_field,
@@ -327,7 +328,79 @@ class MainMenu(tk.Frame):
         create_button_widget(button_frame, "Back", lambda: self.close_view())
 
     def update_details(self, tree):
-        print("Update details")
+        # Close the existing frame
+        self.close_view()
+
+        # Get the selected item from the tree
+        selected_item = tree.selection()
+
+        # Create details frame
+        self.add_details_frame = tk.Frame(self.parent, padx=40, pady=20)
+        self.add_details_frame.grid(row=0, column=1, sticky="nsew")
+
+        # Padding
+        x_padding, y_padding, f_width, l_width = 5, 20, 20, 11
+
+        # Labels
+        tk.Label(self.add_details_frame, text="Add Details",
+                 font=("Helvetica", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
+
+        # ID number label and field
+        id_field = create_label_and_field(self.add_details_frame, "ID Number", 2, f_width=f_width)
+        id_field.insert(0, str(tree.item(selected_item)["values"][0]).strip())
+        id_field.configure(state="disabled")
+
+        # Module label and field
+        tk.Label(self.add_details_frame, text="Module", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding, pady=y_padding)
+        module_list = db_manager.get_modules()
+        module_codes = [module[0] for module in module_list]  # Extract module codes
+        module_field = ttk.Combobox(self.add_details_frame, font=("Helvetica", 11), state="readonly",
+                                    values=module_codes, width=f_width)
+        module_field.grid(row=3, column=1)
+        module_field.set(str(tree.item(selected_item)["values"][1]).strip())
+
+        # Grade Point label and field
+        gpa_field = create_label_and_field(self.add_details_frame, "GPA", 4, f_width=f_width)
+        gpa_field.insert(2, str(tree.item(selected_item)["values"][2]).strip())
+
+        # Semester label and field
+        tk.Label(self.add_details_frame, text="Semester", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=5, column=0, padx=x_padding, pady=y_padding)
+        semester_field = ttk.Combobox(self.add_details_frame, font=("Helvetica", 11), state="readonly",
+                                      values=["1", "2"], width=f_width)
+        semester_field.grid(row=5, column=1)
+        semester_field.set(str(tree.item(selected_item)["values"][3]).strip())
+
+        # Year label and field
+        tk.Label(self.add_details_frame, text="Year", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=6, column=0, padx=x_padding, pady=y_padding)
+        current_year = datetime.now().year  # Get the current year
+        year_var = tk.StringVar()  # Create a StringVar
+        year_field = tk.Spinbox(self.add_details_frame, font=('Helvetica', 11, 'normal'), from_=2016,
+                                to=current_year, width=f_width,
+                                textvariable=year_var)  # Associate the StringVar with the Spinbox
+        year_field.grid(row=6, column=1, padx=x_padding, pady=y_padding)
+        year_var.set(str(tree.item(selected_item)["values"][4]).strip())  # Use the set method of the StringVar
+
+        # Submit and Cancel buttons
+        button_frame = tk.Frame(self.add_details_frame)
+        button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
+
+        create_button_widget(button_frame, "Submit",
+                             lambda: [self.validate({
+                                 "ID": (id_field, "int"),
+                                 "Module Code": (module_field, "str"),
+                                 "GPA": (gpa_field, "float"),
+                                 "Semester": (semester_field, "int"),
+                                 "Year": (year_field, "int")
+                             }, self.update_detail_in_db)])
+
+        create_button_widget(button_frame, "Clear",
+                             lambda: self.clear_fields(id_field, gpa_field, module_field, semester_field,
+                                                       year_field))
+
+        create_button_widget(button_frame, "Back", lambda: self.close_view())
 
     def add_module(self):
         # Close the existing frame
@@ -361,25 +434,18 @@ class MainMenu(tk.Frame):
         button_frame = tk.Frame(self.add_module_frame)
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
 
-
         create_button_widget(button_frame, "Submit",
                              lambda: [self.validate({
-                                                "Module Code": (mod_code_field, "str"),
-                                                "Module Name": (mod_name_field, "str"),
-                                                "Credits": (mod_credits_field, "int")
-                                                }, self.add_module_to_db),
-
-                                      # Clear input fields
-                                      self.clear_fields(mod_code_field,
-                                                        mod_name_field,
-                                                        mod_credits_field)])
+                                 "Module Code": (mod_code_field, "str"),
+                                 "Module Name": (mod_name_field, "str"),
+                                 "Credits": (mod_credits_field, "int")
+                             }, self.add_module_to_db)])
 
         create_button_widget(button_frame, "Clear", lambda: self.clear_fields(mod_code_field,
                                                                               mod_name_field,
                                                                               mod_credits_field))
 
         create_button_widget(button_frame, "Back", lambda: self.close_view())
-
 
     def update_module(self, tree):
         # Close the existing frame
@@ -416,30 +482,22 @@ class MainMenu(tk.Frame):
         mod_credits_field.grid(row=4, column=1)
         mod_credits_field.set(str(tree.item(selected_item)["values"][2]).strip())
 
-
         # Submit and Cancel buttons
         button_frame = tk.Frame(self.add_module_frame)
         button_frame.grid(row=7, column=0, columnspan=3, padx=x_padding, pady=y_padding)
-
 
         create_button_widget(button_frame, "Submit",
                              lambda: [self.validate({
                                  "Module Code": (mod_code_field, "str"),
                                  "Module Name": (mod_name_field, "str"),
                                  "Credits": (mod_credits_field, "int")
-                             }, self.update_module_in_db),
-
-                                 # Clear input fields
-                                 self.clear_fields(mod_code_field,
-                                                   mod_name_field,
-                                                   mod_credits_field)])
+                             }, self.update_module_in_db)])
 
         create_button_widget(button_frame, "Clear", lambda: self.clear_fields(mod_code_field,
                                                                               mod_name_field,
                                                                               mod_credits_field))
 
         create_button_widget(button_frame, "Back", lambda: self.close_view())
-
 
     @staticmethod
     def clear_fields(*fields):
@@ -477,34 +535,47 @@ class MainMenu(tk.Frame):
             messagebox.showerror("Error", error_message)
 
     def add_student_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_student, (validated_fields["Student ID"],validated_fields["Student Name"],
-                                                   validated_fields["Student Email"],validated_fields["School"],
+        self.add_to_db(db_manager.insert_student, (validated_fields["Student ID"], validated_fields["Student Name"],
+                                                   validated_fields["Student Email"], validated_fields["School"],
                                                    validated_fields["Programme"]),
-                       "Student record added successfully.", "Failed to add student record.")
-
-    def update_student_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Student ID"],
-                                                      validated_fields["Student Name"],validated_fields["Student Email"],
-                                                      validated_fields["School"],validated_fields["Programme"]),
-                          "student", "Student record updated successfully.", "Failed to update student record.")
+                       "Student record added successfully.",
+                       "Failed to add student record.")
 
     def add_detail_to_db(self, id_number, module, gpa, semester, year):
         self.add_to_db(db_manager.insert_detail, (id_number, module, gpa, semester, year),
-                       "Detail record added successfully.", "Failed to add detail record.")
+                       "Detail record added successfully.",
+                       "Failed to add detail record.")
 
-    # def add_module_to_db(self, mod_code, mod_name, mod_credits):
     def add_module_to_db(self, validated_fields):
         self.add_to_db(db_manager.insert_module, (validated_fields["Module Code"], validated_fields["Module Name"],
-                                                  validated_fields["Credits"]), "Module record added successfully.",
+                                                  validated_fields["Credits"]),
+                       "Module record added successfully.",
                        "Failed to add module record.")
+
+    def update_student_in_db(self, validated_fields):
+        self.update_in_db((validated_fields["Student ID"],
+                           validated_fields["Student Name"], validated_fields["Student Email"],
+                           validated_fields["School"], validated_fields["Programme"]),
+                          "student",
+                          "Student record updated successfully.",
+                          "Failed to update student record.")
+        self.close_view()
+
+    def update_detail_in_db(self, validated_fields):
+        self.update_in_db((validated_fields["ID"], validated_fields["Module Name"],
+                           validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
+                          "details",
+                          "Module detail record updated successfully.",
+                          "Failed to update module detail record.")
+        self.close_view()
 
     def update_module_in_db(self, validated_fields):
         self.update_in_db((validated_fields["Module Code"], validated_fields["Module Name"],
-                           validated_fields["Credits"]), "module", "Module record updated successfully.",
+                           validated_fields["Credits"]),
+                          "module",
+                          "Module record updated successfully.",
                           "Failed to update module record.")
-
-
-
+        self.close_view()
 
     def remove_item(self, tree, remove_func, dialog_title, dialog_prompt, parent_frame, fields=None):
         # Set global record count
@@ -598,30 +669,38 @@ class MainMenu(tk.Frame):
         self.remove_item(tree, db_manager.remove_details, "Input", "Enter values for the fields.", self.details_frame,
                          ["Student ID", "Module Code", "Semester"])
 
-
     def validate(self, fields, submit_func):
         validated_fields = {}  # Store the validated fields
+        field_widgets = []  # Store the field widgets
 
         for field_name, (input_field, validation_type) in fields.items():
             try:
                 input_value = input_field.get()
+                field_widgets.append(input_field)  # Add the input field widget to the list
                 if validation_type == "int":
                     # Validate as an integer
                     if input_value.isdigit():
                         validated_fields[field_name] = input_value
                     else:
-                        raise ValueError(f"{field_name} is not a valid integer.")
+                        raise ValueError("is not a valid integer.")
                 elif validation_type == "str":
                     # Validate as a non-empty string
                     if input_value.strip():
                         validated_fields[field_name] = input_value
                     else:
-                        raise ValueError(f"{field_name} cannot be empty.")
+                        raise ValueError("cannot be empty.")
+                elif validation_type == "float":
+                    # Validate as a decimal number
+                    if input_value.replace(".", "", 1).isdigit():
+                        if float(input_value) < 0 or float(input_value) > 4:
+                            raise ValueError("must be a decimal number between 0 and 4.")
+                        validated_fields[field_name] = input_value
+                    else:
+                        raise ValueError("is not a valid decimal number.")
                 # Add more validation types as needed
                 else:
                     # Unknown validation type
                     raise ValueError(f"Unknown validation type for {field_name}.")
-
             except ValueError as e:
                 # If validation fails, show an error message and return
                 tk.messagebox.showerror("Error", f"{field_name}: {e}")
@@ -634,63 +713,7 @@ class MainMenu(tk.Frame):
 
         # If all fields are successfully validated, call the submit function
         submit_func(validated_fields)
-
-
-
-    def validate_and_submit(self, id_field, module_field, gpa_field, semester_field, year_field):
-        try:
-            # validate id
-            try:
-                id_number = int(id_field.get())
-                if id_number <= 0:
-                    raise ValueError
-            except ValueError:
-                tk.messagebox.showerror("Error", "ID number must be a positive integer.")
-                return
-
-            # Validate module
-            try:
-                module = str(module_field.get())
-                if module == "":
-                    raise ValueError
-            except ValueError:
-                tk.messagebox.showerror("Error", "Module code cannot be empty.")
-                return
-
-            # Validate GPA
-            try:
-                gpa = float(gpa_field.get())
-                if gpa < 0 or gpa > 4:
-                    raise ValueError
-            except ValueError:
-                tk.messagebox.showerror("Error", "GPA must be a decimal number between 0 and 4.")
-                return
-
-            # Validate semester
-            try:
-                semester = str(semester_field.get())
-                if semester == "":
-                    raise ValueError
-            except ValueError:
-                tk.messagebox.showerror("Error", "Semester cannot be empty.")
-                return
-
-            year = int(year_field.get())
-
-            # Create a tuple with the values
-            details_list = db_manager.get_details()
-            details_tuple = (id_number, module, gpa, semester, year)
-
-            # Check if the record already exists in the database
-            if details_tuple in details_list:
-                tk.messagebox.showerror("Error", "Record already exists in the database.")
-                return
-
-            # Insert the new record
-            self.add_detail_to_db(id_number, module, gpa, semester, year)
-        except Exception as e:
-            tk.messagebox.showerror("Error", "Failed to add record.")
-            logging.error("An error occurred in validating submissions:", e)
+        self.clear_fields(*field_widgets)  # Clear all fields
 
     def close_view(self):  # we can keep editing this to close respective frames as we work
         # Check which view frame exists and remove it

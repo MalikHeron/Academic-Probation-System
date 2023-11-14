@@ -86,6 +86,20 @@ def button_config(frame, tree, add, update, remove, back):
     remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
     back_button = tk.Button(frame, text="Back", command=back)
 
+    # Initially disable the update button
+    update_button.config(state='disabled')
+
+    def on_tree_select(event):
+        # Enable the update button when an item is selected
+        selected = tree.selection()
+        if selected:
+            update_button.config(state='normal')
+        else:
+            update_button.config(state='disabled')
+
+    # Bind the function to the tree's selection event
+    tree.bind('<<TreeviewSelect>>', on_tree_select)
+
     button_width = 100  # width of the buttons
     button_spacing = 40  # space between the buttons
     total_width = 4 * button_width + 2 * button_spacing  # total width of all buttons and spaces
@@ -98,6 +112,7 @@ def button_config(frame, tree, add, update, remove, back):
                         width=button_width)
     back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 3 * (button_width + button_spacing), anchor='s',
                       width=button_width)
+
 
 def create_label_and_field(frame, text, row, padx=5, pady=20, f_width=25, l_width=11):
     tk.Label(frame, text=text, width=l_width, anchor="w", font=("Helvetica", 12)).grid(row=row, column=0, padx=padx,

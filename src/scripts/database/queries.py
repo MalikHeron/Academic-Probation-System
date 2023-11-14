@@ -135,6 +135,18 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
+    def insert_module(self, data):
+        try:
+            c = self.conn.cursor()
+            c.execute(f"""INSERT INTO module_master VALUES ('{data[0]}', '{data[1]}', {data[2]})""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
     def update_record(self, data, table_name):
         try:
             c = self.conn.cursor()
@@ -150,19 +162,6 @@ class DatabaseManager:
                     WHERE student_id={data[0]} AND module_code='{data[1]}'""")
                 case _:
                     print("Record could not be updated.")
-
-            # Commit changes
-            self.conn.commit()
-            return True
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
-            return False
-
-
-    def insert_module(self, data):
-        try:
-            c = self.conn.cursor()
-            c.execute(f"""INSERT INTO module_master VALUES ('{data[0]}', '{data[1]}', {data[2]})""")
 
             # Commit changes
             self.conn.commit()
