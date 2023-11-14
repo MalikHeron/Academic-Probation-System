@@ -348,7 +348,7 @@ class MainMenu(tk.Frame):
         x_padding, y_padding, f_width, l_width = 5, 20, 20, 11
 
         # Labels
-        tk.Label(self.add_details_frame, text="Add Details",
+        tk.Label(self.add_details_frame, text="Update Details",
                  font=("Helvetica", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
         # ID number label and field
