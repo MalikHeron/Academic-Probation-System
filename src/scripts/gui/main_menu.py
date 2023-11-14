@@ -142,11 +142,11 @@ class MainMenu(tk.Frame):
         self.record_count_label.pack(pady=5)
 
         # Define columns
-        columns = ("Student ID", "Module Code", "Grade Point", "Semester", "Year")
-        column_widths = [100, 200, 150, 150, 150]
+        columns = ("Student ID", "Module Code", "Grade Point Average", "Semester", "Year")
+        column_widths = [100, 200, 200, 150, 150]
 
         # Create Treeview
-        tree = create_treeview(self.details_frame, columns, column_widths, 115, data=data)
+        tree = create_treeview(self.details_frame, columns, column_widths, 90, data=data)
 
         # Button configurations
         button_config(self.details_frame, tree, self.add_details, self.update_details, self.remove_details,
@@ -279,7 +279,13 @@ class MainMenu(tk.Frame):
                  font=("Helvetica", 14, "bold")).grid(row=0, column=0, columnspan=2, pady=15)
 
         # ID number label and field
-        id_field = create_label_and_field(self.add_details_frame, "ID Number", 2, f_width=f_width)
+        tk.Label(self.add_details_frame, text="ID Number", width=l_width, anchor="w",
+                 font=("Helvetica", 12)).grid(row=2, column=0, padx=x_padding, pady=y_padding)
+        student_list = db_manager.get_students()
+        student_ids = [student[0] for student in student_list]  # Extract module codes
+        id_field = ttk.Combobox(self.add_details_frame, font=("Helvetica", 11), state="readonly",
+                                values=student_ids, width=f_width)
+        id_field.grid(row=2, column=1)
 
         # Module label and field
         tk.Label(self.add_details_frame, text="Module", width=l_width, anchor="w",
@@ -511,11 +517,14 @@ class MainMenu(tk.Frame):
                 field.delete(0, tk.END)
             elif isinstance(field, tk.StringVar):
                 field.set("")
+            elif isinstance(field, tk.Spinbox):
+                field.delete(0, tk.END)
+                field.insert(0, "2016")
 
     @staticmethod
     def add_to_db(add_record, data, success_message, error_message):
         # Insert the record into the database
-        success = add_record(data)
+        success = add_record(*data)
         if success:
             # Display a success message
             messagebox.showinfo("Success", success_message)

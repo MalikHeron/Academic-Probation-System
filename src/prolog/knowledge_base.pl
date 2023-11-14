@@ -11,26 +11,26 @@ default_gpa(2.2).
 % student(Id, Name, Email, School, Programme).
 
 % Fact for module
-% module(Module, Name, Credits).
+% module(ModuleCode, Name, Credits).
 
 % Fact for module_details
-% module_details(Id, Module, GradePoint, Semester, Year).
+% module_details(Id, ModuleCode, GradePoint, Semester, Year).
 
 % Calculate grade points earned for a module
 grade_points_earned(StudentID, Semester, Year, GradePointsEarned) :-
     % Retrieve the details of each module taken by the student in the given semester
-    module_details(StudentID, Module, GradePoint, Semester, Year),
+    module_details(StudentID, ModuleCode, GradePoint, Semester, Year),
     % Retrieve the credits for each module
-    module(Module, _, Credits),
+    module(ModuleCode, _, Credits),
     % Calculate the grade points earned for each module (credits * grade point)
     GradePointsEarned is Credits * GradePoint.
 
 % Retrieve credits for a module
 module_credits(StudentID, Semester, Year, Credits) :-
     % Retrieve the details of each module taken by the student in the given semester
-    module_details(StudentID, Module, _, Semester, Year),
+    module_details(StudentID, ModuleCode, _, Semester, Year),
     % Retrieve the credits for each module
-    module(Module, _, Credits).
+    module(ModuleCode, _, Credits).
 
 % Calculates the GPA for a given student ID and semester
 gpa(StudentID, Name, Semester, Year, GPA) :-
