@@ -109,11 +109,9 @@ class DatabaseManager:
             return False
 
     def insert_detail(self, id_number, module, gpa, semester, year):
-        sql_insert_detail = f"""INSERT INTO module_details(student_id, module_code, grade_points, semester, year) VALUES 
-                                ({id_number}, '{module}', {gpa}, {semester}, {year});"""
         try:
             c = self.conn.cursor()
-            c.execute(sql_insert_detail)
+            c.execute(f"""INSERT INTO module_details VALUES ({id_number}, '{module}', {gpa}, {semester}, {year})""")
 
             # Commit changes
             self.conn.commit()
@@ -122,11 +120,11 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_student(self, data):
+    def insert_student(self, student_id, name, email, school, programme):
         try:
             c = self.conn.cursor()
-            c.execute(f"""INSERT INTO student_master VALUES ({data[0]}, '{data[1]}', '{data[2]}', '{data[3]}', 
-            '{data[4]}')""")
+            c.execute(f"""INSERT INTO student_master VALUES ({student_id}, '{name}', '{email}', '{school}', '{programme}
+            ')""")
 
             # Commit changes
             self.conn.commit()
@@ -135,10 +133,10 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_module(self, data):
+    def insert_module(self, mod_code, mod_name, credit):
         try:
             c = self.conn.cursor()
-            c.execute(f"""INSERT INTO module_master VALUES ('{data[0]}', '{data[1]}', {data[2]})""")
+            c.execute(f"""INSERT INTO module_master VALUES ('{mod_code}', '{mod_name}', {credit})""")
 
             # Commit changes
             self.conn.commit()

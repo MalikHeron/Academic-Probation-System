@@ -550,8 +550,10 @@ class MainMenu(tk.Frame):
                        "Student record added successfully.",
                        "Failed to add student record.")
 
-    def add_detail_to_db(self, id_number, module, gpa, semester, year):
-        self.add_to_db(db_manager.insert_detail, (id_number, module, gpa, semester, year),
+    def add_detail_to_db(self, validated_fields):
+        self.add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module Code"],
+                                                  validated_fields["GPA"], validated_fields["Semester"],
+                                                  validated_fields["Year"]),
                        "Detail record added successfully.",
                        "Failed to add detail record.")
 
