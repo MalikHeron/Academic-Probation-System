@@ -202,7 +202,13 @@ class DatabaseManager:
     def insert_detail(self, id_number, module, gpa, semester, year):
         try:
             c = self.conn.cursor()
-            c.execute(f"""INSERT INTO module_details VALUES ({id_number}, '{module}', {gpa}, {semester}, {year})""")
+            # Get module code
+            c.execute(f"""SELECT code FROM module_master WHERE name = '{module}'""")
+            module_code = c.fetchone()[0]
+
+            # Insert details
+            c.execute(
+                f"""INSERT INTO module_details VALUES ({id_number}, '{module_code}', {gpa}, {semester}, {year})""")
 
             # Commit changes
             self.conn.commit()
@@ -245,13 +251,14 @@ class DatabaseManager:
     def update_record(self, data, table_name):
         try:
             c = self.conn.cursor()
-            # Get school, programme and advisor
-            school = self.get_school(data[3])
-            programme = self.get_programme(data[4])
-            advisor = self.get_advisor(data[5])
 
             match table_name:
                 case "student":
+                    # Get school, programme and advisor
+                    school = self.get_school(data[3])
+                    programme = self.get_programme(data[4])
+                    advisor = self.get_advisor(data[5])
+
                     c.execute(
                         f"""UPDATE student_master SET name='{data[1]}', email='{data[2]}', school_code='{school[0]}', 
                     programme_code='{programme[0]}', advisor_id={advisor[0]} WHERE id={data[0]}""")
@@ -259,8 +266,12 @@ class DatabaseManager:
                     c.execute(f"""UPDATE module_master SET name='{data[1]}', credits={data[2]} 
                     WHERE code='{data[0]}'""")
                 case "details":
+                    # Get module code
+                    c.execute(f"""SELECT * FROM module_master WHERE name = '{data[1]}'""")
+                    module_code = c.fetchone()[0]
+
                     c.execute(f"""UPDATE module_details SET grade_points={data[2]}, semester={data[3]}, year={data[4]}
-                    WHERE student_id={data[0]} AND module_code='{data[1]}'""")
+                    WHERE student_id={data[0]} AND module_code='{module_code}'""")
                 case _:
                     print("Record could not be updated.")
 

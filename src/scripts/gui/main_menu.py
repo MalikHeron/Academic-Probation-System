@@ -481,7 +481,7 @@ class MainMenu(tk.Frame):
                        "Failed to add student record.")
 
     def add_detail_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module Code"],
+        self.add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module"],
                                                   validated_fields["GPA"], validated_fields["Semester"],
                                                   validated_fields["Year"]),
                        "Detail record added successfully.",
@@ -504,7 +504,7 @@ class MainMenu(tk.Frame):
         self.close_view()
 
     def update_detail_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["ID"], validated_fields["Module Name"],
+        self.update_in_db((validated_fields["ID"], validated_fields["Module"],
                            validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
                           "details",
                           "Module detail record updated successfully.",
@@ -568,7 +568,6 @@ class MainMenu(tk.Frame):
             if selected_item:
                 tree.delete(selected_item)
             else:
-
                 # If no item was selected, find and delete the item from the tree
                 for item in tree.get_children():
                     # Get the first value of the item
@@ -610,7 +609,7 @@ class MainMenu(tk.Frame):
 
     def remove_details(self, tree):
         self.remove_item(tree, db_manager.remove_details, "Input", "Enter values for the fields.", self.details_frame,
-                         ["Student ID", "Module Code", "Semester"])
+                         ["Student ID", "Module Name", "Semester"])
 
     def validate(self, fields, submit_func):
         validated_fields = {}  # Store the validated fields
