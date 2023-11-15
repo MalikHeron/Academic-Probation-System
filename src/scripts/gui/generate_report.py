@@ -175,11 +175,11 @@ class GenerateReportFrame:
             # Label
             self.alert_var.set(f"Sending alerts")
             self.alert_label = tk.Label(self.report_frame, textvariable=self.alert_var)
-            self.alert_label.place(relx=0.15, rely=0.96, anchor='s')
+            self.alert_label.place(relx=0.25, rely=0.97, anchor='s')
 
             # Progress bar
             self.progressbar = Progressbar(self.report_frame, mode='indeterminate')
-            self.progressbar.place(relx=0.3, rely=0.96, anchor='s')
+            self.progressbar.place(relx=0.35, rely=0.97, anchor='s')
             self.progressbar.start(3)
 
         # Specify the directory where the report will be saved

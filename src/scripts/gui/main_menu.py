@@ -293,17 +293,18 @@ class MainMenu(tk.Frame):
             id_field = ttk.Combobox(self.add_details_frame, font=("Helvetica", 11), state="readonly",
                                     values=student_ids, width=f_width)
             id_field.grid(row=2, column=1)
+
+            # Module label and field
+            tk.Label(self.add_details_frame, text="Module", width=l_width, anchor="w",
+                     font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding, pady=y_padding)
+            module_list = db_manager.get_modules()
+            module_names = [module[1] for module in module_list]  # Extract module names
+            module_field = ttk.Combobox(self.add_details_frame, font=("Helvetica", 11), state="readonly",
+                                        values=module_names, width=f_width)
+            module_field.grid(row=3, column=1)
         else:
             id_field = create_label_and_field(self.add_details_frame, "ID Number", 2, f_width=f_width)
-
-        # Module label and field
-        tk.Label(self.add_details_frame, text="Module", width=l_width, anchor="w",
-                 font=("Helvetica", 12)).grid(row=3, column=0, padx=x_padding, pady=y_padding)
-        module_list = db_manager.get_modules()
-        module_names = [module[1] for module in module_list]  # Extract module names
-        module_field = ttk.Combobox(self.add_details_frame, font=("Helvetica", 11), state="readonly",
-                                    values=module_names, width=f_width)
-        module_field.grid(row=3, column=1)
+            module_field = create_label_and_field(self.add_details_frame, "Module", 3, f_width=f_width)
 
         # Grade Point label and field
         gpa_field = create_label_and_field(self.add_details_frame, "GPA", 4, f_width=f_width)
@@ -363,7 +364,8 @@ class MainMenu(tk.Frame):
         # Populate fields
         id_field.insert(0, str(tree.item(selected_item)["values"][0]).strip())
         id_field.configure(state="disabled")
-        module_field.set(str(tree.item(selected_item)["values"][1]).strip())
+        module_field.insert(0, str(tree.item(selected_item)["values"][1]).strip())
+        module_field.configure(state="disabled")
         gpa_field.insert(0, str(tree.item(selected_item)["values"][2]).strip())
         semester_field.set(str(tree.item(selected_item)["values"][3]).strip())
         year_var.set(str(tree.item(selected_item)["values"][4]).strip())
