@@ -285,6 +285,14 @@ class DatabaseManager:
     def remove_student(self, student_id):
         try:
             c = self.conn.cursor()
+
+            # Check if the student exists
+            c.execute(f"""SELECT * FROM student_master WHERE id = {student_id}""")
+            if c.fetchone() is None:
+                logging.error(f"Student with id {student_id} doesn't exist.")
+                return False
+
+            # Delete record
             c.execute(f"""DELETE FROM student_master WHERE id = {student_id}""")
             c.execute(f"""DELETE FROM module_details WHERE student_id = '{student_id}'""")
 
@@ -298,6 +306,13 @@ class DatabaseManager:
     def remove_module(self, module_code):
         try:
             c = self.conn.cursor()
+            # Check if the module exists
+            c.execute(f"""SELECT * FROM module_master WHERE code = {module_code}""")
+            if c.fetchone() is None:
+                logging.error(f"Module with code {module_code} doesn't exist.")
+                return False
+
+            # Delete record
             c.execute(f"""DELETE FROM module_master WHERE code = '{module_code}'""")
             c.execute(f"""DELETE FROM module_details WHERE module_code = '{module_code}'""")
 
@@ -309,11 +324,21 @@ class DatabaseManager:
             return False
 
     def remove_details(self, student_id, module_code, semester):
-        sql_remove_student = f"""DELETE FROM module_details WHERE student_id = {student_id} 
-                            AND module_code = '{module_code}' AND semester = {semester}"""
         try:
             c = self.conn.cursor()
-            c.execute(sql_remove_student)
+
+            # Check if the module exists
+            c.execute(f"""SELECT * FROM module_details WHERE student_id = {student_id} 
+                            AND module_code = '{module_code}' AND semester = {semester}""")
+            if c.fetchone() is None:
+                logging.error(
+                    f"Record with student id [{student_id}], module code [{module_code}] "
+                    f"and semester [{semester}] doesn't exist.")
+                return False
+
+            # Delete record
+            c.execute(f"""DELETE FROM module_details WHERE student_id = {student_id} 
+                            AND module_code = '{module_code}' AND semester = {semester}""")
 
             # Commit changes
             self.conn.commit()
