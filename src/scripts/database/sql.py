@@ -3,8 +3,12 @@ sql_create_students_table = """CREATE TABLE IF NOT EXISTS student_master (
                                     id integer PRIMARY KEY,
                                     name text NOT NULL,
                                     email text NOT NULL,
-                                    school text NOT NULL,
-                                    programme text NOT NULL
+                                    school_code text NOT NULL,
+                                    programme_code text NOT NULL,
+                                    advisor_id integer NOT NULL,
+                                    FOREIGN KEY (school_code) REFERENCES school (school_code),
+                                    FOREIGN KEY (programme_code) REFERENCES programme (programme_code),
+                                    FOREIGN KEY (advisor_id) REFERENCES staff (staff_id)
                                 );"""
 
 sql_create_modules_table = """CREATE TABLE IF NOT EXISTS module_master (
@@ -23,46 +27,143 @@ sql_create_details_table = """CREATE TABLE IF NOT EXISTS module_details (
                                 FOREIGN KEY (module_code) REFERENCES module_master (code)
                             );"""
 
+sql_create_programmes_table = """CREATE TABLE IF NOT EXISTS programme (
+                                programme_code text PRIMARY KEY,
+                                school_code text NOT NULL,
+                                director_id integer NOT NULL,
+                                programme_name text NOT NULL,
+                                FOREIGN KEY (school_code) REFERENCES school (school_code),
+                                FOREIGN KEY (director_id) REFERENCES staff (staff_id)
+                            );"""
+
+sql_create_school_table = """CREATE TABLE IF NOT EXISTS school (
+                                school_code text PRIMARY KEY,
+                                faculty_code text NOT NULL,
+                                school_name text NOT NULL,
+                                FOREIGN KEY (faculty_code) REFERENCES faculty (faculty_code)
+                            );"""
+
+sql_create_faculty_table = """CREATE TABLE IF NOT EXISTS faculty (
+                                faculty_code text PRIMARY KEY,
+                                admin_id integer NOT NULL,
+                                faculty_name text NOT NULL
+                            );"""
+
+sql_create_staff_table = """CREATE TABLE IF NOT EXISTS staff (
+                                staff_id integer NOT NULL,
+                                name text NOT NULL,
+                                email text NOT NULL,
+                                position text NOT NULL
+                            );"""
+
 sql_create_unique_index = """CREATE UNIQUE INDEX idx_module_details_unique ON 
                         module_details(student_id, module_code, semester, year
                         );"""
 
+# Inserting data into faculty
+sql_insert_faculty = """INSERT OR IGNORE INTO faculty (faculty_code, admin_id, faculty_name) VALUES
+('FENC', 18, 'Faculty of Engineering and Computing'),
+('FELS', 18, 'Faculty of Education and Liberal Studies'),
+('COBAM', 19, 'College of Business Administration and Management'),
+('FOSS', 21, 'Faculty of Science and Sport'),
+('COHS', 22, 'College of Heath Sciences');"""
+
+# Inserting data into school
+sql_insert_schools = """INSERT OR IGNORE INTO school (school_code, faculty_code, school_name) VALUES
+('SCIT', 'FENC', 'School of Computing and Information Technology'),
+('SOE', 'FENC', 'School of Engineering'),
+('SOBA', 'COBAM', 'School of Business and Management'),
+('CSN', 'COHS', 'Caribbean School of Nursing'),
+('SOMAS', 'FOSS', 'School of Mathematics & Statistics'),
+('SONAS', 'FOSS', 'School of Natural & Applied Sciences'),
+('CSSS', 'FOSS', 'Caribbean School of Sport Sciences');"""
+
+# Inserting data into programmes
+sql_insert_programmes = """INSERT OR IGNORE INTO programme (programme_code, school_code, director_id, programme_name) 
+VALUES
+('CS', 'SCIT', 1, 'Computing'),
+('CNS', 'SCIT', 2, 'Computer Network and Security'),
+('CIS', 'SCIT', 3, 'Computer Information Systems'),
+('APD', 'SCIT', 4, 'Animation Production and Development'),
+('CE', 'SOE', 5, 'Civil Engineering'),
+('ME', 'SOE', 6, 'Mechanical Engineering'),
+('CHE', 'SOE', 7, 'Chemical Engineering'),
+('NS', 'CSN', 8, 'Nursing'),
+('MW', 'CSN', 9, 'Midwifery'),
+('AS', 'SOMAS', 10, 'Actuarial Science'),
+('ES', 'SONAS', 11, 'Environmental Science'),
+('FC', 'SONAS', 12, 'Forensic Chemistry'),
+('SM', 'CSSS', 13, 'Sport Management'),
+('ASC', 'CSSS', 14, 'Art and Science of Coaching'),
+('HRM', 'SOBA', 15, 'Human Resource Management'),
+('ACC', 'SOBA', 16, 'Accounting');"""
+
+# Inserting data into staff
+sql_insert_staff = """INSERT OR IGNORE INTO staff (staff_id, name, email, position) VALUES
+(1, 'Alex Doe', 'alexdoe@gmail.com', 'Director'),
+(2, 'John Smith', 'johnsmith@gmail.com', 'Director'),
+(3, 'Robert Johnson', 'robertjohnson@gmail.com', 'Director'),
+(4, 'Emily Davis', 'emilydavis@gmail.com', 'Director'),
+(5, 'Daniel Miller', 'danielmiller@gmail.com', 'Director'),
+(6, 'Jessica Taylor', 'jessicataylor@gmail.com', 'Director'),
+(7, 'Michael Brown', 'michaelbrown@gmail.com', 'Director'),
+(8, 'Sarah White', 'sarahwhite@gmail.com', 'Director'),
+(9, 'David Anderson', 'davidanderson@gmail.com', 'Director'),
+(10, 'Emma Thomas', 'emmathomas@gmail.com', 'Director'),
+(11, 'William Jackson', 'williamjackson@hotmail.com', 'Director'),
+(12, 'Olivia Martin', 'oliviamartin@yahoo.com', 'Director'),
+(13, 'James Thompson', 'jamesthompson@yahoo.com', 'Director'),
+(14, 'Sophia Garcia', 'sophiagarcia@yahoo.com', 'Director'),
+(15, 'Benjamin Martinez', 'benjaminmartinez@yahoo.com', 'Director'),
+(16, 'Isabella Robinson', 'isabellarobinson@yahoo.com', 'Director'),
+(17, 'John Bartley', 'johnbartley@gmail.com', 'Director'),
+(18, 'Jane White', 'janeswhite@gmail.com', 'Administrator'),
+(19, 'Robert McCarthy', 'robertmccarthy@gmail.com', 'Administrator'),
+(20, 'Emily Williams', 'emilywilliams@gmail.com', 'Administrator'),
+(21, 'Daniel Grant', 'danielgrant@gmail.com', 'Administrator'),
+(22, 'Jessica Gilpin', 'jessicgilpin@hotmail.com', 'Administrator'),
+(23, 'Michael Horne', 'michaelhorne@hotmail.com', 'Advisor'),
+(24, 'Sarah Heron', 'sarahheron@hotmail.com', 'Advisor'),
+(25, 'David Thomas', 'davidthomas@hotmail.com', 'Advisor'),
+(26, 'Emma Pitterson', 'emmapitterson@hotmail.com', 'Advisor');"""
+
 # Inserting data into student_master
-sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, school, programme) VALUES
-(1, 'John Doe', 'johndoe@gmail.com', 'School of Computing', 'Computer Science'),
-(2, 'Jane Smith', 'janesmith@gmail.com', 'School of Business', 'Business Administration'),
-(3, 'Robert Johnson', 'robertjohnson@gmail.com', 'School of Arts', 'Fine Arts'),
-(4, 'Michael Williams', 'michaelwilliams@gmail.com', 'School of Engineering', 'Mechanical Engineering'),
-(5, 'Sarah Brown', 'sarahbrown@gmail.com', 'School of Science', 'Biology'),
-(6, 'David Jones', 'davidjones@gmail.com', 'School of Computing', 'Information Systems'),
-(7, 'Emily Davis', 'emilydavis@gmail.com', 'School of Business', 'Accounting'),
-(8, 'James Miller', 'jamesmiller@gmail.com', 'School of Arts', 'Music'),
-(9, 'Jessica Wilson', 'jessicawilson@gmail.com', 'School of Engineering', 'Civil Engineering'),
-(10, 'Thomas Moore', 'thomasmoore@gmail.com', 'School of Science', 'Physics'),
-(11, 'Alice Johnson', 'alice.johnson@yahoo.com', 'School of Computing', 'Computer Science'),
-(12, 'Bob Smith', 'bob.smith@yahoo.com', 'School of Physics', 'Physics'),
-(13, 'Charlie Brown', 'charlie.brown@yahoo.com', 'School of Mathematics', 'Mathematics'),
-(14, 'David Williams', 'david.williams@yahoo.com', 'School of Chemistry', 'Chemistry'),
-(15, 'Eva Davis', 'eva.davis@yahoo.com', 'School of Biology', 'Biology'),
-(16, 'Frank Miller', 'frank.miller@yahoo.com', 'School of Economics', 'Economics'),
-(17, 'Grace Wilson', 'grace.wilson@yahoo.com', 'School of History', 'History'),
-(18, 'Harry Moore', 'harry.moore@yahoo.com', 'School of Philosophy', 'Philosophy'),
-(19, 'Ivy Taylor', 'ivy.taylor@yahoo.com', 'School of Sociology', 'Sociology'),
-(20, 'Jack Anderson', 'jack.anderson@yahoo.com', 'School of Political Science', 'Political Science'),
-(21, 'Kathy Thomas', 'kathy.thomas@hotmail.com', 'School of English Literature', 'English Literature'),
-(22, 'Larry Jackson', 'larry.jackson@hotmail.com', 'School of Psychology', 'Psychology'),
-(23, 'Mia White', 'mia.white@hotmail.com', 'School of Anthropology', 'Anthropology'),
-(24, 'Nick Harris', 'nick.harris@hotmail.com', 'School of Astronomy', 'Astronomy'),
-(25, 'Olivia Martin', 'olivia.martin@hotmail.com', 'School of Geography', 'Geography'),
-(26, 'Peter Thompson', 'peter.thompson@hotmail.com', 'School of Archaeology', 'Archaeology'),
-(27, 'Quincy Allen', 'quincy.allen@hotmail.com', 'School of Music', 'Music'),
-(28, 'Rita Clark', 'rita.clark@hotmail.com', 'School of Drama', 'Drama'),
-(29, 'Sam King', 'sam.king@hotmail.com', 'School of Art History', 'Art History'),
-(30, 'Tina Wright', 'tina.wright@hotmail.com', 'School of Modern Languages', 'Modern Languages');"""
+sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, school_code, programme_code, advisor_id)
+VALUES
+(1, 'John Doe', 'johndoe@gmail.com', 'SCIT', 'CS', 23),
+(2, 'Jane Smith', 'janesmith@gmail.com', 'SCIT', 'CNS', 24),
+(3, 'Robert Johnson', 'robertjohnson@gmail.com', 'SCIT', 'CIS', 25),
+(4, 'Michael Williams', 'michaelwilliams@gmail.com', 'SCIT', 'APD', 26),
+(5, 'Sarah Brown', 'sarahbrown@gmail.com', 'SOE', 'CE', 23),
+(6, 'David Jones', 'davidjones@gmail.com', 'SOE', 'ME', 24),
+(7, 'Emily Davis', 'emilydavis@gmail.com', 'SOE', 'CHE', 25),
+(8, 'James Miller', 'jamesmiller@gmail.com', 'CSN', 'NS', 26),
+(9, 'Jessica Wilson', 'jessicawilson@gmail.com', 'CSN', 'MW', 23),
+(10, 'Thomas Moore', 'thomasmoore@gmail.com', 'SOMAS', 'AS', 24),
+(11, 'Alice Johnson', 'alice.johnson@yahoo.com', 'SONAS', 'ES', 25),
+(12, 'Bob Smith', 'bob.smith@yahoo.com', 'SONAS', 'FC', 26),
+(13, 'Charlie Brown', 'charlie.brown@yahoo.com', 'CSSS', 'SM', 23),
+(14, 'David Williams', 'david.williams@yahoo.com', 'CSSS', 'ASC', 24),
+(15, 'Eva Davis', 'eva.davis@yahoo.com', 'SOBA', 'HRM', 25),
+(16, 'Frank Miller', 'frank.miller@yahoo.com', 'SOBA', 'ACC', 26),
+(17, 'Grace Wilson', 'grace.wilson@yahoo.com', 'SOMAS', 'AS', 23),
+(18, 'Harry Moore', 'harry.moore@yahoo.com', 'SOBA', 'HRM', 24),
+(19, 'Ivy Taylor', 'ivy.taylor@yahoo.com', 'SOMAS', 'AS', 25),
+(20, 'Jack Anderson', 'jack.anderson@yahoo.com', 'CSN', 'MW', 26),
+(21, 'Kathy Thomas', 'kathy.thomas@hotmail.com', 'SOE', 'ME', 23),
+(22, 'Larry Jackson', 'larry.jackson@hotmail.com', 'SOMAS', 'AS', 24),
+(23, 'Mia White', 'mia.white@hotmail.com', 'SOE', 'CE', 25),
+(24, 'Nick Harris', 'nick.harris@hotmail.com', 'SCIT', 'CS', 26),
+(25, 'Olivia Martin', 'olivia.martin@hotmail.com', 'SCIT', 'CS', 23),
+(26, 'Peter Thompson', 'peter.thompson@hotmail.com', 'SONAS', 'FC', 24),
+(27, 'Quincy Allen', 'quincy.allen@hotmail.com', 'CSN', 'NS', 25),
+(28, 'Rita Clark', 'rita.clark@hotmail.com', 'SOE', 'CHE', 26),
+(29, 'Sam King', 'sam.king@hotmail.com', 'SCIT', 'CIS', 23),
+(30, 'Tina Wright', 'tina.wright@hotmail.com', 'SCIT', 'APD', 24);"""
 
 # Inserting data into module_master
 sql_insert_modules = """INSERT OR IGNORE INTO module_master(code, name, credits) VALUES
-('CS101', 'Computer Science', 3),
+('CS101', 'Computer Security', 3),
 ('BA101', 'Business Administration', 3),
 ('FA101', 'Fine Arts', 4),
 ('ME101', 'Mechanical Engineering', 4),

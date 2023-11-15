@@ -25,7 +25,7 @@ class AcademicProbationSystem:
 
     def setup_window(self):
         # Set window size
-        self.window_width = 1000
+        self.window_width = 1300
         self.window_height = 600
 
         # Get screen width and height
@@ -41,8 +41,8 @@ class AcademicProbationSystem:
         self.window.resizable(False, False)
 
         # Make the columns equal width
-        self.window.columnconfigure(0, weight=1, minsize=500)
-        self.window.columnconfigure(1, weight=1, minsize=500)
+        self.window.columnconfigure(0, weight=1, minsize=650)
+        self.window.columnconfigure(1, weight=1, minsize=650)
 
         # window close event
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -61,15 +61,15 @@ class AcademicProbationSystem:
         frame2.grid(row=0, column=1, sticky="ew")
 
         # background image
-        img = Image.open("../../res/background.png").resize((500, 600))
+        img = Image.open("../../res/background.png").resize((650, 600))
         background_image = ImageTk.PhotoImage(img)
 
-        background = tk.Label(frame1, image=background_image, width=500, height=600)
+        background = tk.Label(frame1, image=background_image, width=650, height=600)
         background.image = background_image
         background.pack(fill=tk.BOTH, expand=True)
 
-        content = tk.Frame(background, background='', width=500, height=600)
-        content.place(x=0, y=0, width=500, height=600)
+        content = tk.Frame(background, background='', width=650, height=600)
+        content.place(x=0, y=0, width=650, height=600)
 
         logo_image = ImageTk.PhotoImage(Image.open("../../res/logo.png").resize((150, 200)))
         logo_label = ttk.Label(content, image=logo_image, background="")

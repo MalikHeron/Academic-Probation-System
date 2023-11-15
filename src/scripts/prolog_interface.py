@@ -11,6 +11,8 @@ if not os.path.exists("../../logs"):
     os.makedirs("../../logs")  # Create a logs directory
 if not os.path.exists("../../data"):
     os.makedirs("../../data")  # Create a data directory
+if not os.path.exists("../../reports"):
+    os.makedirs("../../reports")  # Create a reports directory
 
 # Configure the logging module
 logging.basicConfig(filename='../../logs/app.log', filemode='w',
@@ -32,7 +34,6 @@ class PrologQueryHandler:
             if result is None:
                 return None
             else:
-                logging.info(result)  # Log the result
                 return result
         except Exception as e:
             logging.error(f"An error occurred: {e}")  # Log the error
@@ -45,7 +46,6 @@ class PrologQueryHandler:
             if result is None:
                 return None
             else:
-                logging.info(result)  # Log the result
                 return result[0]['GPA']
         except Exception as e:
             logging.error(f"An error occurred: {e}")  # Log the error

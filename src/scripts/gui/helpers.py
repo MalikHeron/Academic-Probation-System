@@ -1,5 +1,59 @@
+import os
 import tkinter as tk
+from datetime import datetime
 from tkinter import ttk
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+
+
+def create_pdf(data, year, gpa, directory):
+    # Get the current date and time
+    now = datetime.now()
+    # Format the date and time as a string
+    now_str = now.strftime("%Y-%m-%d_%H-%M-%S")
+    # Append the date and time to the report name
+    report_name = f"Report_{now_str}.pdf"
+    # Combine the directory and the report name
+    path = os.path.join(directory, report_name)
+
+    pdf = SimpleDocTemplate(path, pagesize=letter)
+    styles = getSampleStyleSheet()
+
+    # Add headers
+    elems = [Paragraph("University of Technology", styles['Title']),
+             Paragraph("<para align=center>Academic Probation Alert GPA Report</para>", styles['Normal']),
+             Paragraph(f"<para align=center>Year: {year}</para>", styles['Normal']),
+             Paragraph(f"<para align=center>GPA: {gpa}</para>", styles['Normal']), Spacer(1, 20)]
+
+    # Create table
+    table = Table(data)
+
+    # Add a table style
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ])
+    table.setStyle(style)
+
+    # Add the table to the elements to be added to the PDF
+    elems.append(table)
+
+    # Build the PDF
+    pdf.build(elems)
+
+    # Return the report name
+    return path
 
 
 def sort_column(tree, col, reverse):
@@ -70,7 +124,7 @@ def create_treeview(frame, columns, column_widths, pad, height=23, data=None):
 def create_button(frame, text, command, bg_color='#61CBEC', fg_color='#000000', font=('Arial', 12, 'normal')):
     button = tk.Button(frame, text=text, command=command)
     button.configure(background=bg_color, foreground=fg_color, font=font, relief='groove')
-    button.pack(padx=40, pady=5, fill='x', expand=True)
+    button.pack(padx=100, pady=5, fill='x', expand=True)
     return button
 
 
@@ -78,6 +132,18 @@ def create_button_widget(frame, text, command, padx=5, pady=20, width=10):
     button = tk.Button(frame, text=text, font=("Helvetica", 12), width=width, command=command)
     button.pack(side="left", padx=padx, pady=pady, anchor='center')
     return button
+
+
+def create_buttons(frame, fields, row, submit_action, clear_fields, close_view, x_padding=5, y_padding=20):
+    # Submit and Cancel buttons
+    button_frame = tk.Frame(frame)
+    button_frame.grid(row=row, column=0, columnspan=3, padx=x_padding, pady=y_padding)
+
+    create_button_widget(button_frame, "Submit", submit_action)
+
+    create_button_widget(button_frame, "Clear", lambda: clear_fields(*fields))
+
+    create_button_widget(button_frame, "Back", lambda: close_view())
 
 
 def button_config(frame, tree, add, update, remove, back):

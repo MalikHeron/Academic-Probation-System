@@ -11,7 +11,7 @@ def create_connection(db_file):
     try:
         connection = sqlite3.connect(db_file)
     except Error as e:
-        print(e)
+        logging.error(f"An error occurred: {e}")
     return connection
 
 
@@ -28,6 +28,10 @@ class DatabaseManager:
         self.create_table(sql_create_students_table)
         self.create_table(sql_create_modules_table)
         self.create_table(sql_create_details_table)
+        self.create_table(sql_create_staff_table)
+        self.create_table(sql_create_faculty_table)
+        self.create_table(sql_create_programmes_table)
+        self.create_table(sql_create_school_table)
 
         # Check if database is empty
         if not self.get_students() and not self.get_modules() and not self.get_details():
@@ -35,6 +39,10 @@ class DatabaseManager:
             self.insert_data(sql_insert_students)
             self.insert_data(sql_insert_modules)
             self.insert_data(sql_insert_details)
+            self.insert_data(sql_insert_staff)
+            self.insert_data(sql_insert_faculty)
+            self.insert_data(sql_insert_programmes)
+            self.insert_data(sql_insert_schools)
 
             # Commit changes
             self.conn.commit()
@@ -44,14 +52,14 @@ class DatabaseManager:
         try:
             connection = sqlite3.connect(self.db_file)
         except Error as e:
-            print(e)
+            logging.error(f"An error occurred: {e}")
         return connection
 
     def close_connection(self):
         try:
             self.conn.close()
         except Error as e:
-            print(e)
+            logging.error(f"An error occurred: {e}")
 
     def create_table(self, create_table_sql):
         try:
@@ -63,7 +71,7 @@ class DatabaseManager:
                 except Error as e:
                     logging.warning(e)
         except Error as e:
-            print(e)
+            logging.error(f"An error occurred: {e}")
 
     def insert_data(self, insert_data_sql):
         c = self.conn.cursor()
@@ -71,7 +79,14 @@ class DatabaseManager:
 
     def get_students(self):
         c = self.conn.cursor()
-        c.execute("""SELECT * FROM student_master""")
+        c.execute("""
+            SELECT id, student_master.name, student_master.email, school.school_name AS school_code, 
+            programme.programme_name AS programme_name, staff.name AS advisor_name 
+            FROM student_master 
+            JOIN school ON student_master.school_code = school.school_code
+            JOIN programme ON student_master.programme_code = programme.programme_code
+            JOIN staff ON student_master.advisor_id = staff.staff_id
+        """)
         return c.fetchall()
 
     def get_modules(self):
@@ -81,7 +96,24 @@ class DatabaseManager:
 
     def get_details(self):
         c = self.conn.cursor()
-        c.execute("""SELECT * FROM module_details""")
+        c.execute("""SELECT student_id, module_master.name AS module_name, grade_points, semester, year 
+            FROM module_details 
+            JOIN module_master ON module_details.module_code = module_master.code""")
+        return c.fetchall()
+
+    def get_schools(self):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM school""")
+        return c.fetchall()
+
+    def get_programmes(self, school_code):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM programme WHERE school_code = '{school_code}'""")
+        return c.fetchall()
+
+    def get_advisors(self):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM staff WHERE position = 'Advisor'""")
         return c.fetchall()
 
     def get_student(self, student_id):
@@ -93,6 +125,65 @@ class DatabaseManager:
         c = self.conn.cursor()
         c.execute(f"""SELECT * FROM module_master WHERE code = '{module_code}'""")
         Prolog.assert_module(c.fetchone())
+
+    def get_programme(self, programme_name):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM programme WHERE programme_name = '{programme_name}'""")
+        return c.fetchone()
+
+    def get_school(self, school_name):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM school WHERE school_name = '{school_name}'""")
+        return c.fetchone()
+
+    def get_advisor(self, advisor_name):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM staff WHERE name = '{advisor_name}'""")
+        return c.fetchone()
+
+    def get_student_advisor(self, student_id):
+        c = self.conn.cursor()
+        # Get advisor id
+        c.execute(f"""SELECT advisor_id FROM student_master WHERE id = {student_id}""")
+        advisor_id = c.fetchone()[0]
+
+        # Get advisor details
+        c.execute(f"""SELECT * FROM staff WHERE staff_id = {advisor_id}""")
+        return c.fetchone()
+
+    def get_programme_name(self, programme_code):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT programme_name FROM programme WHERE programme_code = '{programme_code}'""")
+        return c.fetchone()[0]
+
+    def get_programme_director(self, programme_code):
+        c = self.conn.cursor()
+        # Get director id
+        c.execute(f"""SELECT director_id FROM programme WHERE programme_code = '{programme_code}'""")
+        director_id = c.fetchone()[0]
+
+        # Get director details
+        c.execute(f"""SELECT * FROM staff WHERE staff_id = {director_id}""")
+        return c.fetchone()
+
+    def get_school_name(self, school_code):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT school_name FROM school WHERE school_code = '{school_code}'""")
+        return c.fetchone()[0]
+
+    def get_school_administrator(self, school_code):
+        c = self.conn.cursor()
+        # Get faculty code
+        c.execute(f"""SELECT faculty_code FROM school WHERE school_code = '{school_code}'""")
+        faculty_code = c.fetchone()[0]
+
+        # Get administrator id
+        c.execute(f"""SELECT admin_id FROM faculty WHERE faculty_code = '{faculty_code}'""")
+        admin_id = c.fetchone()[0]
+
+        # Get administrator details
+        c.execute(f"""SELECT * FROM staff WHERE staff_id = {admin_id}""")
+        return c.fetchone()
 
     def update_knowledge_base(self, year):
         try:
@@ -120,11 +211,17 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_student(self, student_id, name, email, school, programme):
+    def insert_student(self, student_id, name, email, school_name, programme_name, advisor_name):
         try:
             c = self.conn.cursor()
-            c.execute(f"""INSERT INTO student_master VALUES ({student_id}, '{name}', '{email}', '{school}', '{programme}
-            ')""")
+            # Get school, programme and advisor
+            school = self.get_school(school_name)
+            programme = self.get_programme(programme_name)
+            advisor = self.get_advisor(advisor_name)
+
+            c.execute(
+                f"""INSERT INTO student_master VALUES ({student_id}, '{name}', '{email}', 
+                '{school[0]}', '{programme[0]}', {advisor[0]})""")
 
             # Commit changes
             self.conn.commit()
@@ -148,10 +245,16 @@ class DatabaseManager:
     def update_record(self, data, table_name):
         try:
             c = self.conn.cursor()
+            # Get school, programme and advisor
+            school = self.get_school(data[3])
+            programme = self.get_programme(data[4])
+            advisor = self.get_advisor(data[5])
+
             match table_name:
                 case "student":
-                    c.execute(f"""UPDATE student_master SET name='{data[1]}', email='{data[2]}', school='{data[3]}', 
-                    programme='{data[4]}' WHERE id={data[0]}""")
+                    c.execute(
+                        f"""UPDATE student_master SET name='{data[1]}', email='{data[2]}', school_code='{school[0]}', 
+                    programme_code='{programme[0]}', advisor_id={advisor[0]} WHERE id={data[0]}""")
                 case "module":
                     c.execute(f"""UPDATE module_master SET name='{data[1]}', credits={data[2]} 
                     WHERE code='{data[0]}'""")
