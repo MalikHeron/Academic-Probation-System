@@ -20,12 +20,15 @@ class AcademicProbationSystem:
         self.window_height = None
         self.window_width = None
         self.window = tk.Tk()
-        self.window.title('Academic Probation System')
         self.setup_window()
         self.setup_components()
         DatabaseManager()  # initialize database connection
 
     def setup_window(self):
+        # Set window title and icon
+        self.window.title('Academic Probation System')
+        self.window.iconbitmap('../../res/icon.ico')
+
         # Set window size
         self.window_width = 1300
         self.window_height = 600
@@ -55,6 +58,7 @@ class AcademicProbationSystem:
             self.window.destroy()
 
     def setup_components(self):
+        # Create frames
         frame1 = ttk.Frame(self.window)
         frame2 = MainMenu(self.window)
 
@@ -73,10 +77,12 @@ class AcademicProbationSystem:
         # Create a semi-transparent grey rectangle
         canvas.create_rectangle(0, 0, 650, 600, fill='#808080', stipple='gray25')
 
+        # logo image
         logo_img = Image.open("../../res/logo.png").resize((150, 200))
         self.logo_image = ImageTk.PhotoImage(logo_img)  # Keep a reference to the image object
         canvas.create_image(325, 240, image=self.logo_image)
 
+        # title
         canvas.create_text(325, 360, text="Academic Probation System", font=("Arial", 17, "bold"), fill="white")
 
         frame2.grid(row=0, column=1, sticky="ew")

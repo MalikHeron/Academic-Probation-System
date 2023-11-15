@@ -1,4 +1,6 @@
+import itertools
 import os
+import time
 import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
@@ -66,6 +68,14 @@ def sort_column(tree, col, reverse):
 
     # reverse sort next time column is clicked
     tree.heading(col, command=lambda: sort_column(tree, col, not reverse))
+
+
+def animate(done):
+    for c in itertools.cycle(['|', '/', '-', '\\']):
+        if done[0]:
+            break
+        print('\rSending alert... ' + c, end='', flush=True)
+        time.sleep(0.1)
 
 
 def create_treeview(frame, columns, column_widths, pad, height=23, data=None):

@@ -6,7 +6,7 @@ from tkinter import simpledialog, messagebox, ttk
 import easygui
 
 from scripts.database.queries import DatabaseManager
-from scripts.gui.generate_report import GenerateReportFrame
+from scripts.gui.generate_report import GenerateReport
 from scripts.gui.helpers import create_treeview, button_config, create_button, create_label_and_field, \
     create_buttons
 
@@ -52,7 +52,7 @@ class MainMenu(tk.Frame):
         self.view_details_button = create_button(self, "View Details", self.view_details)
 
         # generate report button
-        self.generate_report_button = create_button(self, "Generate Report", lambda: GenerateReportFrame(self.parent),
+        self.generate_report_button = create_button(self, "Generate Report", lambda: GenerateReport(self.parent),
                                                     bg_color='#936BE9')
 
     # View functions
@@ -232,6 +232,7 @@ class MainMenu(tk.Frame):
         return student_id_field, student_name_field, student_email_field, school_field, programme_field, advisor_field
 
     def add_student(self):
+        # Define the submit action
         def submit_action():
             self.validate({"ID": (student_id_field, "int"),
                            "Full Name": (student_name_field, "str"),
@@ -241,6 +242,7 @@ class MainMenu(tk.Frame):
                            "Advisor": (advisor_field, "str")},
                           self.add_student_to_db)
 
+        # Create the student frame
         student_id_field, student_name_field, student_email_field, school_field, programme_field, advisor_field \
             = self.create_student_frame("Add Student", submit_action)
 
@@ -248,6 +250,7 @@ class MainMenu(tk.Frame):
         # Get the selected item from the tree
         selected_item = tree.selection()
 
+        # Define the submit action
         def submit_action():
             self.validate({"ID": (student_id_field, "int"),
                            "Full Name": (student_name_field, "str"),
@@ -257,6 +260,7 @@ class MainMenu(tk.Frame):
                            "Advisor": (advisor_field, "str")},
                           self.update_student_in_db)
 
+        # Create the student frame
         student_id_field, student_name_field, student_email_field, school_field, programme_field, advisor_field \
             = self.create_student_frame("Update Student", submit_action)
 
@@ -271,6 +275,7 @@ class MainMenu(tk.Frame):
 
     # Details functions
     def create_details_frame(self, title, submit_action):
+        # Close the existing frame
         self.close_view()
 
         # Create details frame
@@ -333,6 +338,7 @@ class MainMenu(tk.Frame):
         return id_field, gpa_field, module_field, semester_field, year_field, year_var
 
     def add_details(self):
+        # Define the submit action
         def submit_action():
             self.validate({
                 "ID": (id_field, "int"),
@@ -342,6 +348,7 @@ class MainMenu(tk.Frame):
                 "Year": (year_field, "int")
             }, self.add_detail_to_db)
 
+        # Create the details frame
         id_field, gpa_field, module_field, semester_field, year_field, year_var \
             = self.create_details_frame("Add Details", submit_action)
 
@@ -349,6 +356,7 @@ class MainMenu(tk.Frame):
         # Get the selected item from the tree
         selected_item = tree.selection()
 
+        # Define the submit action
         def submit_action():
             self.validate({
                 "ID": (id_field, "int"),
@@ -358,6 +366,7 @@ class MainMenu(tk.Frame):
                 "Year": (year_field, "int")
             }, self.update_detail_in_db)
 
+        # Create the details frame
         id_field, gpa_field, module_field, semester_field, year_field, year_var \
             = self.create_details_frame("Update Details", submit_action)
 
@@ -406,6 +415,7 @@ class MainMenu(tk.Frame):
         return mod_code_field, mod_name_field, mod_credits_field
 
     def add_module(self):
+        # Define the submit action
         def submit_action():
             self.validate({
                 "Module Code": (mod_code_field, "str"),
@@ -413,12 +423,14 @@ class MainMenu(tk.Frame):
                 "Credits": (mod_credits_field, "int")
             }, self.add_module_to_db)
 
+        # Create the module frame
         mod_code_field, mod_name_field, mod_credits_field = self.create_module_frame("Add Module", submit_action)
 
     def update_module(self, tree):
         # Get the selected item from the tree
         selected_item = tree.selection()
 
+        # Define the submit action
         def submit_action():
             self.validate({
                 "Module Code": (mod_code_field, "str"),
@@ -426,6 +438,7 @@ class MainMenu(tk.Frame):
                 "Credits": (mod_credits_field, "int")
             }, self.update_module_in_db)
 
+        # Create the module frame
         mod_code_field, mod_name_field, mod_credits_field \
             = self.create_module_frame("Update Module", submit_action)
 
@@ -591,6 +604,7 @@ class MainMenu(tk.Frame):
 
             # Decrement the record count
             if record_count > 0:
+                # Decrement the record count
                 record_count -= 1
                 # Update the record count label
                 self.record_count_var.set(f"Number of Records: {record_count}")
@@ -619,6 +633,7 @@ class MainMenu(tk.Frame):
 
         for field_name, (input_field, validation_type) in fields.items():
             try:
+                # Get the input value
                 input_value = input_field.get()
                 field_widgets.append(input_field)  # Add the input field widget to the list
                 if validation_type == "int":

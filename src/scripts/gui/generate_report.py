@@ -1,31 +1,21 @@
 import datetime
-import itertools
 import logging
 import os
 import smtplib
 import threading
-import time
 import tkinter as tk
 from email.message import EmailMessage
 from tkinter import messagebox
 from tkinter.ttk import Progressbar
 
 from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import create_treeview, create_pdf
+from scripts.gui.helpers import create_treeview, create_pdf, animate
 from scripts.prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
 
-def animate(done):
-    for c in itertools.cycle(['|', '/', '-', '\\']):
-        if done[0]:
-            break
-        print('\rSending alert... ' + c, end='', flush=True)
-        time.sleep(0.1)
-
-
-class GenerateReportFrame:
+class GenerateReport:
 
     def __init__(self, parent):
         self.button_frame = None
