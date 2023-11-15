@@ -3,9 +3,6 @@ import os  # Import the os module
 
 from pyswip import Prolog  # Import the Prolog class from the pyswip module
 
-# pip install git+https://github.com/yuce/pyswip@master
-# python.exe -m pip install --upgrade pip
-
 # Create the logs and data directories if they do not exist
 if not os.path.exists("../../logs"):
     os.makedirs("../../logs")  # Create a logs directory
