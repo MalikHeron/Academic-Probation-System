@@ -597,7 +597,7 @@ class MainMenu(tk.Frame):
             tree.update_idletasks()
         else:
             # Display an error message
-            messagebox.showerror("Error", "Failed to remove item.")
+            messagebox.showerror("Error", "Failed to remove record.")
 
     def remove_student(self, tree):
         self.remove_item(tree, db_manager.remove_student, "Input", "Please enter the ID of the student to be deleted:",
