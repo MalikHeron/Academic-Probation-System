@@ -199,11 +199,11 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_detail(self, id_number, module, gpa, semester, year):
+    def insert_detail(self, id_number, module_name, gpa, semester, year):
         try:
             c = self.conn.cursor()
             # Get module code
-            c.execute(f"""SELECT code FROM module_master WHERE name = '{module}'""")
+            c.execute(f"""SELECT code FROM module_master WHERE name = '{module_name}'""")
             module_code = c.fetchone()[0]
 
             # Insert details
@@ -236,10 +236,10 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_module(self, mod_code, mod_name, credit):
+    def insert_module(self, module_code, module_name, credit):
         try:
             c = self.conn.cursor()
-            c.execute(f"""INSERT INTO module_master VALUES ('{mod_code}', '{mod_name}', {credit})""")
+            c.execute(f"""INSERT INTO module_master VALUES ('{module_code}', '{module_name}', {credit})""")
 
             # Commit changes
             self.conn.commit()
@@ -289,7 +289,7 @@ class DatabaseManager:
             # Check if the student exists
             c.execute(f"""SELECT * FROM student_master WHERE id = {student_id}""")
             if c.fetchone() is None:
-                logging.error(f"Student with id {student_id} doesn't exist.")
+                logging.error(f"Student with id [{student_id}] doesn't exist.")
                 return False
 
             # Delete record
@@ -309,7 +309,7 @@ class DatabaseManager:
             # Check if the module exists
             c.execute(f"""SELECT * FROM module_master WHERE code = {module_code}""")
             if c.fetchone() is None:
-                logging.error(f"Module with code {module_code} doesn't exist.")
+                logging.error(f"Module with code [{module_code}] doesn't exist.")
                 return False
 
             # Delete record

@@ -5,8 +5,8 @@ from tkinter import ttk
 
 from PIL import ImageTk, Image
 
-from gui.main_menu import MainMenu
 from database.queries import DatabaseManager
+from gui.main_menu import MainMenu
 
 # setting path
 sys.path.append('../../src')
@@ -15,6 +15,8 @@ sys.path.append('../../src')
 class AcademicProbationSystem:
 
     def __init__(self):
+        self.logo_image = None
+        self.background_image = None
         self.window_height = None
         self.window_width = None
         self.window = tk.Tk()
@@ -62,22 +64,22 @@ class AcademicProbationSystem:
 
         # background image
         img = Image.open("../../res/background.png").resize((650, 600))
-        background_image = ImageTk.PhotoImage(img)
+        self.background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
-        background = tk.Label(frame1, image=background_image, width=650, height=600)
-        background.image = background_image
-        background.pack(fill=tk.BOTH, expand=True)
+        canvas = tk.Canvas(frame1, width=650, height=600)
+        canvas.pack(fill=tk.BOTH, expand=True)
+        canvas.create_image(0, 0, image=self.background_image, anchor='nw')
 
-        content = tk.Frame(background, background='', width=650, height=600)
-        content.place(x=0, y=0, width=650, height=600)
+        # Create a semi-transparent grey rectangle
+        canvas.create_rectangle(0, 0, 650, 600, fill='#808080', stipple='gray25')
 
-        logo_image = ImageTk.PhotoImage(Image.open("../../res/logo.png").resize((150, 200)))
-        logo_label = ttk.Label(content, image=logo_image, background="")
-        logo_label.image = logo_image
-        logo_label.place(relx=0.5, rely=0.4, anchor='center')  # Centered horizontally and placed at 40% of the height
+        logo_img = Image.open("../../res/logo.png").resize((150, 200))
+        self.logo_image = ImageTk.PhotoImage(logo_img)  # Keep a reference to the image object
+        canvas.create_image(325, 240, image=self.logo_image)
 
-        label1 = ttk.Label(content, text="Academic Probation System", font=("Arial", 17, "bold"), background="")
-        label1.place(relx=0.5, rely=0.6, anchor='center')  # Centered both horizontally and vertically
+        canvas.create_text(325, 360, text="Academic Probation System", font=("Arial", 17, "bold"), fill="white")
+
+        frame2.grid(row=0, column=1, sticky="ew")
 
     def run(self):
         self.window.mainloop()

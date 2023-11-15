@@ -41,7 +41,7 @@ def create_pdf(data, year, gpa, directory):
         ('FONTSIZE', (0, 0), (-1, 0), 12),
 
         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
     ])
     table.setStyle(style)
