@@ -31,7 +31,7 @@ class AcademicProbationSystem:
 
         # Set window size
         self.window_width = 1300
-        self.window_height = 600
+        self.window_height = 650
 
         # Get screen width and height
         screen_width = self.window.winfo_screenwidth()
@@ -67,15 +67,15 @@ class AcademicProbationSystem:
         frame2.grid(row=0, column=1, sticky="ew")
 
         # background image
-        img = Image.open("../../res/background.png").resize((650, 600))
+        img = Image.open("../../res/background.png").resize((650, 650))
         self.background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
-        canvas = tk.Canvas(frame1, width=650, height=600)
+        canvas = tk.Canvas(frame1, width=650, height=650)
         canvas.pack(fill=tk.BOTH, expand=True)
         canvas.create_image(0, 0, image=self.background_image, anchor='nw')
 
         # Create a semi-transparent grey rectangle
-        canvas.create_rectangle(0, 0, 650, 600, fill='#808080', stipple='gray25')
+        canvas.create_rectangle(0, 0, 650, 650, fill='#808080', stipple='gray25')
 
         # logo image
         logo_img = Image.open("../../res/logo.png").resize((150, 200))
@@ -84,8 +84,6 @@ class AcademicProbationSystem:
 
         # title
         canvas.create_text(325, 360, text="Academic Probation System", font=("Arial", 17, "bold"), fill="white")
-
-        frame2.grid(row=0, column=1, sticky="ew")
 
     def run(self):
         self.window.mainloop()

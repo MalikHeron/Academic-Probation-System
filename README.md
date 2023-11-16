@@ -4,7 +4,6 @@
 ```bash
 ├── data/                       # Database file
 ├── logs/                       # system logs
-├── reports/                    # reports
 ├── res/                        # PNGs, JPEGs, GIFs etc
 ├── src/                        
     ├── prolog/                 # prolog files

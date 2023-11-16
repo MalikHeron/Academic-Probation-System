@@ -80,13 +80,15 @@ class MainMenu(tk.Frame):
         # Define columns
         columns = ("ID", "Student Name", "Student Email", "School", "Programme", "Advisor")
         column_widths = [50, 150, 250, 360, 300, 150]
+        column_alignments = ["center", "w", "w", "w", "w", "w"]
 
         # Create Treeview
-        tree = create_treeview(self.student_frame, columns, column_widths, 10, data=data)
+        tree = create_treeview(self.student_frame, columns, column_widths, column_alignments, 10, data=data)
 
         # Button configurations
-        button_config(self.student_frame, tree, self.add_student, self.update_student, self.remove_student,
-                      self.close_view)
+        button_config(self.student_frame, tree, db_manager.get_students, self.add_student, self.update_student,
+                      self.remove_student,
+                      self.refresh, self.close_view)
 
     def view_modules(self):
         # Close the existing frame
@@ -112,13 +114,14 @@ class MainMenu(tk.Frame):
         # Define columns
         columns = ("Module Code", "Module Name", "Accreditation")
         column_widths = [200, 400, 150]
+        column_alignments = ["center", "w", "center"]
 
         # Create Treeview
-        tree = create_treeview(self.module_frame, columns, column_widths, 265, data=data)
+        tree = create_treeview(self.module_frame, columns, column_widths, column_alignments, 265, data=data)
 
         # Button configurations
-        button_config(self.module_frame, tree, self.add_module, self.update_module, self.remove_module,
-                      self.close_view)
+        button_config(self.module_frame, tree, db_manager.get_modules, self.add_module, self.update_module,
+                      self.remove_module, self.refresh, self.close_view)
 
     def view_details(self):
         # Close the existing frame
@@ -143,14 +146,15 @@ class MainMenu(tk.Frame):
 
         # Define columns
         columns = ("Student ID", "Module", "Grade Point Average", "Semester", "Year")
-        column_widths = [100, 200, 200, 150, 150]
+        column_widths = [100, 250, 200, 150, 150]
+        column_alignments = ["center", "w", "center", "center", "center"]
 
         # Create Treeview
-        tree = create_treeview(self.details_frame, columns, column_widths, 240, data=data)
+        tree = create_treeview(self.details_frame, columns, column_widths, column_alignments, 215, data=data)
 
         # Button configurations
-        button_config(self.details_frame, tree, self.add_details, self.update_details, self.remove_details,
-                      self.close_view)
+        button_config(self.details_frame, tree, db_manager.get_details, self.add_details, self.update_details,
+                      self.remove_details, self.refresh, self.close_view)
 
     # Student Functions
     def create_student_frame(self, title, submit_action):
@@ -486,6 +490,33 @@ class MainMenu(tk.Frame):
         else:
             # Display an error message
             messagebox.showerror("Error", error_message)
+
+    # Refresh function
+    def refresh(self, frame, tree, get_data_func):
+        # Clear the tree
+        tree.delete(*tree.get_children())
+
+        # Get data
+        data = get_data_func()
+
+        # Set global record count
+        global record_count
+        record_count = len(data)
+
+        # Update the record count label
+        self.record_count_label.config(fg="green")
+        self.record_count_var.set("Table updated")
+
+        # Change the color and text back to normal after 1 second
+        frame.after(1000, lambda: self.record_count_label.config(fg="black"))
+        frame.after(1000, lambda: self.record_count_var.set(f"Number of Records: {record_count}"))
+
+        # Insert data in table
+        for item in data:
+            tree.insert("", "end", values=item)
+
+        # Update the tree view
+        tree.update_idletasks()
 
     # Add functions
     def add_student_to_db(self, validated_fields):

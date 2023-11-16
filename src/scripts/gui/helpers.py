@@ -58,9 +58,22 @@ def create_pdf(data, year, gpa, directory):
     return path
 
 
+def animate(done):
+    for c in itertools.cycle(['|', '/', '-', '\\']):
+        if done[0]:
+            break
+        print('\rSending alert... ' + c, end='', flush=True)
+        time.sleep(0.1)
+
+
 def sort_column(tree, col, reverse):
     column_data = [(tree.set(child_id, col), child_id) for child_id in tree.get_children('')]
-    column_data.sort(reverse=reverse)
+
+    # Check if the column data are digits and sort accordingly
+    if all(item[0].isdigit() for item in column_data):
+        column_data.sort(key=lambda t: int(t[0]), reverse=reverse)
+    else:
+        column_data.sort(reverse=reverse)
 
     # rearrange items in sorted positions
     for index, (val, child_id) in enumerate(column_data):
@@ -70,15 +83,18 @@ def sort_column(tree, col, reverse):
     tree.heading(col, command=lambda: sort_column(tree, col, not reverse))
 
 
-def animate(done):
-    for c in itertools.cycle(['|', '/', '-', '\\']):
-        if done[0]:
-            break
-        print('\rSending alert... ' + c, end='', flush=True)
-        time.sleep(0.1)
+def search(tree, data, search_text):
+    # Remove all items from the tree
+    for i in tree.get_children():
+        tree.delete(i)
+
+    # Reinsert items that match the search text
+    for item in data:
+        if search_text.lower() in str(item).lower():
+            tree.insert("", "end", values=item)
 
 
-def create_treeview(frame, columns, column_widths, pad, height=23, data=None):
+def create_treeview(frame, columns, column_widths, column_alignments, pad, height=23, data=None, searchable=True):
     # Create a style
     style = ttk.Style()
     style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
@@ -92,6 +108,18 @@ def create_treeview(frame, columns, column_widths, pad, height=23, data=None):
 
     # Add that new frame to a new window on the canvas
     canvas.create_window((0, 0), window=second_frame, anchor="nw")
+
+    if searchable:
+        # Create search bar
+        search_frame = tk.Frame(second_frame)
+        search_frame.pack(fill='x', padx=pad, pady=10)
+        search_label = tk.Label(search_frame, text="Search:")
+        search_label.pack(side=tk.LEFT, padx=(0, 10))
+        search_entry = tk.Entry(search_frame, width=20)
+        search_entry.pack(side=tk.LEFT, fill='x', expand=False)
+
+        # Update search function whenever search text is changed
+        search_entry.bind('<KeyRelease>', lambda event: search(tree, data, search_entry.get()))
 
     def on_configure(event):
         # Update scroll region after starting 'mainloop'
@@ -117,8 +145,8 @@ def create_treeview(frame, columns, column_widths, pad, height=23, data=None):
     tree["columns"] = columns
 
     # Format columns
-    for col, width in zip(columns, column_widths):
-        tree.column(col, width=width)
+    for col, width, align in zip(columns, column_widths, column_alignments):
+        tree.column(col, width=width, anchor=align)
         tree.heading(col, text=col, command=lambda _col=col: sort_column(tree, _col, False))
 
     if data is not None:
@@ -156,10 +184,11 @@ def create_buttons(frame, fields, row, submit_action, clear_fields, close_view, 
     create_button_widget(button_frame, "Back", lambda: close_view())
 
 
-def button_config(frame, tree, add, update, remove, back):
+def button_config(frame, tree, data_func, add, update, remove, refresh, back):
     add_button = tk.Button(frame, text="Add", command=add)
     update_button = tk.Button(frame, text="Update", command=lambda: update(tree))
     remove_button = tk.Button(frame, text="Remove", command=lambda: remove(tree))
+    refresh_button = tk.Button(frame, text="Refresh", command=lambda: refresh(frame, tree, data_func))
     back_button = tk.Button(frame, text="Back", command=back)
 
     # Initially disable the update button
@@ -178,7 +207,7 @@ def button_config(frame, tree, add, update, remove, back):
 
     button_width = 100  # width of the buttons
     button_spacing = 40  # space between the buttons
-    total_width = 4 * button_width + 2 * button_spacing  # total width of all buttons and spaces
+    total_width = 5 * button_width + 2 * button_spacing  # total width of all buttons and spaces
 
     # Center the buttons at the bottom of the window
     add_button.place(relx=0.5, rely=0.98, x=-total_width / 2, anchor='s', width=button_width)
@@ -186,7 +215,9 @@ def button_config(frame, tree, add, update, remove, back):
                         width=button_width)
     remove_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 2 * (button_width + button_spacing), anchor='s',
                         width=button_width)
-    back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 3 * (button_width + button_spacing), anchor='s',
+    refresh_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 3 * (button_width + button_spacing), anchor='s',
+                         width=button_width)
+    back_button.place(relx=0.5, rely=0.98, x=-total_width / 2 + 4 * (button_width + button_spacing), anchor='s',
                       width=button_width)
 
 

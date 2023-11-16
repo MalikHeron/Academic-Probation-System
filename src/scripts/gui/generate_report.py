@@ -118,12 +118,14 @@ class GenerateReport:
         # Define columns
         columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
         column_widths = [100, 200, 200, 200, 150]
+        column_alignments = ['center', 'w', 'center', 'center', 'center']
 
         # Update knowledge base
         db_manager.update_knowledge_base(year)
 
         # Create Treeview
-        tree = create_treeview(self.report_frame, columns, column_widths, 215, height=20)
+        tree = create_treeview(self.report_frame, columns, column_widths, column_alignments, 215, height=20,
+                               searchable=False)
 
         # Counter for the number of alerts to be sent
         self.alerts_to_send = 0
