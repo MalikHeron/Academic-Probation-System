@@ -152,7 +152,7 @@ class Dialog(tk.Toplevel):
 
     def details_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 500, 450)
+        self.initialize_properties(title, 540, 450)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[20, 0])
@@ -165,7 +165,7 @@ class Dialog(tk.Toplevel):
         if title == "Add Details":
             student_list = db_manager.get_students()
             student_ids = [student[0] for student in student_list]  # Extract module codes
-            id_field = ttk.Combobox(self.frame, state="readonly", values=student_ids, width=self.f_width)
+            id_field = ttk.Combobox(self.frame, state="readonly", values=student_ids, width=self.f_width + 1)
             id_field.grid(row=2, column=1)
 
             # Module label and field
@@ -175,20 +175,20 @@ class Dialog(tk.Toplevel):
             module_list = db_manager.get_modules()
             module_names = [module[1] for module in module_list]  # Extract module names
             module_field = ttk.Combobox(self.frame, state="readonly", values=module_names,
-                                        width=self.f_width)
+                                        width=self.f_width + 1)
             module_field.grid(row=3, column=1)
         else:
-            id_field = create_label_and_field(self.frame, "ID Number", 2, f_width=self.f_width + 3)
-            module_field = create_label_and_field(self.frame, "Module", 3, f_width=self.f_width + 3)
+            id_field = create_label_and_field(self.frame, "ID Number", 2, f_width=self.f_width + 4)
+            module_field = create_label_and_field(self.frame, "Module", 3, f_width=self.f_width + 4)
 
         # Grade Point label and field
-        gpa_field = create_label_and_field(self.frame, "GPA", 4, f_width=self.f_width + 3)
+        gpa_field = create_label_and_field(self.frame, "GPA", 4, f_width=self.f_width + 4)
 
         # Semester label and field
         ttk.Label(self.frame, text="Semester", width=self.l_width, anchor="w").grid(row=5, column=0,
                                                                                     padx=self.x_padding,
                                                                                     pady=self.y_padding)
-        semester_field = ttk.Combobox(self.frame, state="readonly", values=["1", "2"], width=self.f_width)
+        semester_field = ttk.Combobox(self.frame, state="readonly", values=["1", "2"], width=self.f_width + 1)
         semester_field.grid(row=5, column=1)
 
         # Year label and field
@@ -196,7 +196,7 @@ class Dialog(tk.Toplevel):
                                                                                 pady=self.y_padding)
         current_year = datetime.now().year  # Get the current year
         year_var = tk.StringVar()  # Create a StringVar
-        year_field = ttk.Spinbox(self.frame, from_=2016, to=current_year, width=self.f_width - 4,
+        year_field = ttk.Spinbox(self.frame, from_=2016, to=current_year, width=self.f_width - 3,
                                  state="readonly", textvariable=year_var)  # Associate the StringVar with the Spinbox
         year_field.grid(row=6, column=1, padx=self.x_padding, pady=self.y_padding)
 

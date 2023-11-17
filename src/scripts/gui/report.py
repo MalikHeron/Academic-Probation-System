@@ -10,7 +10,7 @@ from tkinter import ttk
 from tkinter.ttk import Progressbar
 
 from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import create_treeview, create_pdf, animate, validate, create_report_treeview
+from scripts.gui.helpers import create_pdf, animate, validate, create_report_treeview
 from scripts.prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager

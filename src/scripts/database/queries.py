@@ -141,10 +141,20 @@ class DatabaseManager:
         c.execute(f"""SELECT * FROM staff WHERE name = '{advisor_name}'""")
         return c.fetchone()
 
-    def get_module_code(self, module_name):
+    def get_module_code(self, module):
         c = self.conn.cursor()
-        c.execute(f"""SELECT code FROM module_master WHERE name = '{module_name}'""")
-        return c.fetchone()[0]
+        # Check if the module is a code
+        c.execute(f"""SELECT * FROM module_master WHERE code = '{module}'""")
+        if c.fetchone() is not None:
+            return module  # Return the module as is if it's a code
+
+        # If the module is not a code, assume it's a name and get the code
+        c.execute(f"""SELECT code FROM module_master WHERE name = '{module}'""")
+        result = c.fetchone()
+        if result is not None:
+            return result[0]  # Return the code corresponding to the module name
+
+        return None  # Return None if the module is neither a code nor a name
 
     def get_student_advisor(self, student_id):
         c = self.conn.cursor()
@@ -309,20 +319,19 @@ class DatabaseManager:
             return False
 
     def remove_module(self, module):
-        module_code = None
         try:
             c = self.conn.cursor()
-            # Check if the module exists
-            c.execute(f"""SELECT * FROM module_master WHERE code = '{module}'""")
-            if c.fetchone() is None:
-                # Get module code
-                module_code = self.get_module_code(module)
+            # Get module code
+            module_code = self.get_module_code(module)
+            if module_code is None:
+                logging.error(f"Module [{module}] doesn't exist.")
+                return False
 
-                # Check if the module exists
-                c.execute(f"""SELECT * FROM module_master WHERE code = '{module_code}'""")
-                if c.fetchone() is None:
-                    logging.error(f"Module with code [{module}] doesn't exist.")
-                    return False
+            # Check if the module exists
+            c.execute(f"""SELECT * FROM module_master WHERE code = '{module_code}'""")
+            if c.fetchone() is None:
+                logging.error(f"Module with code [{module_code}] doesn't exist.")
+                return False
 
             # Delete record
             c.execute(f"""DELETE FROM module_master WHERE code = '{module_code}'""")

@@ -248,7 +248,7 @@ def create_report_treeview(frame, columns, column_widths, column_alignments, pad
     # Format columns
     for col, width, align in zip(pdf_columns, pdf_widths, pdf_alignments):
         file_tree.column(col, width=width, anchor=align)
-        file_tree.heading(col, text=col, command=lambda _col=col: sort_column(gpa_tree, _col, False))
+        file_tree.heading(col, text=col, command=lambda _col=col: sort_column(file_tree, _col, False))
 
     # Get all the PDF files from a folder
     folder_path = "../../reports"  # Replace with your folder path
@@ -305,9 +305,9 @@ def create_buttons(frame, fields, row, submit_action, clear_fields, close_view, 
 
 def button_config(frame, tree, data_func, add, update, remove, refresh):
     add_button = ttk.Button(frame, text="Add", command=add, style='TButton')
-    update_button = ttk.Button(frame, text="Update", command=lambda: update(tree), style='TButton')
-    remove_button = ttk.Button(frame, text="Remove", command=lambda: remove(tree), style='TButton')
-    refresh_button = ttk.Button(frame, text="Refresh", command=lambda: refresh(frame, tree, data_func), style='TButton')
+    update_button = ttk.Button(frame, text="Update", command=lambda: update(), style='TButton')
+    remove_button = ttk.Button(frame, text="Remove", command=lambda: remove(), style='TButton')
+    refresh_button = ttk.Button(frame, text="Refresh", command=lambda: refresh(frame, data_func), style='TButton')
 
     # Initially disable the update button
     update_button.config(state='disabled')

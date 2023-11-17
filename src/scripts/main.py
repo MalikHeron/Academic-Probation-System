@@ -7,8 +7,8 @@ import sv_ttk
 from PIL import ImageTk, Image
 
 from database.queries import DatabaseManager
-from gui.main_menu import Screens
-from scripts.gui.generate_report import Report
+from gui.views import Views
+from scripts.gui.report import Report
 
 # setting path
 sys.path.append('../../src')
@@ -129,9 +129,9 @@ class AcademicProbationSystem:
         frame = ttk.Notebook(self.window)
 
         # Create tabs
-        tab1 = Screens(frame).student_view()
-        tab2 = Screens(frame).module_view()
-        tab3 = Screens(frame).details_view()
+        tab1 = Views(frame).student_view()
+        tab2 = Views(frame).module_view()
+        tab3 = Views(frame).details_view()
         tab4 = Report(frame).generate_view()
 
         # Add tabs to notebook
@@ -155,9 +155,16 @@ class AcademicProbationSystem:
         # Create the main window
         self.window = tk.Tk()
 
+        # Hide the main window
+        self.window.withdraw()
+
         # Set up the main window and its components
         self.setup_main_window()
         self.setup_components()
+
+        # Show the main window and give it focus
+        self.window.deiconify()
+        self.window.focus_force()
 
         # Start the main event loop
         self.window.mainloop()
