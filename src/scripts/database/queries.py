@@ -141,6 +141,11 @@ class DatabaseManager:
         c.execute(f"""SELECT * FROM staff WHERE name = '{advisor_name}'""")
         return c.fetchone()
 
+    def get_module_code(self, module_name):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT code FROM module_master WHERE name = '{module_name}'""")
+        return c.fetchone()[0]
+
     def get_student_advisor(self, student_id):
         c = self.conn.cursor()
         # Get advisor id
@@ -303,14 +308,21 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_module(self, module_code):
+    def remove_module(self, module):
+        module_code = None
         try:
             c = self.conn.cursor()
             # Check if the module exists
-            c.execute(f"""SELECT * FROM module_master WHERE code = {module_code}""")
+            c.execute(f"""SELECT * FROM module_master WHERE code = '{module}'""")
             if c.fetchone() is None:
-                logging.error(f"Module with code [{module_code}] doesn't exist.")
-                return False
+                # Get module code
+                module_code = self.get_module_code(module)
+
+                # Check if the module exists
+                c.execute(f"""SELECT * FROM module_master WHERE code = '{module_code}'""")
+                if c.fetchone() is None:
+                    logging.error(f"Module with code [{module}] doesn't exist.")
+                    return False
 
             # Delete record
             c.execute(f"""DELETE FROM module_master WHERE code = '{module_code}'""")
@@ -323,9 +335,13 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_details(self, student_id, module_code, semester):
+    def remove_details(self, student_id, module_name, semester):
         try:
             c = self.conn.cursor()
+
+            # Get module code
+            c.execute(f"""SELECT code FROM module_master WHERE name = '{module_name}'""")
+            module_code = c.fetchone()[0]
 
             # Check if the module exists
             c.execute(f"""SELECT * FROM module_details WHERE student_id = {student_id} 

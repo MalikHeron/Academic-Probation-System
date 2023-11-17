@@ -1,88 +1,92 @@
-import datetime
 import logging
 import os
 import smtplib
 import threading
 import tkinter as tk
+from datetime import datetime
 from email.message import EmailMessage
 from tkinter import messagebox
+from tkinter import ttk
 from tkinter.ttk import Progressbar
 
 from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import create_treeview, create_pdf, animate
+from scripts.gui.helpers import create_treeview, create_pdf, animate, validate, create_report_treeview
 from scripts.prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
 
-class GenerateReport:
+class Report(ttk.Frame):
 
     def __init__(self, parent):
-        self.button_frame = None
-        self.gpa_label = None
-        self.year_frame = None
-        self.gpa_frame = None
+        super().__init__(parent)
+        self.container = None
+        self.pdf_files = None
+        self.pdf_buttons = None
+        self.generate_button = None
         self.alert_label = None
         self.alerts_to_send = None
         self.progressbar = None
-        self.select_year = None
         self.generate_frame = None
         self.title = None
-        self.gpa_entry = None
-        self.year_selector = None
-        self.report_frame = None
+        self.gpa_field = None
+        self.year_field = None
         self.parent = parent
         self.alert_var = tk.StringVar()
-        self.setup_components()
 
-    def setup_components(self):
+    def generate_view(self):
         # Create report frame
-        self.generate_frame = tk.Frame(self.parent, padx=60)
-        self.generate_frame.grid(row=0, column=1, columnspan=1, sticky="ew")
+        self.generate_frame = ttk.Frame(self.parent)
+        self.generate_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
-        # title
-        self.title = tk.Label(self.generate_frame, text="Generate Report", font=('Helvetica', 14, 'bold'))
-        self.title.configure(foreground='black')
-        self.title.pack(padx=20, pady=20, fill='x', expand=True)
+        # Padding
+        x_padding, y_padding, f_width, l_width = 20, 20, 20, 11
 
-        # Year Selector Frame
-        self.year_frame = tk.Frame(self.generate_frame)
-        self.year_frame.pack(padx=60, pady=10, fill='x', expand=True)
-        self.select_year = tk.Label(self.year_frame, text="Select Year:", font=('Helvetica', 12, 'normal'))
-        self.select_year.pack(side='left', padx=10)
-        current_year = datetime.datetime.now().year  # Get the current year
-        self.year_selector = tk.Spinbox(self.year_frame, font=('Helvetica', 11, 'normal'), from_=2016, to=current_year,
-                                        width=18)
-        self.year_selector.pack(side='left', padx=10)
+        # Create button frame
+        button_frame = ttk.Frame(self.generate_frame)
+        button_frame.pack(fill='x', padx=10, pady=20)
 
-        # Optional Label
-        tk.Label(self.generate_frame, text="OR", font=("Helvetica", 12, "bold"), foreground="#7a7a7a") \
-            .pack(padx=80, pady=5, fill='x', expand=True)
+        # Create year labels and entry fields
+        year_label = ttk.Label(button_frame, text="Year:")
+        year_label.pack(side=tk.LEFT, padx=(0, 10))
+        # Get the current year
+        current_year = datetime.now().year
+        year_var = tk.StringVar()  # Create a StringVar
+        self.year_field = ttk.Spinbox(button_frame, from_=2016, to=current_year, width=f_width - 4,
+                                      state="readonly",
+                                      textvariable=year_var)  # Associate the StringVar with the Spinbox
+        self.year_field.pack(side=tk.LEFT, fill='x', expand=False)
 
-        # GPA Entry Frame
-        self.gpa_frame = tk.Frame(self.generate_frame)
-        self.gpa_frame.pack(padx=60, pady=10, fill='x', expand=True)
-        self.gpa_label = tk.Label(self.gpa_frame, text="Enter GPA:", font=('Helvetica', 12, 'normal'))
-        self.gpa_label.pack(side='left', padx=10)
-        self.gpa_entry = tk.Entry(self.gpa_frame, font=('Helvetica', 11, 'normal'), width=19)
-        self.gpa_entry.pack(side='left', padx=18)
+        # Create gpa labels and entry fields
+        ttk.Label(button_frame, text="OR", foreground="#7a7a7a").pack(side=tk.LEFT, padx=(20, 20))
 
-        # Submit Button
-        self.button_frame = tk.Frame(self.generate_frame)
-        self.button_frame.pack(padx=150, pady=30, fill='x', expand=True)
-        submit_button = tk.Button(self.button_frame, text="Generate", command=self.submit)
-        submit_button.configure(background='#0cb000', foreground='#FFFFFF', font=('Helvetica', 12, 'normal')),
-        submit_button.pack(side='left', padx=10)
+        # Create gpa labels and entry fields
+        gpa_label = ttk.Label(button_frame, text="GPA:")
+        gpa_label.pack(side=tk.LEFT, padx=(0, 10))
+        self.gpa_field = ttk.Entry(button_frame, width=f_width)
+        self.gpa_field.pack(side=tk.LEFT, fill='x', expand=False)
 
-        # Back Button
-        back_button = tk.Button(self.button_frame, text="Back", command=self.generate_frame.grid_forget)
-        back_button.configure(font=('Helvetica', 12, 'normal')),
-        back_button.pack(side='left', padx=10)
+        def submit_action():
+            validate({"Year": (self.year_field, "int")}, lambda: self.submit(tree), args=False)
 
-    def submit(self):
+        # Create generate button
+        self.generate_button = ttk.Button(button_frame, text="Generate", command=submit_action)
+        self.generate_button.pack(side=tk.LEFT, fill='x', expand=False, padx=(10, 0))
+
+        # Define columns
+        columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
+        column_widths = [100, 200, 200, 200, 150]
+        column_alignments = ['center', 'w', 'center', 'center', 'center']
+
+        # Create Treeview
+        tree = create_report_treeview(self.generate_frame, columns, column_widths, column_alignments, 10)
+
+        return self.generate_frame
+
+    def submit(self, tree):
         # Get data
-        year = self.year_selector.get()
-        gpa = self.gpa_entry.get()
+        year = self.year_field.get()
+        gpa = self.gpa_field.get()
 
         if gpa != "":
             # Validate GPA
@@ -101,31 +105,15 @@ class GenerateReport:
         # Show submitted message
         messagebox.showinfo("Summary", f"Requesting students from {year}\nwith a maximum GPA of {gpa}")
 
-        # Hide main frame and show report frame
-        self.view_report(year, gpa)
+        # show the report
+        self.view_report(year, gpa, tree)
 
-    def view_report(self, year, gpa):
-        # Create report frame
-        self.report_frame = tk.Frame(self.parent)
-        self.report_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
-        # Labels
-        tk.Label(self.report_frame, text="University of Technology", font=("Helvetica", 10, "bold")).pack()
-        tk.Label(self.report_frame, text="Academic Probation Alert GPA Report").pack()
-        tk.Label(self.report_frame, text=f"Year: {year}").pack()
-        tk.Label(self.report_frame, text=f"GPA: {gpa}").pack(pady=5)
-
-        # Define columns
-        columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
-        column_widths = [100, 200, 200, 200, 150]
-        column_alignments = ['center', 'w', 'center', 'center', 'center']
-
+    def view_report(self, year, gpa, tree):
         # Update knowledge base
         db_manager.update_knowledge_base(year)
 
-        # Create Treeview
-        tree = create_treeview(self.report_frame, columns, column_widths, column_alignments, 215, height=20,
-                               searchable=False)
+        #  Clear the table
+        tree.delete(*tree.get_children())
 
         # Counter for the number of alerts to be sent
         self.alerts_to_send = 0
@@ -147,6 +135,9 @@ class GenerateReport:
                     # Increment the counter
                     self.alerts_to_send += 1
 
+                    # Disable the generate button
+                    self.generate_button.config(state="disabled")
+
                     # Get the advisor, director, and administrator for the student's programme and school
                     advisor = db_manager.get_student_advisor(student_id)
                     director = db_manager.get_programme_director(programme_code)
@@ -164,14 +155,18 @@ class GenerateReport:
 
         # If there are alerts to send, show the label and progress bar
         if self.alerts_to_send > 0:
+            # Create alert frame
+            alert_frame = ttk.Frame(self.generate_frame)
+            alert_frame.place(relx=0.5, rely=0.95, anchor=tk.CENTER)
+
             # Label
             self.alert_var.set(f"Sending alerts")
-            self.alert_label = tk.Label(self.report_frame, textvariable=self.alert_var)
-            self.alert_label.place(relx=0.25, rely=0.97, anchor='s')
+            self.alert_label = ttk.Label(alert_frame, textvariable=self.alert_var)
+            self.alert_label.pack(side=tk.LEFT, padx=(0, 10))
 
             # Progress bar
-            self.progressbar = Progressbar(self.report_frame, mode='indeterminate')
-            self.progressbar.place(relx=0.35, rely=0.97, anchor='s')
+            self.progressbar = Progressbar(alert_frame, mode='indeterminate')
+            self.progressbar.pack(side=tk.LEFT, fill='x', expand=False)
             self.progressbar.start(3)
 
         # Specify the directory where the report will be saved
@@ -185,11 +180,6 @@ class GenerateReport:
             messagebox.showinfo("Success", "Report saved as a PDF successfully.")
         else:
             messagebox.showerror("Error", "Report could not be saved as a PDF.")
-
-        close_button = tk.Button(self.report_frame, text="Close", command=self.report_frame.grid_forget)
-
-        # Center the buttons at the bottom of the window
-        close_button.place(relx=0.5, rely=0.98, anchor='s', width=100)
 
     def send_alert(self, name, email, school, programme, cumulative_gpa, gpa, advisor, director,
                    administrator):
@@ -348,16 +338,18 @@ class GenerateReport:
                 self.progressbar.destroy()
                 # Update the label with a success message in green
                 self.alert_var.set("Email alerts sent!")
-                self.alert_label.config(fg='green')
+                self.alert_label.config(foreground='green')
+                # Enable the generate button
+                self.generate_button.config(state="normal")
                 # Schedule the removal of the label
-                self.report_frame.after(2000, self.remove_alerts)  # 2000 milliseconds = 2 seconds
+                self.generate_frame.after(2000, self.remove_alerts)  # 2000 milliseconds = 2 seconds
         except Exception as e:
             logging.error(f'Error sending alert: {e}')
             # Destroy the progress bar
             self.progressbar.destroy()
             # Update the label with a failure message in red
             self.alert_var.set(f"Error sending email alerts!")
-            self.alert_label.config(fg='red')
+            self.alert_label.config(foreground='red')
 
     def remove_alerts(self):
         # Remove the label
