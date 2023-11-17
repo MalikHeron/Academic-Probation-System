@@ -2,6 +2,4 @@ root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
-root - INFO - [{'Results': [[13, 'Charlie Brown', 'charlie.brown@yahoo.com', 'CSSS', 'SM', 1.5, 2.25, 1.9]]}]
-root - INFO - Alert sent to charlie.brown@yahoo.com
 root - WARNING - index idx_module_details_unique already exists

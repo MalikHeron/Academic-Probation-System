@@ -1,6 +1,7 @@
 import itertools
 import logging
 import os
+import re
 import threading
 import time
 import tkinter as tk
@@ -98,10 +99,6 @@ def search(tree, data, search_text):
 
 def create_treeview(frame, columns, column_widths, column_alignments, pad, height=23, data=None, searchable=True,
                     padx=0):
-    # Create a style
-    style = ttk.Style()
-    style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
-
     # Create Canvas in new window
     canvas = tk.Canvas(frame)
     canvas.pack(side=tk.LEFT, fill='both', expand=True)
@@ -118,7 +115,7 @@ def create_treeview(frame, columns, column_widths, column_alignments, pad, heigh
         search_frame.pack(fill='x', padx=pad, pady=10)
         search_label = ttk.Label(search_frame, text="Search:")
         search_label.pack(side=tk.LEFT, padx=(0, 10))
-        search_entry = ttk.Entry(search_frame, width=20)
+        search_entry = ttk.Entry(search_frame, width=20, style='TEntry')
         search_entry.pack(side=tk.LEFT, fill='x', expand=False)
 
         # Update search function whenever search text is changed
@@ -163,10 +160,6 @@ def create_treeview(frame, columns, column_widths, column_alignments, pad, heigh
 
 
 def create_report_treeview(frame, columns, column_widths, column_alignments, pad, height=23, data=None):
-    # Create a style
-    style = ttk.Style()
-    style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"))
-
     # Create Canvas in new window
     canvas = tk.Canvas(frame)
     canvas.pack(side=tk.LEFT, fill='both', expand=True)
@@ -276,18 +269,51 @@ def create_report_treeview(frame, columns, column_widths, column_alignments, pad
 
     file_tree.pack(padx=(30, pad))
 
+    # Create a delete button
+    delete_button = ttk.Button(pdf_frame, text="Delete", state="disabled", cursor="hand2")
+
+    # Function to delete a file
+    def delete_file():
+        selected_items = file_tree.selection()  # get selected items
+        if len(selected_items) > 1:
+            message = "Delete these reports?"
+        else:
+            message = "Delete this report?"
+
+        if messagebox.askokcancel("Confirm", message):
+            # Delete all selected items
+            for selected_item in selected_items:
+                file_path = os.path.join(folder_path, file_tree.item(selected_item)['values'][0])
+                os.remove(file_path)  # remove the file
+                file_tree.delete(selected_item)  # remove item from treeview
+
+    # Update delete button state based on treeview selection
+    def update_delete_button(event):
+        if file_tree.selection():
+            delete_button.config(state="normal")
+        else:
+            delete_button.config(state="disabled")
+
+    # Bind the function to the treeview select event
+    file_tree.bind('<<TreeviewSelect>>', update_delete_button)
+
+    # Set the command of the delete button to the delete_file function
+    delete_button.config(command=delete_file)
+
+    delete_button.pack(padx=(30, pad), pady=(10, 0))
+
     return gpa_tree
 
 
 def create_button(frame, text, command):
     # Create a button with the new style
-    button = ttk.Button(frame, text=text, width=50, command=command, style='TButton')
+    button = ttk.Button(frame, text=text, width=50, command=command, style='TButton', cursor="hand2")
     button.pack(side="top", padx=0, pady=5, anchor='center')
     return button
 
 
 def create_button_widget(frame, text, command, pad_x=5, pad_y=20, width=10):
-    button = ttk.Button(frame, text=text, width=width, command=command, style='TButton')
+    button = ttk.Button(frame, text=text, width=width, command=command, style='TButton', cursor="hand2")
     button.pack(side="left", padx=pad_x, pady=pad_y, anchor='center')
     return button
 
@@ -304,10 +330,11 @@ def create_buttons(frame, fields, row, submit_action, clear_fields, close_view, 
 
 
 def button_config(frame, tree, data_func, add, update, remove, refresh):
-    add_button = ttk.Button(frame, text="Add", command=add, style='TButton')
-    update_button = ttk.Button(frame, text="Update", command=lambda: update(), style='TButton')
-    remove_button = ttk.Button(frame, text="Remove", command=lambda: remove(), style='TButton')
-    refresh_button = ttk.Button(frame, text="Refresh", command=lambda: refresh(frame, data_func), style='TButton')
+    add_button = ttk.Button(frame, text="Add", command=add, style='TButton', cursor="hand2")
+    update_button = ttk.Button(frame, text="Update", command=lambda: update(), style='TButton', cursor="hand2")
+    remove_button = ttk.Button(frame, text="Remove", command=lambda: remove(), style='TButton', cursor="hand2")
+    refresh_button = ttk.Button(frame, text="Refresh", command=lambda: refresh(frame, data_func), style='TButton',
+                                cursor="hand2")
 
     # Initially disable the update button
     update_button.config(state='disabled')
@@ -337,7 +364,7 @@ def button_config(frame, tree, data_func, add, update, remove, refresh):
 
 def create_label_and_field(frame, text, row, pad_x=0, pad_y=20, f_width=25, l_width=11):
     ttk.Label(frame, text=text, width=l_width, anchor="w").grid(row=row, column=0, padx=pad_x, pady=pad_y)
-    field = ttk.Entry(frame, width=f_width)
+    field = ttk.Entry(frame, width=f_width, style='TEntry')
     field.grid(row=row, column=1)
     return field
 
@@ -388,6 +415,12 @@ def validate(fields, submit_func, args=True):
                     validated_fields[field_name] = input_value
                 else:
                     raise ValueError("is not a valid decimal number.")
+            elif validation_type == "email":
+                # Validate as an email
+                if re.match(r"[^@]+@[^@]+\.[^@]+", input_value):
+                    validated_fields[field_name] = input_value
+                else:
+                    raise ValueError("is not a valid email.")
             # Add more validation types as needed
             else:
                 # Unknown validation type
@@ -427,17 +460,20 @@ def get_pdf_files(folder_path):
 
 
 def update_pdf_list(folder_path, pdf_files, tree):
-    while True:
-        new_pdf_files = get_pdf_files(folder_path)
-        if new_pdf_files != pdf_files:
-            # Clear the tree
-            tree.delete(*tree.get_children())
+    try:
+        while True:
+            new_pdf_files = get_pdf_files(folder_path)
+            if new_pdf_files != pdf_files:
+                # Clear the tree
+                tree.delete(*tree.get_children())
 
-            # Update the list of files
-            pdf_files = new_pdf_files
-            for pdf_file in pdf_files:
-                file_size = convert_bytes(os.path.getsize(os.path.join(folder_path, pdf_file)))
-                tree.insert("", "end", values=(pdf_file, file_size))
+                # Update the list of files
+                pdf_files = new_pdf_files
+                for pdf_file in pdf_files:
+                    file_size = convert_bytes(os.path.getsize(os.path.join(folder_path, pdf_file)))
+                    tree.insert("", "end", values=(pdf_file, file_size))
+    except Exception as e:
+        logging.error("An error occurred in updating the PDF list:", e)
 
 
 def open_pdf(pdf_file_path):

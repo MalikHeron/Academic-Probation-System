@@ -131,7 +131,7 @@ class Views(ttk.Frame):
         def submit_action():
             validate({"ID": (student_id_field, "int"),
                       "Full Name": (student_name_field, "str"),
-                      "Email": (student_email_field, "str"),
+                      "Email": (student_email_field, "email"),
                       "School": (school_field, "str"),
                       "Programme": (programme_field, "str"),
                       "Advisor": (advisor_field, "str")},
@@ -151,7 +151,7 @@ class Views(ttk.Frame):
         def submit_action():
             validate({"ID": (student_id_field, "int"),
                       "Full Name": (student_name_field, "str"),
-                      "Email": (student_email_field, "str"),
+                      "Email": (student_email_field, "email"),
                       "School": (school_field, "str"),
                       "Programme": (programme_field, "str"),
                       "Advisor": (advisor_field, "str")},
@@ -382,15 +382,18 @@ class Views(ttk.Frame):
 
         # If an item is selected, get its values
         if selected_item:
-            # If fields is None, get the first value
-            if option == 1:
-                values = str(self.tree.item(selected_item)["values"][0]).strip()
+            if messagebox.askokcancel("Confirm", "Remove this record?"):
+                # If fields is None, get the first value
+                if option == 1:
+                    values = str(self.tree.item(selected_item)["values"][0]).strip()
+                else:
+                    # Otherwise, get all the values
+                    student_id = str(self.tree.item(selected_item)["values"][0]).strip()
+                    module_code = str(self.tree.item(selected_item)["values"][1]).strip()
+                    semester = str(self.tree.item(selected_item)["values"][3]).strip()
+                    values = [student_id, module_code, semester]
             else:
-                # Otherwise, get all the values
-                student_id = str(self.tree.item(selected_item)["values"][0]).strip()
-                module_code = str(self.tree.item(selected_item)["values"][1]).strip()
-                semester = str(self.tree.item(selected_item)["values"][3]).strip()
-                values = [student_id, module_code, semester]
+                return
         else:
             # If no item is selected, display a dialog box to request the values
             if option == 1:

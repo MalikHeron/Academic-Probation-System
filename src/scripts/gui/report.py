@@ -70,7 +70,8 @@ class Report(ttk.Frame):
             validate({"Year": (self.year_field, "int")}, lambda: self.submit(tree), args=False)
 
         # Create generate button
-        self.generate_button = ttk.Button(button_frame, text="Generate", command=submit_action)
+        self.generate_button = ttk.Button(button_frame, text="Generate", command=submit_action, style='Accent.TButton',
+                                          cursor="hand2")
         self.generate_button.pack(side=tk.LEFT, fill='x', expand=False, padx=(10, 0))
 
         # Define columns

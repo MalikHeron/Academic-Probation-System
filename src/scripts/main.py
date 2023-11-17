@@ -1,5 +1,7 @@
 import sys
+import time
 import tkinter as tk
+from datetime import datetime
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -17,6 +19,11 @@ sys.path.append('../../src')
 class AcademicProbationSystem:
 
     def __init__(self):
+        self.start_time = None
+        self.time_label = None
+        self.dark_icon = None
+        self.light_icon = None
+        self.theme_button = None
         self.logo_image = None
         self.background_image = None
         self.window_height = None
@@ -107,23 +114,31 @@ class AcademicProbationSystem:
         canvas.create_text(400, 400, text="Academic Probation System", font=("Arial", 17, "bold"), fill="white")
 
     def setup_components(self):
-        # Create a style
-        style = ttk.Style()
+        # Set styles
+        self.set_styles()
 
-        # Configure the font style for Button
-        style.configure('TButton', font=('Helvetica', 10, 'normal'))
+        # Create a ribbon frame below the tabs
+        ribbon_frame = ttk.Frame(self.window)
+        ribbon_frame.pack(fill=tk.X)
 
-        # Configure the font style for Label
-        style.configure("TLabel", font=('Helvetica', 11, 'normal'))
+        # Load the icon and keep it in memory
+        self.dark_icon = tk.PhotoImage(file="../../res/switch-dark.png")
+        self.light_icon = tk.PhotoImage(file="../../res/switch-light.png")
 
-        # Configure the font style for Entry (text field)
-        style.configure("TEntry", font=('Helvetica', 11, 'normal'))
+        # Create a theme switch button with an icon
+        self.theme_button = ttk.Button(ribbon_frame, text="Switch theme", image=self.dark_icon, compound=tk.LEFT,
+                                       command=self.switch_theme, cursor="hand2")
+        self.theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
-        # Configure the font style for Treeview (table)
-        style.configure("Treeview", font=('Helvetica', 10, 'normal'))
+        # Record the start time
+        self.start_time = time.time()
 
-        # Configure the font style for Notebook (tabs)
-        style.configure("TNotebook.Tab", font=('Helvetica', 10, 'normal'))
+        # Create a label to display the time active
+        self.time_label = ttk.Label(ribbon_frame, text="")
+        self.time_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
+
+        # Update the time active every second
+        self.update_time()
 
         # Create frames
         frame = ttk.Notebook(self.window)
@@ -144,7 +159,7 @@ class AcademicProbationSystem:
         frame.pack(fill=tk.BOTH, expand=True)
 
     def on_closing(self):
-        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
             DatabaseManager().close_connection()  # close database connection
             self.window.destroy()
 
@@ -168,6 +183,53 @@ class AcademicProbationSystem:
 
         # Start the main event loop
         self.window.mainloop()
+
+    def update_time(self):
+        # Get the current date and time
+        now = datetime.now()
+
+        # Format the date and time
+        date_time = now.strftime("%A, %B %d, %Y %I:%M:%S %p")
+
+        # Update the label
+        self.time_label.config(text=date_time)
+
+        # Schedule the next update
+        self.window.after(1000, self.update_time)
+
+    @staticmethod
+    def set_styles():
+        # Create a style
+        style = ttk.Style()
+
+        # Configure the font style for Button
+        style.configure('TButton', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for Label
+        style.configure('TLabel', font=('Helvetica', 11, 'normal'))
+
+        # Configure the font style for Entry (text field)
+        style.configure('TEntry', font=('Helvetica', 16, 'normal'))
+
+        # Configure the font style for Treeview (table)
+        style.configure('Treeview', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for Treeview (table) headings
+        style.configure('Treeview.Heading', font=("Helvetica", 10, "bold"))
+
+        # Configure the font style for Notebook (tabs)
+        style.configure('TNotebook.Tab', font=('Helvetica', 10, 'normal'))
+
+    def switch_theme(self):
+        current_theme = sv_ttk.get_theme()
+        if current_theme == "light":
+            sv_ttk.set_theme("dark")
+            self.theme_button.config(image=self.light_icon)
+            self.set_styles()
+        else:
+            sv_ttk.set_theme("light")
+            self.theme_button.config(image=self.dark_icon)
+            self.set_styles()
 
     def run(self):
         self.splash_window.mainloop()

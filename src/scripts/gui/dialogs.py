@@ -210,7 +210,7 @@ class Dialog(tk.Toplevel):
 
     def single_input_dialog(self, text):
         # Initialize window properties
-        self.initialize_properties("Remove", 440, 150)
+        self.initialize_properties("Input Required", 440, 150)
 
         # Create the input frame
         frame = ttk.Frame(self)
@@ -252,7 +252,7 @@ class Dialog(tk.Toplevel):
 
     def multi_input_dialog(self):
         # Initialize window properties
-        self.initialize_properties("Remove", 440, 250)
+        self.initialize_properties("Input Required", 440, 250)
 
         # Create the input frame
         frame = ttk.Frame(self)
