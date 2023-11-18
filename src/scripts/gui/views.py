@@ -3,7 +3,7 @@ from tkinter import messagebox, ttk
 
 from scripts.database.queries import DatabaseManager
 from scripts.gui.dialogs import Dialog
-from scripts.gui.helpers import create_treeview, button_config, validate
+from scripts.gui.helpers import Helpers
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 global student_count  # keep track of the number of student records
@@ -17,15 +17,10 @@ class Views(ttk.Frame):
         super().__init__(parent)
         self.tree = None
         self.record_count_label = None
-        self.report_frame = None
-        self.generate_report_button = None
-        self.view_details_button = None
         self.student_frame = None
         self.details_frame = None
         self.module_frame = None
-        self.view_modules_button = None
-        self.view_students_button = None
-        self.title = None
+        self.helpers = Helpers()  # create an instance of Helpers
         self.parent = parent
         self.record_count_var = tk.StringVar()
 
@@ -53,12 +48,14 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "w", "w", "w", "w"]
 
         # Create Treeview
-        self.tree = create_treeview(self.student_frame, columns, column_widths, column_alignments, 10, data=data)
+        self.tree = self.helpers.create_treeview(self.student_frame, columns, column_widths, column_alignments, 10,
+                                            data=data)
 
         # Button configurations
-        button_config(self.student_frame, self.tree, db_manager.get_students, self.add_student, self.update_student,
-                      self.remove_student,
-                      self.refresh)
+        self.helpers.button_config(self.student_frame, self.tree, db_manager.get_students, self.add_student,
+                              self.update_student,
+                              self.remove_student,
+                              self.refresh)
 
         return self.student_frame
 
@@ -85,12 +82,12 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "center"]
 
         # Create Treeview
-        self.tree = create_treeview(self.module_frame, columns, column_widths, column_alignments, 10, data=data,
-                                    pad_x=530)
+        self.tree = self.helpers.create_treeview(self.module_frame, columns, column_widths, column_alignments, 10, data=data,
+                                            pad_x=530)
 
         # Button configurations
-        button_config(self.module_frame, self.tree, db_manager.get_modules, self.add_module, self.update_module,
-                      self.remove_module, self.refresh)
+        self.helpers.button_config(self.module_frame, self.tree, db_manager.get_modules, self.add_module, self.update_module,
+                              self.remove_module, self.refresh)
 
         return self.module_frame
 
@@ -117,25 +114,27 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "center", "center", "center"]
 
         # Create Treeview
-        self.tree = create_treeview(self.details_frame, columns, column_widths, column_alignments, 10, data=data,
-                                    pad_x=430)
+        self.tree = self.helpers.create_treeview(self.details_frame, columns, column_widths, column_alignments, 10,
+                                            data=data,
+                                            pad_x=430)
 
         # Button configurations
-        button_config(self.details_frame, self.tree, db_manager.get_details, self.add_details, self.update_details,
-                      self.remove_details, self.refresh)
+        self.helpers.button_config(self.details_frame, self.tree, db_manager.get_details, self.add_details,
+                              self.update_details,
+                              self.remove_details, self.refresh)
 
         return self.details_frame
 
     def add_student(self):
         # Define the submit action
         def submit_action():
-            validate({"ID": (student_id_field, "int"),
-                      "Full Name": (student_name_field, "str"),
-                      "Email": (student_email_field, "email"),
-                      "School": (school_field, "str"),
-                      "Programme": (programme_field, "str"),
-                      "Advisor": (advisor_field, "str")},
-                     self.add_student_to_db)
+            self.helpers.validate({"ID": (student_id_field, "int"),
+                              "Full Name": (student_name_field, "str"),
+                              "Email": (student_email_field, "email"),
+                              "School": (school_field, "str"),
+                              "Programme": (programme_field, "str"),
+                              "Advisor": (advisor_field, "str")},
+                             self.add_student_to_db)
 
         dialog = Dialog(self)  # Create an instance of Dialog
         # Create the student frame
@@ -149,13 +148,13 @@ class Views(ttk.Frame):
 
         # Define the submit action
         def submit_action():
-            validate({"ID": (student_id_field, "int"),
-                      "Full Name": (student_name_field, "str"),
-                      "Email": (student_email_field, "email"),
-                      "School": (school_field, "str"),
-                      "Programme": (programme_field, "str"),
-                      "Advisor": (advisor_field, "str")},
-                     self.update_student_in_db)
+            self.helpers.validate({"ID": (student_id_field, "int"),
+                              "Full Name": (student_name_field, "str"),
+                              "Email": (student_email_field, "email"),
+                              "School": (school_field, "str"),
+                              "Programme": (programme_field, "str"),
+                              "Advisor": (advisor_field, "str")},
+                             self.update_student_in_db)
 
         dialog = Dialog(self)  # Create an instance of Dialog
         # Create the student frame
@@ -173,10 +172,50 @@ class Views(ttk.Frame):
 
         dialog.wait_window()  # This will wait until the dialog is destroyed
 
+    def add_module(self):
+        # Define the submit action
+        def submit_action():
+            self.helpers.validate({
+                "Module Code": (mod_code_field, "str"),
+                "Module Name": (mod_name_field, "str"),
+                "Credits": (mod_credits_field, "int")
+            }, self.add_module_to_db)
+
+        dialog = Dialog(self)  # Create an instance of Dialog
+        # Create the module frame
+        frame, mod_code_field, mod_name_field, mod_credits_field = dialog.module_dialog("Add Module",
+                                                                                        submit_action)
+        dialog.wait_window()  # This will wait until the dialog is destroyed
+
+    def update_module(self):
+        # Get the selected item from the tree
+        selected_item = self.tree.selection()
+
+        # Define the submit action
+        def submit_action():
+            self.helpers.validate({
+                "Module Code": (mod_code_field, "str"),
+                "Module Name": (mod_name_field, "str"),
+                "Credits": (mod_credits_field, "int")
+            }, self.update_module_in_db)
+
+        dialog = Dialog(self)  # Create an instance of Dialog
+        # Create the module frame
+        frame, mod_code_field, mod_name_field, mod_credits_field \
+            = dialog.module_dialog("Update Module", submit_action)
+
+        # Populate fields
+        mod_code_field.insert(0, str(self.tree.item(selected_item)["values"][0]).strip())
+        mod_code_field.configure(state="disabled")
+        mod_name_field.insert(0, str(self.tree.item(selected_item)["values"][1]).strip())
+        mod_credits_field.set(str(self.tree.item(selected_item)["values"][2]).strip())
+
+        dialog.wait_window()  # This will wait until the dialog is destroyed
+
     def add_details(self):
         # Define the submit action
         def submit_action():
-            validate({
+            self.helpers.validate({
                 "ID": (id_field, "int"),
                 "Module": (module_field, "str"),
                 "GPA": (gpa_field, "float"),
@@ -196,7 +235,7 @@ class Views(ttk.Frame):
 
         # Define the submit action
         def submit_action():
-            validate({
+            self.helpers.validate({
                 "ID": (id_field, "int"),
                 "Module": (module_field, "str"),
                 "GPA": (gpa_field, "float"),
@@ -220,45 +259,37 @@ class Views(ttk.Frame):
 
         dialog.wait_window()  # This will wait until the dialog is destroyed
 
-    def add_module(self):
-        # Define the submit action
-        def submit_action():
-            validate({
-                "Module Code": (mod_code_field, "str"),
-                "Module Name": (mod_name_field, "str"),
-                "Credits": (mod_credits_field, "int")
-            }, self.add_module_to_db)
+    # Refresh functions
+    def refresh(self, frame, get_data_func):
+        # Clear the tree
+        self.tree.delete(*self.tree.get_children())
 
-        dialog = Dialog(self)  # Create an instance of Dialog
-        # Create the module frame
-        frame, mod_code_field, mod_name_field, mod_credits_field = dialog.module_dialog("Add Module",
-                                                                                        submit_action)
-        dialog.wait_window()  # This will wait until the dialog is destroyed
+        # Get data
+        data = get_data_func()
 
-    def update_module(self):
-        # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        match get_data_func:
+            case db_manager.get_students:
+                global student_count
+                student_count = len(data)
+                record_count = student_count
+            case db_manager.get_details:
+                global details_count
+                details_count = len(data)
+                record_count = details_count
+            case db_manager.get_modules:
+                global module_count
+                module_count = len(data)
+                record_count = module_count
 
-        # Define the submit action
-        def submit_action():
-            validate({
-                "Module Code": (mod_code_field, "str"),
-                "Module Name": (mod_name_field, "str"),
-                "Credits": (mod_credits_field, "int")
-            }, self.update_module_in_db)
+        # Update the record count
+        frame.after(100, lambda: self.record_count_var.set(f"Number of Records: {record_count}"))
 
-        dialog = Dialog(self)  # Create an instance of Dialog
-        # Create the module frame
-        frame, mod_code_field, mod_name_field, mod_credits_field \
-            = dialog.module_dialog("Update Module", submit_action)
+        # Insert data in table
+        for item in data:
+            self.tree.insert("", "end", values=item)
 
-        # Populate fields
-        mod_code_field.insert(0, str(self.tree.item(selected_item)["values"][0]).strip())
-        mod_code_field.configure(state="disabled")
-        mod_name_field.insert(0, str(self.tree.item(selected_item)["values"][1]).strip())
-        mod_credits_field.set(str(self.tree.item(selected_item)["values"][2]).strip())
-
-        dialog.wait_window()  # This will wait until the dialog is destroyed
+        # Update the tree view
+        self.tree.update_idletasks()
 
     def add_to_db(self, add_record, data, success_message, error_message):
         # Insert the record into the database
@@ -293,43 +324,6 @@ class Views(ttk.Frame):
         else:
             # Display an error message
             messagebox.showerror("Error", error_message)
-
-    # Refresh function
-    def refresh(self, frame, get_data_func):
-        # Clear the tree
-        self.tree.delete(*self.tree.get_children())
-
-        # Get data
-        data = get_data_func()
-
-        match get_data_func:
-            case db_manager.get_students:
-                global student_count
-                student_count = len(data)
-                record_count = student_count
-            case db_manager.get_details:
-                global details_count
-                details_count = len(data)
-                record_count = details_count
-            case db_manager.get_modules:
-                global module_count
-                module_count = len(data)
-                record_count = module_count
-
-        # Update the record count label
-        self.record_count_label.config(foreground="green")
-        self.record_count_var.set("Table updated")
-
-        # Change the color and text back to normal after 1 second
-        frame.after(1000, lambda: self.record_count_label.config(foreground="black"))
-        frame.after(1000, lambda: self.record_count_var.set(f"Number of Records: {record_count}"))
-
-        # Insert data in table
-        for item in data:
-            self.tree.insert("", "end", values=item)
-
-        # Update the tree view
-        self.tree.update_idletasks()
 
     # Add functions
     def add_student_to_db(self, validated_fields):
@@ -470,7 +464,7 @@ class Views(ttk.Frame):
                 # Display an error message
                 messagebox.showerror("Error", "Failed to remove record.")
 
-        # Decrement the record count
+        # Update the record count
         match remove_func:
             case db_manager.remove_student:
                 self.refresh(parent_frame, db_manager.get_students)

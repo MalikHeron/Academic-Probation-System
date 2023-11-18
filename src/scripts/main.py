@@ -49,7 +49,7 @@ class AcademicProbationSystem:
 
         # Set window size
         self.window_width = 1330
-        self.window_height = 800
+        self.window_height = 820
 
         # Get screen width and height
         screen_width = self.window.winfo_screenwidth()
@@ -116,12 +116,12 @@ class AcademicProbationSystem:
         ribbon_frame.pack(fill=tk.X)
 
         # Load the icon and keep it in memory
-        self.dark_theme_icon = tk.PhotoImage(file="../../res/switch-dark.png")
-        self.light_theme_icon = tk.PhotoImage(file="../../res/switch-light.png")
+        self.dark_theme_icon = tk.PhotoImage(file="../../res/switch-light.png")
+        self.light_theme_icon = tk.PhotoImage(file="../../res/switch-dark.png")
 
         # Load the icon and keep it in memory
-        self.dark_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
-        self.light_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
+        self.dark_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
+        self.light_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
 
         # Create a logout button with an icon
         self.logout_button = ttk.Button(ribbon_frame, text="Logout", image=self.dark_logout_icon, compound=tk.LEFT,

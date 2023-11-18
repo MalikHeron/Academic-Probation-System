@@ -10,7 +10,7 @@ from tkinter import ttk
 from tkinter.ttk import Progressbar
 
 from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import create_pdf, animate, validate, create_report_treeview
+from scripts.gui.helpers import Helpers
 from scripts.prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
@@ -20,17 +20,14 @@ class Report(ttk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.container = None
-        self.pdf_files = None
-        self.pdf_buttons = None
         self.generate_button = None
         self.alert_label = None
         self.alerts_to_send = None
         self.progressbar = None
         self.generate_frame = None
-        self.title = None
         self.gpa_field = None
         self.year_field = None
+        self.helpers = Helpers()
         self.parent = parent
         self.alert_var = tk.StringVar()
 
@@ -68,7 +65,7 @@ class Report(ttk.Frame):
         self.gpa_field.pack(side=tk.LEFT, fill='x', expand=False)
 
         def submit_action():
-            validate({"Year": (self.year_field, "int")}, lambda: self.submit(tree), args=False)
+            self.helpers.validate({"Year": (self.year_field, "int")}, lambda: self.submit(tree), args=False)
 
         # Create generate button
         self.generate_button = ttk.Button(button_frame, text="Generate", command=submit_action, style='Accent.TButton',
@@ -81,7 +78,7 @@ class Report(ttk.Frame):
         column_alignments = ['center', 'w', 'center', 'center', 'center']
 
         # Create Treeview
-        tree = create_report_treeview(self.generate_frame, columns, column_widths, column_alignments, 10)
+        tree = self.helpers.create_report_treeview(self.generate_frame, columns, column_widths, column_alignments, 10)
 
         return self.generate_frame
 
@@ -114,7 +111,7 @@ class Report(ttk.Frame):
         # Update knowledge base
         db_manager.update_knowledge_base(year)
 
-        #  Clear the table
+        # Clear the table
         tree.delete(*tree.get_children())
 
         # Counter for the number of alerts to be sent
@@ -175,7 +172,7 @@ class Report(ttk.Frame):
             directory = "../../reports/"
 
             # Create a PDF with the data
-            report_name = create_pdf(data, year, gpa, directory)
+            report_name = self.helpers.create_pdf(data, year, gpa, directory)
 
             # Check if the file was created successfully
             if os.path.exists(report_name):
@@ -312,7 +309,7 @@ class Report(ttk.Frame):
         administrator_message.set_content(administrator_body)
 
         done = [False]
-        t = threading.Thread(target=animate, args=(done,))
+        t = threading.Thread(target=self.helpers.animate, args=(done,))
         t.start()
 
         try:

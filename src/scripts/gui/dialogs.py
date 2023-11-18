@@ -3,7 +3,7 @@ from datetime import datetime
 from tkinter import ttk
 
 from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import create_label_and_field, create_buttons, clear_fields, create_button_widget, validate
+from scripts.gui.helpers import Helpers
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 
@@ -15,12 +15,10 @@ class Dialog(tk.Toplevel):
         self.semester_field = None
         self.id_field = None
         self.input_field = None
-        self.cancel_button = None
-        self.submit_button = None
-        self.label = None
         self.window_height = None
         self.window_width = None
         self.result = None
+        self.helpers = Helpers()
         # Padding
         self.x_padding, self.y_padding, self.f_width, self.l_width = 20, 20, 28, 11
 
@@ -56,13 +54,13 @@ class Dialog(tk.Toplevel):
         self.frame.grid(row=0, column=0, sticky="nsew")
 
         # Student ID label and field
-        student_id_field = create_label_and_field(self.frame, "ID Number", 2, f_width=self.f_width + 15)
+        student_id_field = self.helpers.create_label_and_field(self.frame, "ID Number", 2, f_width=self.f_width + 15)
 
         # Student Name label and field
-        student_name_field = create_label_and_field(self.frame, "Full Name", 3, f_width=self.f_width + 15)
+        student_name_field = self.helpers.create_label_and_field(self.frame, "Full Name", 3, f_width=self.f_width + 15)
 
         # Student Email label and field
-        student_email_field = create_label_and_field(self.frame, "Email", 4, f_width=self.f_width + 15)
+        student_email_field = self.helpers.create_label_and_field(self.frame, "Email", 4, f_width=self.f_width + 15)
 
         # School label and field
         ttk.Label(self.frame, text="School", width=self.l_width, anchor="w").grid(row=5, column=0,
@@ -109,12 +107,12 @@ class Dialog(tk.Toplevel):
         school_var.trace('w', update_programmes)  # Call update_programmes when the school value changes
 
         # Create buttons
-        create_buttons(self.frame, [student_id_field,
-                                    student_name_field,
-                                    student_email_field,
-                                    school_field,
-                                    programme_field,
-                                    advisor_field], 8, submit_action, clear_fields, self.destroy)
+        self.helpers.create_buttons(self.frame, [student_id_field,
+                                            student_name_field,
+                                            student_email_field,
+                                            school_field,
+                                            programme_field,
+                                            advisor_field], 8, submit_action, self.helpers.clear_fields, self.destroy)
 
         student_id_field.focus_set()  # Make the entry field focused
 
@@ -130,10 +128,10 @@ class Dialog(tk.Toplevel):
         self.frame.grid(row=0, column=0, sticky="nsew")
 
         # Module Code label and field
-        mod_code_field = create_label_and_field(self.frame, "Module Code", 2, f_width=self.f_width + 3)
+        mod_code_field = self.helpers.create_label_and_field(self.frame, "Module Code", 2, f_width=self.f_width + 3)
 
         # Module Name label and field
-        mod_name_field = create_label_and_field(self.frame, "Module Name", 3, f_width=self.f_width + 3)
+        mod_name_field = self.helpers.create_label_and_field(self.frame, "Module Name", 3, f_width=self.f_width + 3)
 
         # Credits label and field
         ttk.Label(self.frame, text="Credits", width=self.l_width, anchor="w").grid(row=4, column=0,
@@ -144,8 +142,8 @@ class Dialog(tk.Toplevel):
         mod_credits_field.grid(row=4, column=1)
 
         # Create buttons
-        create_buttons(self.frame, [mod_code_field, mod_name_field, mod_credits_field], 5, submit_action,
-                       clear_fields, self.destroy)
+        self.helpers.create_buttons(self.frame, [mod_code_field, mod_name_field, mod_credits_field], 5, submit_action,
+                               self.helpers.clear_fields, self.destroy)
 
         mod_code_field.focus_set()  # Make the entry field focused
 
@@ -180,11 +178,11 @@ class Dialog(tk.Toplevel):
                                         width=self.f_width + 1, font=('Helvetica', 11, 'normal'))
             module_field.grid(row=3, column=1)
         else:
-            id_field = create_label_and_field(self.frame, "ID Number", 2, f_width=self.f_width + 4)
-            module_field = create_label_and_field(self.frame, "Module", 3, f_width=self.f_width + 4)
+            id_field = self.helpers.create_label_and_field(self.frame, "ID Number", 2, f_width=self.f_width + 4)
+            module_field = self.helpers.create_label_and_field(self.frame, "Module", 3, f_width=self.f_width + 4)
 
         # Grade Point label and field
-        gpa_field = create_label_and_field(self.frame, "GPA", 4, f_width=self.f_width + 4)
+        gpa_field = self.helpers.create_label_and_field(self.frame, "GPA", 4, f_width=self.f_width + 4)
 
         # Semester label and field
         ttk.Label(self.frame, text="Semester", width=self.l_width, anchor="w").grid(row=5, column=0,
@@ -205,8 +203,8 @@ class Dialog(tk.Toplevel):
         year_field.grid(row=6, column=1, padx=self.x_padding, pady=self.y_padding)
 
         # Create buttons
-        create_buttons(self.frame, [id_field, gpa_field, module_field, semester_field,
-                                    year_field], 7, submit_action, clear_fields, self.destroy)
+        self.helpers.create_buttons(self.frame, [id_field, gpa_field, module_field, semester_field,
+                                            year_field], 7, submit_action, self.helpers.clear_fields, self.destroy)
 
         id_field.focus_set()  # Make the entry field focused
 
@@ -241,17 +239,17 @@ class Dialog(tk.Toplevel):
 
         def submit_action():
             if text == "Student ID:":
-                validate({"ID": (self.input_field, "int")}, self.submit_single, args=False)
+                self.helpers.validate({"ID": (self.input_field, "int")}, self.submit_single, args=False)
             else:
-                validate({"Module": (self.input_field, "str")}, self.submit_single, args=False)
+                self.helpers.validate({"Module": (self.input_field, "str")}, self.submit_single, args=False)
 
         # Submit and Cancel buttons
         button_frame = ttk.Frame(self)
         button_frame.grid(row=1, column=0, columnspan=3)
 
         # Create the buttons
-        create_button_widget(button_frame, "Confirm", submit_action)
-        create_button_widget(button_frame, "Cancel", self.destroy)
+        self.helpers.create_button_widget(button_frame, "Confirm", submit_action)
+        self.helpers.create_button_widget(button_frame, "Cancel", self.destroy)
 
         # Make the entry field focused
         self.input_field.focus_set()
@@ -290,18 +288,18 @@ class Dialog(tk.Toplevel):
         self.semester_field.grid(row=2, column=1)
 
         def submit_action():
-            validate({"ID": (self.id_field, "int"),
-                      "Module": (self.module_field, "str"),
-                      "Semester": (self.semester_field, "int")},
-                     self.submit_multi, args=False)
+            self.helpers.validate({"ID": (self.id_field, "int"),
+                              "Module": (self.module_field, "str"),
+                              "Semester": (self.semester_field, "int")},
+                             self.submit_multi, args=False)
 
         # Confirm and Cancel buttons
         button_frame = ttk.Frame(self)
         button_frame.grid(row=3, column=1, columnspan=3)
 
         # Create the buttons
-        create_button_widget(button_frame, "Confirm", submit_action)
-        create_button_widget(button_frame, "Cancel", self.destroy)
+        self.helpers.create_button_widget(button_frame, "Confirm", submit_action)
+        self.helpers.create_button_widget(button_frame, "Cancel", self.destroy)
 
         # Make the entry field focused
         self.id_field.focus_set()
