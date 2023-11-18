@@ -268,9 +268,9 @@ class Views(ttk.Frame):
         self.record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
-        columns = ("School Code", "School Name", "Faculty",)
-        column_widths = [200, 450, 450]
-        column_alignments = ["center", "w", "w"]
+        columns = ("School Code", "School Name", "Faculty", "Administrator")
+        column_widths = [200, 430, 450, 200]
+        column_alignments = ["center", "w", "w", "w"]
 
         # Create search bar
         self.search_bar = self.helpers.create_search_bar(self.school_frame)
@@ -278,7 +278,7 @@ class Views(ttk.Frame):
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.school_frame, columns, column_widths, column_alignments,
                                                    data=self.data,
-                                                   pad_x=180)
+                                                   pad_x=0)
 
         # Update search function whenever search text is changed
         self.update_search()
@@ -404,15 +404,65 @@ class Views(ttk.Frame):
             frame, id_field, name_field, email_field, position_field \
                 = dialog.staff_dialog(title, submit_action)
             fields = [id_field, name_field, email_field, position_field]
+        elif dialog_type == "faculty":
+            def submit_action():
+                self.helpers.validate({
+                    "Code": (code_field, "str"),
+                    "Name": (name_field, "str"),
+                    "Administrator": (admin_field, "str")
+                }, db_action)
+
+            if selected_item is not None:
+                title = "Update Faculty"
+            else:
+                title = "Add Faculty"
+            frame, code_field, name_field, admin_field \
+                = dialog.faculty_dialog(title, submit_action)
+            fields = [code_field, name_field, admin_field]
+        elif dialog_type == "school":
+            def submit_action():
+                self.helpers.validate({
+                    "Code": (code_field, "str"),
+                    "Name": (name_field, "str"),
+                    "Faculty": (faculty_field, "str")
+                }, db_action)
+
+            if selected_item is not None:
+                title = "Update School"
+            else:
+                title = "Add School"
+            frame, code_field, name_field, faculty_field \
+                = dialog.school_dialog(title, submit_action)
+            fields = [code_field, name_field, faculty_field]
+        elif dialog_type == "programme":
+            def submit_action():
+                self.helpers.validate({
+                    "Code": (code_field, "str"),
+                    "Name": (name_field, "str"),
+                    "School": (school_field, "str"),
+                    "Director": (director_field, "str")
+                }, db_action)
+
+            if selected_item is not None:
+                title = "Update Programme"
+            else:
+                title = "Add Programme"
+            frame, code_field, name_field, school_field, director_field \
+                = dialog.programme_dialog(title, submit_action)
+            fields = [code_field, name_field, school_field, director_field]
 
         if selected_item is not None:
             for i, field in enumerate(fields):
-                if hasattr(field, 'set'):
-                    field.set(str(self.tree.item(selected_item)["values"][i]).strip())
-                else:
-                    field.insert(0, str(self.tree.item(selected_item)["values"][i]).strip())
-                if i < 2:  # ID and Module fields are disabled for updates
-                    field.configure(state="disabled")
+                values = self.tree.item(selected_item)["values"]
+                if i < len(values):
+                    if hasattr(field, 'set'):
+                        field.set(str(values[i]).strip())
+                    else:
+                        field.insert(0, str(values[i]).strip())
+                    if i == 0 and dialog_type != "details":
+                        field.configure(state="disabled")
+                    elif i < 2 and dialog_type == "details":  # ID and Module fields are disabled for updates
+                        field.configure(state="disabled")
 
         dialog.wait_window()  # This will wait until the dialog is destroyed
 
@@ -607,20 +657,21 @@ class Views(ttk.Frame):
                        "Failed to add staff record.")
 
     def add_faculty_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_staff, (validated_fields["Code"], validated_fields["Admin"],
-                                                 validated_fields["Name"]),
+        self.add_to_db(db_manager.insert_staff, (validated_fields["Code"], validated_fields["Name"],
+                                                 validated_fields["Administrator"]),
                        "Faculty record added successfully.",
                        "Failed to add faculty record.")
 
     def add_school_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_staff, (validated_fields["Code"], validated_fields["Faculty"],
-                                                 validated_fields["Name"]),
+        self.add_to_db(db_manager.insert_staff, (validated_fields["Code"], validated_fields["Name"],
+                                                 validated_fields["Faculty"]),
                        "School record added successfully.",
                        "Failed to add faculty record.")
 
     def add_programme_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_staff, (validated_fields["Code"], validated_fields["School"],
-                                                 validated_fields["Director"], validated_fields["Name"]),
+        self.add_to_db(db_manager.insert_staff,
+                       (validated_fields["Code"], validated_fields["Name"], validated_fields["School"],
+                        validated_fields["Director"],),
                        "Programme record added successfully.",
                        "Failed to add faculty record.")
 
@@ -655,25 +706,25 @@ class Views(ttk.Frame):
                           "Failed to update staff record.")
 
     def update_faculty_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Code"], validated_fields["Admin"],
-                           validated_fields["Name"]),
+        self.update_in_db((validated_fields["Code"], validated_fields["Name"],
+                           validated_fields["Administrator"]),
                           "faculty",
                           "Faculty record updated successfully.",
                           "Failed to update faculty record.")
 
     def update_school_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Code"], validated_fields["Faculty"],
-                           validated_fields["Name"]),
+        self.update_in_db((validated_fields["Code"], validated_fields["Name"],
+                           validated_fields["Faculty"]),
                           "school",
-                          "Faculty record updated successfully.",
-                          "Failed to update faculty record.")
+                          "School record updated successfully.",
+                          "Failed to update school record.")
 
     def update_programme_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Code"], validated_fields["School"],
-                           validated_fields["Director"], validated_fields["Name"]),
+        self.update_in_db((validated_fields["Code"], validated_fields["Name"],
+                           validated_fields["School"], validated_fields["Director"]),
                           "programme",
-                          "Faculty record updated successfully.",
-                          "Failed to update faculty record.")
+                          "Programme record updated successfully.",
+                          "Failed to update programme record.")
 
     # Remove functions
     def remove_item(self, remove_func, parent_frame, option=1, dialog_prompt=None):
@@ -687,6 +738,7 @@ class Views(ttk.Frame):
                     # If fields is None, get the first value
                     if option == 1:
                         values = str(self.tree.item(selected_item)["values"][0]).strip()
+                        print(values)
                     else:
                         # Otherwise, get all the values
                         student_id = str(self.tree.item(selected_item)["values"][0]).strip()
@@ -800,16 +852,16 @@ class Views(ttk.Frame):
         self.remove_item(db_manager.remove_details, self.details_frame, 2)
 
     def remove_staff(self):
-        self.remove_item(db_manager.remove_details, self.staff_frame, dialog_prompt="Staff ID:")
+        self.remove_item(db_manager.remove_staff, self.staff_frame, dialog_prompt="Staff ID:")
 
     def remove_faculty(self):
-        self.remove_item(db_manager.remove_details, self.faculty_frame, dialog_prompt="Faculty:")
+        self.remove_item(db_manager.remove_faculty, self.faculty_frame, dialog_prompt="Faculty:")
 
     def remove_school(self):
-        self.remove_item(db_manager.remove_details, self.school_frame, dialog_prompt="School:")
+        self.remove_item(db_manager.remove_school, self.school_frame, dialog_prompt="School:")
 
     def remove_programme(self):
-        self.remove_item(db_manager.remove_details, self.programme_frame, dialog_prompt="Programme:")
+        self.remove_item(db_manager.remove_programme, self.programme_frame, dialog_prompt="Programme:")
 
     def update_search(self):
         # Update search function whenever search text is changed

@@ -3,9 +3,9 @@ sql_create_students_table = """CREATE TABLE IF NOT EXISTS student_master (
                                     id integer PRIMARY KEY,
                                     name text NOT NULL,
                                     email text NOT NULL,
-                                    school_code text NOT NULL,
-                                    programme_code text NOT NULL,
-                                    advisor_id integer NOT NULL,
+                                    school_code text,
+                                    programme_code text,
+                                    advisor_id integer,
                                     FOREIGN KEY (school_code) REFERENCES school (school_code),
                                     FOREIGN KEY (programme_code) REFERENCES programme (programme_code),
                                     FOREIGN KEY (advisor_id) REFERENCES staff (staff_id)
@@ -30,8 +30,8 @@ sql_create_details_table = """CREATE TABLE IF NOT EXISTS module_details (
 sql_create_programmes_table = """CREATE TABLE IF NOT EXISTS programme (
                                 programme_code text PRIMARY KEY,
                                 programme_name text NOT NULL,
-                                school_code text NOT NULL,
-                                director_id integer NOT NULL,
+                                school_code text,
+                                director_id integer,
                                 FOREIGN KEY (school_code) REFERENCES school (school_code),
                                 FOREIGN KEY (director_id) REFERENCES staff (staff_id)
                             );"""
@@ -39,14 +39,14 @@ sql_create_programmes_table = """CREATE TABLE IF NOT EXISTS programme (
 sql_create_school_table = """CREATE TABLE IF NOT EXISTS school (
                                 school_code text PRIMARY KEY,
                                 school_name text NOT NULL,
-                                faculty_code text NOT NULL,
+                                faculty_code text,
                                 FOREIGN KEY (faculty_code) REFERENCES faculty (faculty_code)
                             );"""
 
 sql_create_faculty_table = """CREATE TABLE IF NOT EXISTS faculty (
                                 faculty_code text PRIMARY KEY,
                                 faculty_name text NOT NULL,
-                                admin_id integer NOT NULL
+                                admin_id integer
                             );"""
 
 sql_create_staff_table = """CREATE TABLE IF NOT EXISTS staff (

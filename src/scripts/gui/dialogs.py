@@ -232,7 +232,7 @@ class Dialog(tk.Toplevel):
 
         # School label and field
         ttk.Label(self.frame, text="Position", width=self.l_width, anchor="w").grid(row=5, column=0,
-                                                                                  pady=self.y_padding)
+                                                                                    pady=self.y_padding)
         # Position label and field
         position_field = ttk.Combobox(self.frame, state="readonly", values=["Administrator", "Advisor", "Director"],
                                       width=self.f_width,
@@ -240,13 +240,122 @@ class Dialog(tk.Toplevel):
         position_field.grid(row=5, column=1)
 
         # Create buttons
-        self.helpers.create_dialog_buttons(self.frame, [id_field, name_field, email_field, position_field], 7,
+        self.helpers.create_dialog_buttons(self.frame, [id_field, name_field, email_field, position_field], 6,
                                            submit_action, self.helpers.clear_fields,
                                            self.destroy)
 
         id_field.focus_set()  # Make the entry field focused
 
         return self.frame, id_field, name_field, email_field, position_field
+
+    def faculty_dialog(self, title, submit_action):
+        # Initialize window properties
+        self.initialize_properties(title, 550, 300)
+
+        # Create the input frame
+        self.frame = ttk.Frame(self, padding=[20, 0])
+        self.frame.grid(row=0, column=0, sticky="nsew")
+
+        # Faculty Code label and field
+        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 3)
+
+        # Faculty Name label and field
+        name_field = self.helpers.create_label_and_field(self.frame, "Faculty Name", 3, f_width=self.f_width + 3)
+
+        # Admin label and field
+        ttk.Label(self.frame, text="Administrator", width=self.l_width, anchor="w").grid(row=4, column=0,
+                                                                                         padx=self.x_padding,
+                                                                                         pady=self.y_padding)
+        admin_list = db_manager.get_administrator()
+        admin_names = [admin[1] for admin in admin_list]
+        admin_field = ttk.Combobox(self.frame, state="readonly", values=admin_names,
+                                   width=self.f_width + 1, font=('Helvetica', 11, 'normal'))
+        admin_field.grid(row=4, column=1)
+
+        # Create buttons
+        self.helpers.create_dialog_buttons(self.frame, [code_field, name_field, admin_field], 5,
+                                           submit_action, self.helpers.clear_fields,
+                                           self.destroy)
+
+        code_field.focus_set()  # Make the entry field focused
+
+        return self.frame, code_field, name_field, admin_field
+
+    def school_dialog(self, title, submit_action):
+        # Initialize window properties
+        self.initialize_properties(title, 550, 300)
+
+        # Create the input frame
+        self.frame = ttk.Frame(self, padding=[20, 0])
+        self.frame.grid(row=0, column=0, sticky="nsew")
+
+        # School Code label and field
+        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 3)
+
+        # School Name label and field
+        name_field = self.helpers.create_label_and_field(self.frame, "Name", 3, f_width=self.f_width + 3)
+
+        # Faculty label and field
+        ttk.Label(self.frame, text="Faculty", width=self.l_width, anchor="w").grid(row=4, column=0,
+                                                                                   padx=self.x_padding,
+                                                                                   pady=self.y_padding)
+        faculty_list = db_manager.get_faculties()
+        faculty_names = [faculty[1] for faculty in faculty_list]
+        faculty_field = ttk.Combobox(self.frame, state="readonly", values=faculty_names,
+                                     width=self.f_width + 1, font=('Helvetica', 11, 'normal'))
+        faculty_field.grid(row=4, column=1)
+
+        # Create buttons
+        self.helpers.create_dialog_buttons(self.frame, [code_field, name_field, faculty_field], 5,
+                                           submit_action, self.helpers.clear_fields,
+                                           self.destroy)
+
+        code_field.focus_set()  # Make the entry field focused
+
+        return self.frame, code_field, name_field, faculty_field
+
+    def programme_dialog(self, title, submit_action):
+        # Initialize window properties
+        self.initialize_properties(title, 570, 350)
+
+        # Create the input frame
+        self.frame = ttk.Frame(self, padding=[20, 0])
+        self.frame.grid(row=0, column=0, sticky="nsew")
+
+        # Programme Code label and field
+        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 6)
+
+        # Programme Name label and field
+        name_field = self.helpers.create_label_and_field(self.frame, "Name", 3, f_width=self.f_width + 6)
+
+        # School label and field
+        ttk.Label(self.frame, text="School", width=self.l_width, anchor="w").grid(row=4, column=0,
+                                                                                  padx=self.x_padding,
+                                                                                  pady=self.y_padding)
+        school_list = db_manager.get_schools()
+        school_names = [school[1] for school in school_list]
+        school_field = ttk.Combobox(self.frame, state="readonly", values=school_names,
+                                    width=self.f_width + 3, font=('Helvetica', 11, 'normal'))
+        school_field.grid(row=4, column=1)
+
+        # Director label and field
+        ttk.Label(self.frame, text="Director", width=self.l_width, anchor="w").grid(row=5, column=0,
+                                                                                    padx=self.x_padding,
+                                                                                    pady=self.y_padding)
+        director_list = db_manager.get_directors()
+        director_names = [director[1] for director in director_list]
+        director_field = ttk.Combobox(self.frame, state="readonly", values=director_names,
+                                      width=self.f_width + 3, font=('Helvetica', 11, 'normal'))
+        director_field.grid(row=5, column=1)
+
+        # Create buttons
+        self.helpers.create_dialog_buttons(self.frame, [code_field, name_field, school_field, director_field], 6,
+                                           submit_action, self.helpers.clear_fields,
+                                           self.destroy)
+
+        code_field.focus_set()  # Make the entry field focused
+
+        return self.frame, code_field, name_field, school_field, director_field
 
     def single_input_dialog(self, text):
         # Initialize window properties
