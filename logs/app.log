@@ -2,9 +2,4 @@ root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
-root - INFO - [{'Results': [[2, 'Jane Smith', 'janesmith@gmail.com', 'SCIT', 'CNS', 2.48, 2.82, 2.58], [7, 'Emily Davis', 'emilydavis@gmail.com', 'SOE', 'CHE', 1.45, 2.24, 1.84], [20, 'Jack Anderson', 'jack.anderson@yahoo.com', 'CSN', 'MW', 2.11, 0, 2.11], [26, 'Peter Thompson', 'peter.thompson@hotmail.com', 'SONAS', 'FC', 1.55, 2.85, 2.17]]}]
-root - INFO - Alert sent to janesmith@gmail.com
-root - INFO - Alert sent to peter.thompson@hotmail.com
-root - INFO - Alert sent to jack.anderson@yahoo.com
-root - INFO - Alert sent to emilydavis@gmail.com
 root - WARNING - index idx_module_details_unique already exists

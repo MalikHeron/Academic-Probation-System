@@ -86,34 +86,67 @@ class DatabaseManager:
             JOIN school ON student_master.school_code = school.school_code
             JOIN programme ON student_master.programme_code = programme.programme_code
             JOIN staff ON student_master.advisor_id = staff.staff_id
+            ORDER BY id
         """)
         return c.fetchall()
 
     def get_modules(self):
         c = self.conn.cursor()
-        c.execute("""SELECT * FROM module_master""")
+        c.execute("""SELECT * FROM module_master ORDER BY name""")
         return c.fetchall()
 
     def get_details(self):
         c = self.conn.cursor()
         c.execute("""SELECT student_id, module_master.name AS module_name, grade_points, semester, year 
             FROM module_details 
-            JOIN module_master ON module_details.module_code = module_master.code""")
+            JOIN module_master ON module_details.module_code = module_master.code
+            ORDER BY student_id
+        """)
+        return c.fetchall()
+
+    def get_staff(self):
+        c = self.conn.cursor()
+        c.execute("""SELECT * FROM staff ORDER BY staff_id""")
+        return c.fetchall()
+
+    def get_faculties(self):
+        c = self.conn.cursor()
+        c.execute("""
+                SELECT faculty_code, faculty_name, staff.name AS admin_name
+                FROM faculty 
+                JOIN staff ON faculty.admin_id = staff.staff_id
+                ORDER BY faculty_code
+            """)
         return c.fetchall()
 
     def get_schools(self):
         c = self.conn.cursor()
-        c.execute(f"""SELECT * FROM school""")
+        c.execute("""
+                SELECT school_code, school_name, faculty.faculty_name AS faculty_name
+                FROM school 
+                JOIN faculty ON school.faculty_code = faculty.faculty_code
+                ORDER BY school_code
+            """)
         return c.fetchall()
 
-    def get_programmes(self, school_code):
+    def get_programmes(self, school_code=None):
         c = self.conn.cursor()
-        c.execute(f"""SELECT * FROM programme WHERE school_code = '{school_code}'""")
+        if school_code is None:
+            c.execute("""
+                SELECT programme_code, programme_name, school.school_name AS school_name,
+                staff.name AS director_name
+                FROM programme 
+                JOIN school ON programme.school_code = school.school_code
+                JOIN staff ON programme.director_id = staff.staff_id
+                ORDER BY programme_code
+            """)
+        else:
+            c.execute(f"""SELECT * FROM programme WHERE school_code = '{school_code}' ORDER BY programme_name""")
         return c.fetchall()
 
     def get_advisors(self):
         c = self.conn.cursor()
-        c.execute(f"""SELECT * FROM staff WHERE position = 'Advisor'""")
+        c.execute(f"""SELECT * FROM staff WHERE position = 'Advisor' ORDER BY name""")
         return c.fetchall()
 
     def get_student(self, student_id):
@@ -263,6 +296,75 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
+    def insert_staff(self, id_number, name, email, position):
+        try:
+            c = self.conn.cursor()
+            # Insert details
+            c.execute(
+                f"""INSERT INTO staff VALUES ({id_number}, '{name}', '{email}', '{position}')""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_faculty(self, faculty_code, admin_name, faculty_name):
+        try:
+            c = self.conn.cursor()
+            # Get admin id
+            c.execute(f"""SELECT staff_id FROM staff WHERE name = '{admin_name}'""")
+            admin_id = c.fetchone()[0]
+
+            # Insert details
+            c.execute(
+                f"""INSERT INTO faculty VALUES ('{faculty_code}', '{faculty_name}', {admin_id})""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_programme(self, programme_code, school_code, director_name, programme_name):
+        try:
+            c = self.conn.cursor()
+            # Get director id
+            c.execute(f"""SELECT staff_id FROM staff WHERE name = '{director_name}'""")
+            director_id = c.fetchone()[0]
+
+            # Insert details
+            c.execute(
+                f"""INSERT INTO programme VALUES ('{programme_code}', '{school_code}', {director_id}, 
+                '{programme_name}')""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def insert_school(self, school_code, faculty_name, school_name):
+        try:
+            c = self.conn.cursor()
+            # Get faculty code
+            c.execute(f"""SELECT faculty_code FROM faculty WHERE faculty_name = '{faculty_name}'""")
+            faculty_code = c.fetchone()[0]
+
+            # Insert details
+            c.execute(
+                f"""INSERT INTO school VALUES ('{school_code}', '{faculty_code}', '{school_name}')""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
     def update_record(self, data, table_name):
         try:
             c = self.conn.cursor()
@@ -287,6 +389,30 @@ class DatabaseManager:
 
                     c.execute(f"""UPDATE module_details SET grade_points={data[2]}, semester={data[3]}, year={data[4]}
                     WHERE student_id={data[0]} AND module_code='{module_code}'""")
+                case "staff":
+                    c.execute(f"""UPDATE staff SET name='{data[1]}', email='{data[2]}', position='{data[3]}' 
+                    WHERE staff_id={data[0]}""")
+                case "faculty":
+                    # Get admin id
+                    c.execute(f"""SELECT * FROM staff WHERE name = '{data[1]}'""")
+                    admin_id = c.fetchone()[0]
+
+                    c.execute(f"""UPDATE faculty SET admin_id={admin_id}, faculty_name='{data[2]}' 
+                    WHERE faculty_code='{data[0]}'""")
+                case "school":
+                    # Get faculty code
+                    c.execute(f"""SELECT * FROM faculty WHERE faculty_name = '{data[1]}'""")
+                    faculty_code = c.fetchone()[0]
+
+                    c.execute(f"""UPDATE school SET faculty_code='{faculty_code}', school_name='{data[2]}' 
+                    WHERE school_code='{data[0]}'""")
+                case "programme":
+                    # Get director id
+                    c.execute(f"""SELECT * FROM staff WHERE name = '{data[1]}'""")
+                    director_id = c.fetchone()[0]
+
+                    c.execute(f"""UPDATE programme SET director_id={director_id}, programme_name='{data[2]}' 
+                    WHERE programme_code='{data[0]}'""")
                 case _:
                     print("Record could not be updated.")
 
@@ -300,7 +426,6 @@ class DatabaseManager:
     def remove_student(self, student_id):
         try:
             c = self.conn.cursor()
-
             # Check if the student exists
             c.execute(f"""SELECT * FROM student_master WHERE id = {student_id}""")
             if c.fetchone() is None:
@@ -347,7 +472,6 @@ class DatabaseManager:
     def remove_details(self, student_id, module_name, semester):
         try:
             c = self.conn.cursor()
-
             # Get module code
             c.execute(f"""SELECT code FROM module_master WHERE name = '{module_name}'""")
             module_code = c.fetchone()[0]
@@ -364,6 +488,94 @@ class DatabaseManager:
             # Delete record
             c.execute(f"""DELETE FROM module_details WHERE student_id = {student_id} 
                             AND module_code = '{module_code}' AND semester = {semester}""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def remove_staff(self, staff_id):
+        try:
+            c = self.conn.cursor()
+            # Check if the staff exists
+            c.execute(f"""SELECT * FROM staff WHERE staff_id = {staff_id}""")
+            if c.fetchone() is None:
+                logging.error(f"Staff with id [{staff_id}] doesn't exist.")
+                return False
+
+            # Delete record
+            c.execute(f"""DELETE FROM staff WHERE staff_id = {staff_id}""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def remove_faculty(self, faculty_name):
+        try:
+            c = self.conn.cursor()
+            # Get faculty code
+            c.execute(f"""SELECT faculty_code FROM faculty WHERE faculty_name = '{faculty_name}'""")
+            faculty_code = c.fetchone()[0]
+
+            # Check if the faculty exists
+            c.execute(f"""SELECT * FROM faculty WHERE faculty_code = {faculty_code}""")
+            if c.fetchone() is None:
+                logging.error(f"Faculty with code [{faculty_code}] doesn't exist.")
+                return False
+
+            # Delete record
+            c.execute(f"""DELETE FROM faculty WHERE faculty_code = {faculty_code}""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def remove_school(self, school_name):
+        try:
+            c = self.conn.cursor()
+            # Get school name
+            c.execute(f"""SELECT school_code FROM school WHERE school_name = '{school_name}'""")
+            school_code = c.fetchone()[0]
+
+            # Check if the school exists
+            c.execute(f"""SELECT * FROM school WHERE school_code = {school_code}""")
+            if c.fetchone() is None:
+                logging.error(f"School with code [{school_code}] doesn't exist.")
+                return False
+
+            # Delete record
+            c.execute(f"""DELETE FROM school WHERE school_code = {school_code}""")
+
+            # Commit changes
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return False
+
+    def remove_programme(self, programme_name):
+        try:
+            c = self.conn.cursor()
+            # Get programme name
+            c.execute(f"""SELECT programme_code FROM programme WHERE programme_name = '{programme_name}'""")
+            programme_code = c.fetchone()[0]
+
+            # Check if the programme exists
+            c.execute(f"""SELECT * FROM programme WHERE programme_code = {programme_code}""")
+            if c.fetchone() is None:
+                logging.error(f"Programme with code [{programme_code}] doesn't exist.")
+                return False
+
+            # Delete record
+            c.execute(f"""DELETE FROM programme WHERE programme_code = {programme_code}""")
 
             # Commit changes
             self.conn.commit()

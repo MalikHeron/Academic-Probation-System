@@ -29,24 +29,24 @@ sql_create_details_table = """CREATE TABLE IF NOT EXISTS module_details (
 
 sql_create_programmes_table = """CREATE TABLE IF NOT EXISTS programme (
                                 programme_code text PRIMARY KEY,
+                                programme_name text NOT NULL,
                                 school_code text NOT NULL,
                                 director_id integer NOT NULL,
-                                programme_name text NOT NULL,
                                 FOREIGN KEY (school_code) REFERENCES school (school_code),
                                 FOREIGN KEY (director_id) REFERENCES staff (staff_id)
                             );"""
 
 sql_create_school_table = """CREATE TABLE IF NOT EXISTS school (
                                 school_code text PRIMARY KEY,
-                                faculty_code text NOT NULL,
                                 school_name text NOT NULL,
+                                faculty_code text NOT NULL,
                                 FOREIGN KEY (faculty_code) REFERENCES faculty (faculty_code)
                             );"""
 
 sql_create_faculty_table = """CREATE TABLE IF NOT EXISTS faculty (
                                 faculty_code text PRIMARY KEY,
-                                admin_id integer NOT NULL,
-                                faculty_name text NOT NULL
+                                faculty_name text NOT NULL,
+                                admin_id integer NOT NULL
                             );"""
 
 sql_create_staff_table = """CREATE TABLE IF NOT EXISTS staff (
@@ -61,42 +61,42 @@ sql_create_unique_index = """CREATE UNIQUE INDEX idx_module_details_unique ON
                         );"""
 
 # Inserting data into faculty
-sql_insert_faculty = """INSERT OR IGNORE INTO faculty (faculty_code, admin_id, faculty_name) VALUES
-('FENC', 18, 'Faculty of Engineering and Computing'),
-('FELS', 18, 'Faculty of Education and Liberal Studies'),
-('COBAM', 19, 'College of Business Administration and Management'),
-('FOSS', 21, 'Faculty of Science and Sport'),
-('COHS', 22, 'College of Heath Sciences');"""
+sql_insert_faculty = """INSERT OR IGNORE INTO faculty (faculty_code, faculty_name, admin_id) VALUES
+('FENC', 'Faculty of Engineering and Computing', 18),
+('FELS', 'Faculty of Education and Liberal Studies', 19),
+('COBAM', 'College of Business Administration and Management', 20),
+('FOSS', 'Faculty of Science and Sport', 21),
+('COHS', 'College of Heath Sciences', 22);"""
 
 # Inserting data into school
-sql_insert_schools = """INSERT OR IGNORE INTO school (school_code, faculty_code, school_name) VALUES
-('SCIT', 'FENC', 'School of Computing and Information Technology'),
-('SOE', 'FENC', 'School of Engineering'),
-('SOBA', 'COBAM', 'School of Business and Management'),
-('CSN', 'COHS', 'Caribbean School of Nursing'),
-('SOMAS', 'FOSS', 'School of Mathematics & Statistics'),
-('SONAS', 'FOSS', 'School of Natural & Applied Sciences'),
-('CSSS', 'FOSS', 'Caribbean School of Sport Sciences');"""
+sql_insert_schools = """INSERT OR IGNORE INTO school (school_code, school_name, faculty_code) VALUES
+('SCIT', 'School of Computing and Information Technology', 'FENC'),
+('SOE', 'School of Engineering', 'FENC'),
+('SOBA', 'School of Business and Management', 'COBAM'),
+('CSN', 'Caribbean School of Nursing', 'COHS'),
+('SOMAS', 'School of Mathematics & Statistics', 'FOSS'),
+('SONAS', 'School of Natural & Applied Sciences', 'FOSS'),
+('CSSS', 'Caribbean School of Sport Sciences', 'FOSS');"""
 
 # Inserting data into programmes
-sql_insert_programmes = """INSERT OR IGNORE INTO programme (programme_code, school_code, director_id, programme_name) 
+sql_insert_programmes = """INSERT OR IGNORE INTO programme (programme_code, programme_name, school_code, director_id) 
 VALUES
-('CS', 'SCIT', 1, 'Computing'),
-('CNS', 'SCIT', 2, 'Computer Network and Security'),
-('CIS', 'SCIT', 3, 'Computer Information Systems'),
-('APD', 'SCIT', 4, 'Animation Production and Development'),
-('CE', 'SOE', 5, 'Civil Engineering'),
-('ME', 'SOE', 6, 'Mechanical Engineering'),
-('CHE', 'SOE', 7, 'Chemical Engineering'),
-('NS', 'CSN', 8, 'Nursing'),
-('MW', 'CSN', 9, 'Midwifery'),
-('AS', 'SOMAS', 10, 'Actuarial Science'),
-('ES', 'SONAS', 11, 'Environmental Science'),
-('FC', 'SONAS', 12, 'Forensic Chemistry'),
-('SM', 'CSSS', 13, 'Sport Management'),
-('ASC', 'CSSS', 14, 'Art and Science of Coaching'),
-('HRM', 'SOBA', 15, 'Human Resource Management'),
-('ACC', 'SOBA', 16, 'Accounting');"""
+('CS', 'Computing',  'SCIT', 1),
+('CNS', 'Computer Network and Security', 'SCIT', 2),
+('CIS', 'Computer Information Systems', 'SCIT', 3),
+('APD', 'Animation Production and Development', 'SCIT', 4),
+('CE', 'Civil Engineering',  'SOE', 5),
+('ME', 'Mechanical Engineering', 'SOE', 6),
+('CHE', 'Chemical Engineering', 'SOE', 7),
+('NS', 'Nursing', 'CSN', 8),
+('MW', 'Midwifery', 'CSN', 9),
+('AS', 'Actuarial Science', 'SOMAS', 10),
+('ES', 'Environmental Science', 'SONAS', 11),
+('FC', 'Forensic Chemistry', 'SONAS', 12),
+('SM', 'Sport Management', 'CSSS', 13),
+('ASC', 'Art and Science of Coaching', 'CSSS', 14),
+('HRM', 'Human Resource Management', 'SOBA', 15),
+('ACC', 'Accounting', 'SOBA', 16);"""
 
 # Inserting data into staff
 sql_insert_staff = """INSERT OR IGNORE INTO staff (staff_id, name, email, position) VALUES

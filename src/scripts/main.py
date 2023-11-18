@@ -156,15 +156,24 @@ class AcademicProbationSystem:
 
         # Create tabs
         tab1 = Views(frame).student_view()
-        tab2 = Views(frame).module_view()
-        tab3 = Views(frame).details_view()
-        tab4 = Report(frame).generate_view()
+        tab2 = Views(frame).details_view()
+        tab3 = Views(frame).staff_view()
+        tab4 = Views(frame).module_view()
+        tab5 = Views(frame).faculty_view()
+        tab6 = Views(frame).school_view()
+        tab7 = Views(frame).programme_view()
+        tab8 = Report(frame).generate_view()
 
         # Add tabs to notebook
+
         frame.add(tab1, text='Students')
-        frame.add(tab2, text='Modules')
-        frame.add(tab3, text='Student Details')
-        frame.add(tab4, text='Reports')
+        frame.add(tab2, text='Student Details')
+        frame.add(tab3, text='Staff')
+        frame.add(tab4, text='Modules')
+        frame.add(tab5, text='Faculties')
+        frame.add(tab6, text='Schools')
+        frame.add(tab7, text='Programmes')
+        frame.add(tab8, text='Reports')
 
         # Place the frames in the window
         frame.pack(fill=tk.BOTH, expand=True)
@@ -207,7 +216,7 @@ class AcademicProbationSystem:
         self.time_label.config(text=date_time)
 
         # Schedule the next update
-        self.window.after(1000, self.update_time)
+        self.window.after(100, self.update_time)
 
     @staticmethod
     def configure_styles():

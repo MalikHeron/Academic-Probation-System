@@ -66,7 +66,7 @@ class Dialog(tk.Toplevel):
         ttk.Label(self.frame, text="School", width=self.l_width, anchor="w").grid(row=5, column=0,
                                                                                   pady=self.y_padding)
         school_list = db_manager.get_schools()
-        school_names = [school[2] for school in school_list]  # Extract school names
+        school_names = [school[1] for school in school_list]  # Extract school names
         school_var = tk.StringVar()  # Create a StringVar to hold the school value
         school_field = ttk.Combobox(self.frame, state="readonly", values=school_names, width=self.f_width + 12,
                                     textvariable=school_var, font=('Helvetica', 11, 'normal'))
@@ -96,7 +96,7 @@ class Dialog(tk.Toplevel):
                 faculty = school_list[school_names.index(school)][0]  # Get the faculty for the selected school
                 programme_field['state'] = 'readonly'  # Enable the programme field
                 programme_list = db_manager.get_programmes(faculty)  # Get programmes for the selected school
-                programme_names = [programme[3] for programme in programme_list]  # Extract programme names
+                programme_names = [programme[1] for programme in programme_list]  # Extract programme names
                 programme_var.set('')  # Clear the current programme value
                 programme_field['values'] = programme_names  # Update the programme field values
             else:
@@ -112,7 +112,8 @@ class Dialog(tk.Toplevel):
                                                         student_email_field,
                                                         school_field,
                                                         programme_field,
-                                                        advisor_field], 8, submit_action, self.helpers.clear_fields, self.destroy)
+                                                        advisor_field], 8, submit_action, self.helpers.clear_fields,
+                                           self.destroy)
 
         student_id_field.focus_set()  # Make the entry field focused
 
@@ -142,7 +143,8 @@ class Dialog(tk.Toplevel):
         mod_credits_field.grid(row=4, column=1)
 
         # Create buttons
-        self.helpers.create_dialog_buttons(self.frame, [mod_code_field, mod_name_field, mod_credits_field], 5, submit_action,
+        self.helpers.create_dialog_buttons(self.frame, [mod_code_field, mod_name_field, mod_credits_field], 5,
+                                           submit_action,
                                            self.helpers.clear_fields, self.destroy)
 
         mod_code_field.focus_set()  # Make the entry field focused
@@ -204,11 +206,47 @@ class Dialog(tk.Toplevel):
 
         # Create buttons
         self.helpers.create_dialog_buttons(self.frame, [id_field, gpa_field, module_field, semester_field,
-                                                        year_field], 7, submit_action, self.helpers.clear_fields, self.destroy)
+                                                        year_field], 7, submit_action, self.helpers.clear_fields,
+                                           self.destroy)
 
         id_field.focus_set()  # Make the entry field focused
 
         return self.frame, id_field, gpa_field, module_field, semester_field, year_field, year_var
+
+    def staff_dialog(self, title, submit_action):
+        # Initialize window properties
+        self.initialize_properties(title, 550, 350)
+
+        # Create the input frame
+        self.frame = ttk.Frame(self, padding=[50, 0])
+        self.frame.grid(row=0, column=0, sticky="nsew")
+
+        # Staff ID label and field
+        id_field = self.helpers.create_label_and_field(self.frame, "ID Number", 2, f_width=self.f_width + 3)
+
+        # Staff Name label and field
+        name_field = self.helpers.create_label_and_field(self.frame, "Full Name", 3, f_width=self.f_width + 3)
+
+        # Staff Email label and field
+        email_field = self.helpers.create_label_and_field(self.frame, "Email", 4, f_width=self.f_width + 3)
+
+        # School label and field
+        ttk.Label(self.frame, text="Position", width=self.l_width, anchor="w").grid(row=5, column=0,
+                                                                                  pady=self.y_padding)
+        # Position label and field
+        position_field = ttk.Combobox(self.frame, state="readonly", values=["Administrator", "Advisor", "Director"],
+                                      width=self.f_width,
+                                      font=('Helvetica', 11, 'normal'))
+        position_field.grid(row=5, column=1)
+
+        # Create buttons
+        self.helpers.create_dialog_buttons(self.frame, [id_field, name_field, email_field, position_field], 7,
+                                           submit_action, self.helpers.clear_fields,
+                                           self.destroy)
+
+        id_field.focus_set()  # Make the entry field focused
+
+        return self.frame, id_field, name_field, email_field, position_field
 
     def single_input_dialog(self, text):
         # Initialize window properties
@@ -219,23 +257,59 @@ class Dialog(tk.Toplevel):
         frame.grid(row=0, column=1, sticky="nsew")
 
         if text == "Student ID:":
-            # ID number label and field
             ttk.Label(frame, text=text, width=self.l_width, anchor="w").grid(row=0, column=0, padx=self.x_padding,
                                                                              pady=self.y_padding)
+            # Get student ids
             student_list = db_manager.get_students()
-            student_ids = [student[0] for student in student_list]  # Extract module codes
+            student_ids = [student[0] for student in student_list]
             self.input_field = ttk.Combobox(frame, state="readonly", values=student_ids, width=self.f_width,
                                             font=('Helvetica', 11, 'normal'))
             self.input_field.grid(row=0, column=1)
-        else:
-            # Module label and field
-            ttk.Label(frame, text=text, width=self.l_width, anchor="w").grid(row=1, column=0, padx=self.x_padding,
+        elif text == "Module:":
+            ttk.Label(frame, text=text, width=self.l_width, anchor="w").grid(row=0, column=0, padx=self.x_padding,
                                                                              pady=self.y_padding)
+            # Get module names
             module_list = db_manager.get_modules()
-            module_names = [module[1] for module in module_list]  # Extract module names
+            module_names = [module[1] for module in module_list]
             self.input_field = ttk.Combobox(frame, state="readonly", values=module_names, width=self.f_width,
                                             font=('Helvetica', 11, 'normal'))
-            self.input_field.grid(row=1, column=1)
+            self.input_field.grid(row=0, column=1)
+        elif text == "Staff ID:":
+            ttk.Label(frame, text=text, width=self.l_width, anchor="w").grid(row=0, column=0, padx=self.x_padding,
+                                                                             pady=self.y_padding)
+            # Get staff id
+            staff_list = db_manager.get_staff()
+            staff_ids = [staff[0] for staff in staff_list]
+            self.input_field = ttk.Combobox(frame, state="readonly", values=staff_ids, width=self.f_width,
+                                            font=('Helvetica', 11, 'normal'))
+            self.input_field.grid(row=0, column=1)
+        elif text == "Faculty:":
+            ttk.Label(frame, text=text, width=self.l_width, anchor="w").grid(row=0, column=0, padx=self.x_padding,
+                                                                             pady=self.y_padding)
+            # Get faculty names
+            faculty_list = db_manager.get_faculties()
+            faculty_names = [faculty[1] for faculty in faculty_list]
+            self.input_field = ttk.Combobox(frame, state="readonly", values=faculty_names, width=self.f_width,
+                                            font=('Helvetica', 11, 'normal'))
+            self.input_field.grid(row=0, column=1)
+        elif text == "School:":
+            ttk.Label(frame, text=text, width=self.l_width, anchor="w").grid(row=0, column=0, padx=self.x_padding,
+                                                                             pady=self.y_padding)
+            # Get school names
+            school_list = db_manager.get_schools()
+            school_names = [school[1] for school in school_list]
+            self.input_field = ttk.Combobox(frame, state="readonly", values=school_names, width=self.f_width,
+                                            font=('Helvetica', 11, 'normal'))
+            self.input_field.grid(row=0, column=1)
+        elif text == "Programme:":
+            ttk.Label(frame, text=text, width=self.l_width, anchor="w").grid(row=0, column=0, padx=self.x_padding,
+                                                                             pady=self.y_padding)
+            # Get programme names
+            programme_list = db_manager.get_programmes()
+            programme_names = [programme[1] for programme in programme_list]
+            self.input_field = ttk.Combobox(frame, state="readonly", values=programme_names, width=self.f_width,
+                                            font=('Helvetica', 11, 'normal'))
+            self.input_field.grid(row=0, column=1)
 
         def submit_action():
             if text == "Student ID:":
@@ -289,9 +363,9 @@ class Dialog(tk.Toplevel):
 
         def submit_action():
             self.helpers.validate({"ID": (self.id_field, "int"),
-                              "Module": (self.module_field, "str"),
-                              "Semester": (self.semester_field, "int")},
-                             self.submit_multi, args=False)
+                                   "Module": (self.module_field, "str"),
+                                   "Semester": (self.semester_field, "int")},
+                                  self.submit_multi, args=False)
 
         # Confirm and Cancel buttons
         button_frame = ttk.Frame(self)
