@@ -54,7 +54,8 @@ class Report(ttk.Frame):
         year_var = tk.StringVar()  # Create a StringVar
         self.year_field = ttk.Spinbox(button_frame, from_=2016, to=current_year, width=f_width - 4,
                                       state="readonly",
-                                      textvariable=year_var)  # Associate the StringVar with the Spinbox
+                                      textvariable=year_var,
+                                      font=('Helvetica', 11, 'normal'))  # Associate the StringVar with the Spinbox
         self.year_field.pack(side=tk.LEFT, fill='x', expand=False)
 
         # Create gpa labels and entry fields
@@ -63,7 +64,7 @@ class Report(ttk.Frame):
         # Create gpa labels and entry fields
         gpa_label = ttk.Label(button_frame, text="GPA:")
         gpa_label.pack(side=tk.LEFT, padx=(0, 10))
-        self.gpa_field = ttk.Entry(button_frame, width=f_width)
+        self.gpa_field = ttk.Entry(button_frame, width=f_width, font=('Helvetica', 11, 'normal'))
         self.gpa_field.pack(side=tk.LEFT, fill='x', expand=False)
 
         def submit_action():
@@ -154,7 +155,7 @@ class Report(ttk.Frame):
                                                director, administrator))
                     t.start()
 
-        # If there are alerts to send, show the label and progress bar
+        # If there are alerts to send, show the label and progress bar and create the PDF
         if self.alerts_to_send > 0:
             # Create alert frame
             alert_frame = ttk.Frame(self.generate_frame)
@@ -170,17 +171,17 @@ class Report(ttk.Frame):
             self.progressbar.pack(side=tk.LEFT, fill='x', expand=False)
             self.progressbar.start(3)
 
-        # Specify the directory where the report will be saved
-        directory = "../../reports/"
+            # Specify the directory where the report will be saved
+            directory = "../../reports/"
 
-        # Create a PDF with the data
-        report_name = create_pdf(data, year, gpa, directory)
+            # Create a PDF with the data
+            report_name = create_pdf(data, year, gpa, directory)
 
-        # Check if the file was created successfully
-        if os.path.exists(report_name):
-            messagebox.showinfo("Success", "Report saved as a PDF successfully.")
-        else:
-            messagebox.showerror("Error", "Report could not be saved as a PDF.")
+            # Check if the file was created successfully
+            if os.path.exists(report_name):
+                messagebox.showinfo("Success", "Report saved as a PDF successfully.")
+            else:
+                messagebox.showerror("Error", "Report could not be saved as a PDF.")
 
     def send_alert(self, name, email, school, programme, cumulative_gpa, gpa, advisor, director,
                    administrator):

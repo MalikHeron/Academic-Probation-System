@@ -25,7 +25,7 @@
 - SQLite
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.12+
 - Prolog SWI Compiler
 
 ### PIP Dependencies

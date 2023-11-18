@@ -19,10 +19,15 @@ sys.path.append('../../src')
 class AcademicProbationSystem:
 
     def __init__(self):
+        self.emoji_icon = None
+        self.greeting_label = None
+        self.light_logout_icon = None
+        self.dark_logout_icon = None
+        self.logout_button = None
         self.start_time = None
         self.time_label = None
-        self.dark_icon = None
-        self.light_icon = None
+        self.dark_theme_icon = None
+        self.light_theme_icon = None
         self.theme_button = None
         self.logo_image = None
         self.background_image = None
@@ -95,47 +100,53 @@ class AcademicProbationSystem:
         frame.grid(row=0, column=0, sticky="nsew")
 
         # background image
-        img = Image.open("../../res/background.png").resize((800, 600))
+        img = Image.open("../../res/splash.jpg").resize((800, 600))
         self.background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
         canvas = tk.Canvas(frame, width=800, height=600)
         canvas.pack(fill=tk.BOTH, expand=True)
         canvas.create_image(0, 0, image=self.background_image, anchor='nw')
 
-        # Create a semi-transparent grey rectangle
-        canvas.create_rectangle(0, 0, 800, 600, fill='#808080', stipple='gray25')
-
-        # logo image
-        logo_img = Image.open("../../res/logo.png").resize((150, 200))
-        self.logo_image = ImageTk.PhotoImage(logo_img)  # Keep a reference to the image object
-        canvas.create_image(400, 280, image=self.logo_image)
-
-        # title
-        canvas.create_text(400, 400, text="Academic Probation System", font=("Arial", 17, "bold"), fill="white")
-
     def setup_components(self):
         # Set styles
-        self.set_styles()
+        self.configure_styles()
 
         # Create a ribbon frame below the tabs
         ribbon_frame = ttk.Frame(self.window)
         ribbon_frame.pack(fill=tk.X)
 
         # Load the icon and keep it in memory
-        self.dark_icon = tk.PhotoImage(file="../../res/switch-dark.png")
-        self.light_icon = tk.PhotoImage(file="../../res/switch-light.png")
+        self.dark_theme_icon = tk.PhotoImage(file="../../res/switch-dark.png")
+        self.light_theme_icon = tk.PhotoImage(file="../../res/switch-light.png")
+
+        # Load the icon and keep it in memory
+        self.dark_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
+        self.light_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
+
+        # Create a logout button with an icon
+        self.logout_button = ttk.Button(ribbon_frame, text="Logout", image=self.dark_logout_icon, compound=tk.LEFT,
+                                        takefocus=False, cursor="hand2", command=self.on_closing)
+        self.logout_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
-        self.theme_button = ttk.Button(ribbon_frame, text="Switch theme", image=self.dark_icon, compound=tk.LEFT,
-                                       command=self.switch_theme, cursor="hand2")
+        self.theme_button = ttk.Button(ribbon_frame, text="Dark Mode", image=self.dark_theme_icon, compound=tk.LEFT,
+                                       command=self.switch_theme, takefocus=False, cursor="hand2")
         self.theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
-        # Record the start time
-        self.start_time = time.time()
+        # Load the icon and keep it in memory
+        self.emoji_icon = tk.PhotoImage(file="../../res/smile.png")
+
+        # Create a label to display the time active
+        self.greeting_label = ttk.Label(ribbon_frame, text='Welcome back, Malik', image=self.emoji_icon,
+                                        compound=tk.RIGHT)
+        self.greeting_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
 
         # Create a label to display the time active
         self.time_label = ttk.Label(ribbon_frame, text="")
-        self.time_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
+        self.time_label.pack(side=tk.RIGHT, padx=(0, 20), pady=(5, 5))
+
+        # Record the start time
+        self.start_time = time.time()
 
         # Update the time active every second
         self.update_time()
@@ -189,7 +200,8 @@ class AcademicProbationSystem:
         now = datetime.now()
 
         # Format the date and time
-        date_time = now.strftime("%A, %B %d, %Y %I:%M:%S %p")
+        # ("%A, %B %d, %Y %I:%M:%S %p")
+        date_time = now.strftime("%I:%M:%S %p")
 
         # Update the label
         self.time_label.config(text=date_time)
@@ -198,7 +210,7 @@ class AcademicProbationSystem:
         self.window.after(1000, self.update_time)
 
     @staticmethod
-    def set_styles():
+    def configure_styles():
         # Create a style
         style = ttk.Style()
 
@@ -208,9 +220,6 @@ class AcademicProbationSystem:
         # Configure the font style for Label
         style.configure('TLabel', font=('Helvetica', 11, 'normal'))
 
-        # Configure the font style for Entry (text field)
-        style.configure('TEntry', font=('Helvetica', 16, 'normal'))
-
         # Configure the font style for Treeview (table)
         style.configure('Treeview', font=('Helvetica', 10, 'normal'))
 
@@ -218,18 +227,20 @@ class AcademicProbationSystem:
         style.configure('Treeview.Heading', font=("Helvetica", 10, "bold"))
 
         # Configure the font style for Notebook (tabs)
-        style.configure('TNotebook.Tab', font=('Helvetica', 10, 'normal'))
+        style.configure('TNotebook.Tab', focuscolor='', font=('Helvetica', 10, 'normal'))
 
     def switch_theme(self):
         current_theme = sv_ttk.get_theme()
         if current_theme == "light":
             sv_ttk.set_theme("dark")
-            self.theme_button.config(image=self.light_icon)
-            self.set_styles()
+            self.theme_button.config(text="Light Mode", image=self.light_theme_icon)
+            self.logout_button.config(image=self.light_logout_icon)
+            self.configure_styles()
         else:
             sv_ttk.set_theme("light")
-            self.theme_button.config(image=self.dark_icon)
-            self.set_styles()
+            self.theme_button.config(text="Dark Mode", image=self.dark_theme_icon)
+            self.logout_button.config(image=self.dark_logout_icon)
+            self.configure_styles()
 
     def run(self):
         self.splash_window.mainloop()

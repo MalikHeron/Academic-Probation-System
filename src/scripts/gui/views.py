@@ -86,7 +86,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = create_treeview(self.module_frame, columns, column_widths, column_alignments, 10, data=data,
-                                    padx=530)
+                                    pad_x=530)
 
         # Button configurations
         button_config(self.module_frame, self.tree, db_manager.get_modules, self.add_module, self.update_module,
@@ -118,7 +118,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = create_treeview(self.details_frame, columns, column_widths, column_alignments, 10, data=data,
-                                    padx=430)
+                                    pad_x=430)
 
         # Button configurations
         button_config(self.details_frame, self.tree, db_manager.get_details, self.add_details, self.update_details,
@@ -378,20 +378,34 @@ class Views(ttk.Frame):
     # Remove functions
     def remove_item(self, remove_func, parent_frame, option=1, dialog_prompt=None):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_items = self.tree.selection()
 
         # If an item is selected, get its values
-        if selected_item:
-            if messagebox.askokcancel("Confirm", "Remove this record?"):
-                # If fields is None, get the first value
-                if option == 1:
-                    values = str(self.tree.item(selected_item)["values"][0]).strip()
-                else:
-                    # Otherwise, get all the values
-                    student_id = str(self.tree.item(selected_item)["values"][0]).strip()
-                    module_code = str(self.tree.item(selected_item)["values"][1]).strip()
-                    semester = str(self.tree.item(selected_item)["values"][3]).strip()
-                    values = [student_id, module_code, semester]
+        if selected_items:
+            if messagebox.askokcancel("Confirm", "Are you sure you want to remove the selected item(s)?"):
+                for selected_item in selected_items:
+                    # If fields is None, get the first value
+                    if option == 1:
+                        values = str(self.tree.item(selected_item)["values"][0]).strip()
+                    else:
+                        # Otherwise, get all the values
+                        student_id = str(self.tree.item(selected_item)["values"][0]).strip()
+                        module_code = str(self.tree.item(selected_item)["values"][1]).strip()
+                        semester = str(self.tree.item(selected_item)["values"][3]).strip()
+                        values = [student_id, module_code, semester]
+
+                    # Call the remove function with the appropriate arguments
+                    if option == 1:
+                        removed = remove_func(values)
+                    else:
+                        removed = remove_func(*values)
+
+                    # If the item was successfully removed, delete it from the tree
+                    if removed is True:
+                        self.tree.delete(selected_item)
+                    else:
+                        # Display an error message
+                        messagebox.showerror("Error", "Failed to remove record.")
             else:
                 return
         else:
@@ -417,56 +431,56 @@ class Views(ttk.Frame):
                 if values is None:
                     return
 
-        # If options is 1, call the remove function with a single argument
-        # Otherwise, unpack the values and pass them as arguments
-        if option == 1:
-            removed = remove_func(values)
-        else:
-            removed = remove_func(*values)
-
-        # If the item was successfully removed
-        if removed is True:
-            # If an item was selected, delete it from the tree
-            if selected_item:
-                self.tree.delete(selected_item)
+            # If options is 1, call the remove function with a single argument
+            # Otherwise, unpack the values and pass them as arguments
+            if option == 1:
+                removed = remove_func(values)
             else:
-                # If no item was selected, find and delete the item from the tree
-                for item in self.tree.get_children():
-                    # Get the first value of the item
-                    tree_id = str(self.tree.item(item)["values"][0]).strip()
-                    tree_code = str(self.tree.item(item)["values"][1]).strip()
+                removed = remove_func(*values)
 
-                    # If option is 1, compare the first value
-                    if option == 1:
-                        if tree_id == values:
-                            self.tree.delete(item)
-                            break
-                        elif tree_code == values:
-                            self.tree.delete(item)
-                            break
-                    else:
-                        # Otherwise, compare all the values
-                        tree_mod = str(self.tree.item(item)["values"][1]).strip()
-                        tree_sem = str(self.tree.item(item)["values"][3]).strip()
+            # If the item was successfully removed
+            if removed is True:
+                # If an item was selected, delete it from the tree
+                if selected_items:
+                    self.tree.delete(selected_items)
+                else:
+                    # If no item was selected, find and delete the item from the tree
+                    for item in self.tree.get_children():
+                        # Get the first value of the item
+                        tree_id = str(self.tree.item(item)["values"][0]).strip()
+                        tree_code = str(self.tree.item(item)["values"][1]).strip()
 
-                        if tree_id == values[0] and tree_mod == values[1] and tree_sem == values[2]:
-                            self.tree.delete(item)
-                            break
+                        # If option is 1, compare the first value
+                        if option == 1:
+                            if tree_id == values:
+                                self.tree.delete(item)
+                                break
+                            elif tree_code == values:
+                                self.tree.delete(item)
+                                break
+                        else:
+                            # Otherwise, compare all the values
+                            tree_mod = str(self.tree.item(item)["values"][1]).strip()
+                            tree_sem = str(self.tree.item(item)["values"][3]).strip()
 
-            # Decrement the record count
-            match remove_func:
-                case db_manager.remove_student:
-                    self.refresh(parent_frame, db_manager.get_students)
-                case db_manager.remove_module:
-                    self.refresh(parent_frame, db_manager.get_modules)
-                case db_manager.remove_details:
-                    self.refresh(parent_frame, db_manager.get_details)
+                            if tree_id == values[0] and tree_mod == values[1] and tree_sem == values[2]:
+                                self.tree.delete(item)
+                                break
+            else:
+                # Display an error message
+                messagebox.showerror("Error", "Failed to remove record.")
 
-            # Refresh the tree view
-            self.tree.update_idletasks()
-        else:
-            # Display an error message
-            messagebox.showerror("Error", "Failed to remove record.")
+        # Decrement the record count
+        match remove_func:
+            case db_manager.remove_student:
+                self.refresh(parent_frame, db_manager.get_students)
+            case db_manager.remove_module:
+                self.refresh(parent_frame, db_manager.get_modules)
+            case db_manager.remove_details:
+                self.refresh(parent_frame, db_manager.get_details)
+
+        # Refresh the tree view
+        self.tree.update_idletasks()
 
     def remove_student(self):
         self.remove_item(db_manager.remove_student, self.student_frame, dialog_prompt="Student ID:")

@@ -97,8 +97,7 @@ def search(tree, data, search_text):
             tree.insert("", "end", values=item)
 
 
-def create_treeview(frame, columns, column_widths, column_alignments, pad, height=23, data=None, searchable=True,
-                    padx=0):
+def create_treeview(frame, columns, column_widths, column_alignments, pad, height=23, data=None, pad_x=0):
     # Create Canvas in new window
     canvas = tk.Canvas(frame)
     canvas.pack(side=tk.LEFT, fill='both', expand=True)
@@ -109,17 +108,16 @@ def create_treeview(frame, columns, column_widths, column_alignments, pad, heigh
     # Add that new frame to a new window on the canvas
     canvas.create_window((0, 0), window=second_frame, anchor="nw")
 
-    if searchable:
-        # Create search bar
-        search_frame = ttk.Frame(second_frame)
-        search_frame.pack(fill='x', padx=pad, pady=10)
-        search_label = ttk.Label(search_frame, text="Search:")
-        search_label.pack(side=tk.LEFT, padx=(0, 10))
-        search_entry = ttk.Entry(search_frame, width=20, style='TEntry')
-        search_entry.pack(side=tk.LEFT, fill='x', expand=False)
+    # Create search bar
+    search_frame = ttk.Frame(second_frame)
+    search_frame.pack(fill='x', padx=pad, pady=10)
+    search_label = ttk.Label(search_frame, text="Search:")
+    search_label.pack(side=tk.LEFT, padx=(0, 10))
+    search_entry = ttk.Entry(search_frame, width=20, font=('Helvetica', 11, 'normal'))
+    search_entry.pack(side=tk.LEFT, fill='x', expand=False)
 
-        # Update search function whenever search text is changed
-        search_entry.bind('<KeyRelease>', lambda event: search(tree, data, search_entry.get()))
+    # Update search function whenever search text is changed
+    search_entry.bind('<KeyRelease>', lambda event: search(tree, data, search_entry.get()))
 
     def on_configure(event):
         # Update scroll region after starting 'mainloop'
@@ -136,7 +134,7 @@ def create_treeview(frame, columns, column_widths, column_alignments, pad, heigh
 
     # Add a Scrollbar to the Treeview
     scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
-    scrollbar.pack(side=tk.RIGHT, fill='y', padx=(padx), pady=10)
+    scrollbar.pack(side=tk.RIGHT, fill='y', padx=pad_x, pady=10)
 
     # Configure the Treeview
     tree.configure(yscrollcommand=scrollbar.set)
@@ -161,11 +159,11 @@ def create_treeview(frame, columns, column_widths, column_alignments, pad, heigh
 
 def create_report_treeview(frame, columns, column_widths, column_alignments, pad, height=23, data=None):
     # Create Canvas in new window
-    canvas = tk.Canvas(frame)
+    canvas = tk.Canvas(frame, takefocus=False)
     canvas.pack(side=tk.LEFT, fill='both', expand=True)
 
     # Create another frame inside the canvas
-    report_frame = ttk.Frame(canvas)
+    report_frame = ttk.Frame(canvas, takefocus=False)
 
     # Add that new frame to a new window on the canvas
     canvas.create_window((0, 0), window=report_frame, anchor="ne")
@@ -181,7 +179,7 @@ def create_report_treeview(frame, columns, column_widths, column_alignments, pad
     canvas.bind('<Configure>', on_configure)
 
     # Create Treeview in second frame
-    gpa_tree = ttk.Treeview(report_frame, show='headings', style="Treeview", height=height)
+    gpa_tree = ttk.Treeview(report_frame, show='headings', style="Treeview", height=height, takefocus=False)
 
     # Add a Scrollbar to the Treeview
     scrollbar = ttk.Scrollbar(report_frame, orient="vertical", command=gpa_tree.yview)
@@ -206,7 +204,26 @@ def create_report_treeview(frame, columns, column_widths, column_alignments, pad
     gpa_tree.pack(padx=pad)
 
     # Create another frame inside the canvas
-    pdf_frame = ttk.Frame(canvas)
+    pdf_frame = ttk.Frame(canvas, takefocus=False)
+
+    # Create a frame for the Treeview and the Scrollbar
+    tree_frame = ttk.Frame(pdf_frame, takefocus=False)
+
+    # Create Treeview in the new frame
+    file_tree = ttk.Treeview(tree_frame, show='headings', style="Treeview", height=height, takefocus=False)
+
+    # Add a Scrollbar to the Treeview
+    scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=file_tree.yview)
+
+    # Pack the Treeview and the Scrollbar into the new frame
+    file_tree.pack(side=tk.LEFT, fill='both', expand=True)
+    scrollbar.pack(side=tk.RIGHT, fill='y')
+
+    # Configure the Treeview
+    file_tree.configure(yscrollcommand=scrollbar.set)
+
+    # Pack the new frame into the pdf_frame
+    tree_frame.pack()
 
     # Add that new frame to a new window on the canvas
     canvas.create_window((0, 0), window=pdf_frame, anchor="nw")
@@ -220,16 +237,6 @@ def create_report_treeview(frame, columns, column_widths, column_alignments, pad
         pdf_frame.configure(width=event.width)
 
     canvas.bind('<Configure>', on_configure)
-
-    # Create Treeview in second frame
-    file_tree = ttk.Treeview(pdf_frame, show='headings', style="Treeview", height=height)
-
-    # Add a Scrollbar to the Treeview
-    scrollbar = ttk.Scrollbar(pdf_frame, orient="vertical", command=file_tree.yview)
-    scrollbar.pack(side=tk.RIGHT, fill='y')
-
-    # Configure the Treeview
-    file_tree.configure(yscrollcommand=scrollbar.set)
 
     pdf_columns = ("Generated Reports", "Size")
     pdf_widths = [280, 70]
@@ -270,7 +277,7 @@ def create_report_treeview(frame, columns, column_widths, column_alignments, pad
     file_tree.pack(padx=(30, pad))
 
     # Create a delete button
-    delete_button = ttk.Button(pdf_frame, text="Delete", state="disabled", cursor="hand2")
+    delete_button = ttk.Button(pdf_frame, text="Delete", state="disabled", cursor="hand2", takefocus=False)
 
     # Function to delete a file
     def delete_file():
@@ -307,13 +314,14 @@ def create_report_treeview(frame, columns, column_widths, column_alignments, pad
 
 def create_button(frame, text, command):
     # Create a button with the new style
-    button = ttk.Button(frame, text=text, width=50, command=command, style='TButton', cursor="hand2")
+    button = ttk.Button(frame, text=text, width=50, command=command, style='TButton', cursor="hand2", takefocus=False)
     button.pack(side="top", padx=0, pady=5, anchor='center')
     return button
 
 
 def create_button_widget(frame, text, command, pad_x=5, pad_y=20, width=10):
-    button = ttk.Button(frame, text=text, width=width, command=command, style='TButton', cursor="hand2")
+    button = ttk.Button(frame, text=text, width=width, command=command, style='TButton', cursor="hand2",
+                        takefocus=False)
     button.pack(side="left", padx=pad_x, pady=pad_y, anchor='center')
     return button
 
@@ -330,19 +338,21 @@ def create_buttons(frame, fields, row, submit_action, clear_fields, close_view, 
 
 
 def button_config(frame, tree, data_func, add, update, remove, refresh):
-    add_button = ttk.Button(frame, text="Add", command=add, style='TButton', cursor="hand2")
-    update_button = ttk.Button(frame, text="Update", command=lambda: update(), style='TButton', cursor="hand2")
-    remove_button = ttk.Button(frame, text="Remove", command=lambda: remove(), style='TButton', cursor="hand2")
+    add_button = ttk.Button(frame, text="Add", command=add, style='TButton', cursor="hand2", takefocus=False)
+    update_button = ttk.Button(frame, text="Update", command=lambda: update(), style='TButton', cursor="hand2",
+                               takefocus=False)
+    remove_button = ttk.Button(frame, text="Remove", command=lambda: remove(), style='TButton', cursor="hand2",
+                               takefocus=False)
     refresh_button = ttk.Button(frame, text="Refresh", command=lambda: refresh(frame, data_func), style='TButton',
-                                cursor="hand2")
+                                cursor="hand2", takefocus=False)
 
     # Initially disable the update button
     update_button.config(state='disabled')
 
     def on_tree_select(event):
-        # Enable the update button when an item is selected
+        # Enable the update button when only one item is selected
         selected = tree.selection()
-        if selected:
+        if len(selected) == 1:
             update_button.config(state='normal')
         else:
             update_button.config(state='disabled')
@@ -364,7 +374,7 @@ def button_config(frame, tree, data_func, add, update, remove, refresh):
 
 def create_label_and_field(frame, text, row, pad_x=0, pad_y=20, f_width=25, l_width=11):
     ttk.Label(frame, text=text, width=l_width, anchor="w").grid(row=row, column=0, padx=pad_x, pady=pad_y)
-    field = ttk.Entry(frame, width=f_width, style='TEntry')
+    field = ttk.Entry(frame, width=f_width, font=('Helvetica', 11, 'normal'))
     field.grid(row=row, column=1)
     return field
 
@@ -438,7 +448,6 @@ def validate(fields, submit_func, args=True):
     if args:
         # If all fields are successfully validated, call the submit function
         submit_func(validated_fields)
-        clear_fields(*field_widgets)  # Clear all fields
     else:
         submit_func()  # Call the submit function
 
