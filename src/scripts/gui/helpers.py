@@ -108,7 +108,8 @@ class Helpers:
         # reverse sort next time column is clicked
         tree.heading(col, command=lambda: self.sort_column(tree, col, not reverse))
 
-    def search(self, tree, data, search_text):
+    @staticmethod
+    def search(tree, data, search_text):
         # Remove all items from the tree
         for i in tree.get_children():
             tree.delete(i)
@@ -118,7 +119,19 @@ class Helpers:
             if search_text.lower() in str(item).lower():
                 tree.insert("", "end", values=item)
 
-    def create_treeview(self, frame, columns, column_widths, column_alignments, pad, height=23, data=None, pad_x=0):
+    @staticmethod
+    def create_search_bar(frame):
+        # Create search bar
+        search_frame = ttk.Frame(frame)
+        search_frame.pack(fill='x', padx=10, pady=10)
+        search_label = ttk.Label(search_frame, text="Search:")
+        search_label.pack(side=tk.LEFT, padx=(0, 10))
+        search_entry = ttk.Entry(search_frame, width=20, font=('Helvetica', 11, 'normal'))
+        search_entry.pack(side=tk.LEFT, fill='x', expand=False)
+
+        return search_entry
+
+    def create_view_table(self, frame, columns, column_widths, column_alignments, height=23, data=None, pad_x=0):
         # Create Canvas in new window
         canvas = tk.Canvas(frame)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
@@ -128,17 +141,6 @@ class Helpers:
 
         # Add that new frame to a new window on the canvas
         canvas.create_window((0, 0), window=second_frame, anchor="nw")
-
-        # Create search bar
-        search_frame = ttk.Frame(second_frame)
-        search_frame.pack(fill='x', padx=pad, pady=10)
-        search_label = ttk.Label(search_frame, text="Search:")
-        search_label.pack(side=tk.LEFT, padx=(0, 10))
-        search_entry = ttk.Entry(search_frame, width=20, font=('Helvetica', 11, 'normal'))
-        search_entry.pack(side=tk.LEFT, fill='x', expand=False)
-
-        # Update search function whenever search text is changed
-        search_entry.bind('<KeyRelease>', lambda event: self.search(tree, data, search_entry.get()))
 
         def on_configure(event):
             # Update scroll region after starting 'mainloop'
@@ -173,11 +175,9 @@ class Helpers:
             for item in data:
                 tree.insert("", "end", values=item)
 
-        tree.pack(padx=pad)
-
         return tree
 
-    def create_report_treeview(self, frame, columns, column_widths, column_alignments, pad, height=23, data=None):
+    def create_report_tables(self, frame, columns, column_widths, column_alignments, pad, height=23, data=None):
         # Create Canvas in new window
         canvas = tk.Canvas(frame, takefocus=False)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
@@ -199,7 +199,7 @@ class Helpers:
         canvas.bind('<Configure>', on_configure)
 
         # Create Treeview in second frame
-        gpa_tree = ttk.Treeview(report_frame, show='headings', style="Treeview", height=height, takefocus=False)
+        gpa_tree = ttk.Treeview(report_frame, show='headings', style="Treeview", height=height)
 
         # Add a Scrollbar to the Treeview
         scrollbar = ttk.Scrollbar(report_frame, orient="vertical", command=gpa_tree.yview)
@@ -230,7 +230,7 @@ class Helpers:
         tree_frame = ttk.Frame(pdf_frame, takefocus=False)
 
         # Create Treeview in the new frame
-        file_tree = ttk.Treeview(tree_frame, show='headings', style="Treeview", height=height, takefocus=False)
+        file_tree = ttk.Treeview(tree_frame, show='headings', style="Treeview", height=height)
 
         # Add a Scrollbar to the Treeview
         scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=file_tree.yview)
@@ -332,21 +332,14 @@ class Helpers:
         return gpa_tree
 
     @staticmethod
-    def create_button(frame, text, command):
-        # Create a button with the new style
-        button = ttk.Button(frame, text=text, width=50, command=command, style='TButton', cursor="hand2",
-                            takefocus=False)
-        button.pack(side="top", padx=0, pady=5, anchor='center')
-        return button
-
-    @staticmethod
     def create_button_widget(frame, text, command, pad_x=5, pad_y=20, width=10):
         button = ttk.Button(frame, text=text, width=width, command=command, style='TButton', cursor="hand2",
                             takefocus=False)
         button.pack(side="left", padx=pad_x, pady=pad_y, anchor='center')
         return button
 
-    def create_buttons(self, frame, fields, row, submit_action, clear_fields, close_view, x_padding=5, y_padding=20):
+    def create_dialog_buttons(self, frame, fields, row, submit_action, clear_fields, close_view, x_padding=5,
+                              y_padding=20):
         # Submit and Cancel buttons
         button_frame = ttk.Frame(frame)
         button_frame.grid(row=row, column=0, columnspan=3, padx=x_padding, pady=y_padding)
@@ -356,20 +349,35 @@ class Helpers:
         self.create_button_widget(button_frame, "Submit", submit_action)
         self.create_button_widget(button_frame, "Close", lambda: close_view())
 
-    def button_config(self, frame, tree, data_func, add, update, remove, refresh):
-        self.add_button = ttk.Button(frame, text="Add", command=add, style='TButton', cursor="hand2", takefocus=False,
+    def create_crud_buttons(self, frame, tree, data_func, add, update, remove, refresh):
+        # Create a new frame to hold the buttons
+        button_frame = ttk.Frame(frame)
+
+        self.add_button = ttk.Button(button_frame, text="Add", command=add, style='TButton', cursor="hand2",
+                                     takefocus=False,
                                      image=self.light_add_icon,
                                      compound=tk.LEFT)
-        self.update_button = ttk.Button(frame, text="Update", command=lambda: update(), style='TButton', cursor="hand2",
+        self.update_button = ttk.Button(button_frame, text="Update", command=lambda: update(), style='TButton',
+                                        cursor="hand2",
                                         takefocus=False, image=self.light_update_icon,
                                         compound=tk.LEFT)
-        self.remove_button = ttk.Button(frame, text="Remove", command=lambda: remove(), style='TButton', cursor="hand2",
+        self.remove_button = ttk.Button(button_frame, text="Remove", command=lambda: remove(), style='TButton',
+                                        cursor="hand2",
                                         takefocus=False, image=self.light_remove_icon,
                                         compound=tk.LEFT)
-        self.refresh_button = ttk.Button(frame, text="Refresh", command=lambda: refresh(frame, data_func),
+        self.refresh_button = ttk.Button(button_frame, text="Refresh", command=lambda: refresh(frame, data_func),
                                          style='TButton',
                                          cursor="hand2", takefocus=False, image=self.light_refresh_icon,
                                          compound=tk.LEFT)
+        # Place the buttons
+        buttons = [self.add_button, self.update_button, self.remove_button, self.refresh_button]
+
+        # Pack the buttons into the new frame
+        for button in buttons:
+            button.pack(side=tk.LEFT, padx=10)  # padx adds some space between the buttons
+
+        # Place the new frame at the bottom center of the window
+        button_frame.place(relx=0.5, rely=0.98, anchor='s')
 
         def update_icons():
             current_theme = sv_ttk.get_theme()
@@ -385,7 +393,7 @@ class Helpers:
                 self.add_button.config(image=self.dark_add_icon)
 
             # Call this function again after 1000ms (1 second)
-            frame.after(1000, update_icons)
+            button_frame.after(1000, update_icons)
 
         # Call the function once to start the loop
         update_icons()
@@ -403,17 +411,6 @@ class Helpers:
 
         # Bind the function to the tree's selection event
         tree.bind('<<TreeviewSelect>>', on_tree_select)
-
-        button_width = 120  # width of the buttons
-        button_spacing = 40  # space between the buttons
-        total_width = 5 * button_width + 2 * button_spacing  # total width of all buttons and spaces
-
-        # Place the buttons
-        buttons = [self.add_button, self.update_button, self.remove_button, self.refresh_button]
-
-        for i, button in enumerate(buttons):
-            button.place(relx=0.55, rely=0.98, x=-total_width / 2 + i * (button_width + button_spacing), anchor='s',
-                         width=button_width)
 
     @staticmethod
     def create_label_and_field(frame, text, row, pad_x=0, pad_y=20, f_width=25, l_width=11):

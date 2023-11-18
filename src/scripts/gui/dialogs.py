@@ -107,12 +107,12 @@ class Dialog(tk.Toplevel):
         school_var.trace('w', update_programmes)  # Call update_programmes when the school value changes
 
         # Create buttons
-        self.helpers.create_buttons(self.frame, [student_id_field,
-                                            student_name_field,
-                                            student_email_field,
-                                            school_field,
-                                            programme_field,
-                                            advisor_field], 8, submit_action, self.helpers.clear_fields, self.destroy)
+        self.helpers.create_dialog_buttons(self.frame, [student_id_field,
+                                                        student_name_field,
+                                                        student_email_field,
+                                                        school_field,
+                                                        programme_field,
+                                                        advisor_field], 8, submit_action, self.helpers.clear_fields, self.destroy)
 
         student_id_field.focus_set()  # Make the entry field focused
 
@@ -142,8 +142,8 @@ class Dialog(tk.Toplevel):
         mod_credits_field.grid(row=4, column=1)
 
         # Create buttons
-        self.helpers.create_buttons(self.frame, [mod_code_field, mod_name_field, mod_credits_field], 5, submit_action,
-                               self.helpers.clear_fields, self.destroy)
+        self.helpers.create_dialog_buttons(self.frame, [mod_code_field, mod_name_field, mod_credits_field], 5, submit_action,
+                                           self.helpers.clear_fields, self.destroy)
 
         mod_code_field.focus_set()  # Make the entry field focused
 
@@ -203,8 +203,8 @@ class Dialog(tk.Toplevel):
         year_field.grid(row=6, column=1, padx=self.x_padding, pady=self.y_padding)
 
         # Create buttons
-        self.helpers.create_buttons(self.frame, [id_field, gpa_field, module_field, semester_field,
-                                            year_field], 7, submit_action, self.helpers.clear_fields, self.destroy)
+        self.helpers.create_dialog_buttons(self.frame, [id_field, gpa_field, module_field, semester_field,
+                                                        year_field], 7, submit_action, self.helpers.clear_fields, self.destroy)
 
         id_field.focus_set()  # Make the entry field focused
 

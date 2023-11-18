@@ -78,7 +78,7 @@ class Report(ttk.Frame):
         column_alignments = ['center', 'w', 'center', 'center', 'center']
 
         # Create Treeview
-        tree = self.helpers.create_report_treeview(self.generate_frame, columns, column_widths, column_alignments, 10)
+        tree = self.helpers.create_report_tables(self.generate_frame, columns, column_widths, column_alignments, 10)
 
         return self.generate_frame
 
