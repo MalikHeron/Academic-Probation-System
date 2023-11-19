@@ -121,9 +121,10 @@ class Helpers:
 
     @staticmethod
     def create_search_bar(frame):
-        # Create search bar
+        # Create a frame for the search bar
         search_frame = ttk.Frame(frame)
         search_frame.pack(fill='x', padx=10, pady=10)
+        # Create a search label and entry
         search_label = ttk.Label(search_frame, text="Search:")
         search_label.pack(side=tk.LEFT, padx=(0, 10))
         search_entry = ttk.Entry(search_frame, width=20, font=('Helvetica', 11, 'normal'))
@@ -302,12 +303,8 @@ class Helpers:
         # Function to delete a file
         def delete_file():
             selected_items = file_tree.selection()  # get selected items
-            if len(selected_items) > 1:
-                message = "Delete these reports?"
-            else:
-                message = "Delete this report?"
 
-            if messagebox.askokcancel("Confirm", message):
+            if messagebox.askokcancel("Confirm", "Delete the selected report(s)?"):
                 # Delete all selected items
                 for selected_item in selected_items:
                     file_path = os.path.join(folder_path, file_tree.item(selected_item)['values'][0])
@@ -413,10 +410,16 @@ class Helpers:
         tree.bind('<<TreeviewSelect>>', on_tree_select)
 
     @staticmethod
-    def create_label_and_field(frame, text, row, pad_x=0, pad_y=20, f_width=25, l_width=11):
+    def create_label_and_field(frame, text, row, pad_x=0, pad_y=20, f_width=25, l_width=11, is_password=False):
         ttk.Label(frame, text=text, width=l_width, anchor="w").grid(row=row, column=0, padx=pad_x, pady=pad_y)
-        field = ttk.Entry(frame, width=f_width, font=('Helvetica', 11, 'normal'))
+
+        # Create field
+        if is_password:
+            field = ttk.Entry(frame, width=f_width, font=('Helvetica', 11, 'normal'), show="*")
+        else:
+            field = ttk.Entry(frame, width=f_width, font=('Helvetica', 11, 'normal'))
         field.grid(row=row, column=1)
+
         return field
 
     # Helper functions
@@ -472,6 +475,24 @@ class Helpers:
                         validated_fields[field_name] = input_value
                     else:
                         raise ValueError("is not a valid email.")
+                elif validation_type == "password":
+                    if validated_fields["Position"] == "Administrator":
+                        # Validate as a password
+                        if len(input_value) >= 8:
+                            validated_fields[field_name] = input_value
+                        else:
+                            raise ValueError("must be at least 8 characters long.")
+                    else:
+                        validated_fields[field_name] = input_value
+                elif validation_type == "username":
+                    if validated_fields["Position"] == "Administrator":
+                        # Validate as a username
+                        if len(input_value) >= 4:
+                            validated_fields[field_name] = input_value
+                        else:
+                            raise ValueError("must be at least 4 characters long.")
+                    else:
+                        validated_fields[field_name] = input_value
                 # Add more validation types as needed
                 else:
                     # Unknown validation type

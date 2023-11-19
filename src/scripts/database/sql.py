@@ -56,6 +56,13 @@ sql_create_staff_table = """CREATE TABLE IF NOT EXISTS staff (
                                 position text NOT NULL
                             );"""
 
+sql_create_credentials_table = """CREATE TABLE IF NOT EXISTS credentials (
+                                user_id integer PRIMARY KEY,
+                                username text NOT NULL,
+                                password text NOT NULL,
+                                FOREIGN KEY (user_id) REFERENCES staff (staff_id)
+                            );"""
+
 sql_create_unique_index = """CREATE UNIQUE INDEX idx_module_details_unique ON 
                         module_details(student_id, module_code, semester, year
                         );"""
@@ -126,6 +133,14 @@ sql_insert_staff = """INSERT OR IGNORE INTO staff (staff_id, name, email, positi
 (24, 'Sarah Heron', 'sarahheron@hotmail.com', 'Advisor'),
 (25, 'David Thomas', 'davidthomas@hotmail.com', 'Advisor'),
 (26, 'Emma Pitterson', 'emmapitterson@hotmail.com', 'Advisor');"""
+
+# Inserting data into credentials
+sql_insert_credentials = """INSERT OR IGNORE INTO credentials (user_id, username, password) VALUES
+(18, 'JaneWhite5', 'janeswhite'),
+(19, 'RobertMc4', 'robertmccarthy'),
+(20, 'EmilyWilliams3', 'emilywilliams'),
+(21, 'DanielGrant6', 'danielgrant'),
+(22, 'JessicaGilpin7', 'jessicgilpin');"""
 
 # Inserting data into student_master
 sql_insert_students = """INSERT OR IGNORE INTO student_master (id, name, email, school_code, programme_code, advisor_id)

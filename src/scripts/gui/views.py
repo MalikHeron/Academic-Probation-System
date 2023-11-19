@@ -394,16 +394,18 @@ class Views(ttk.Frame):
                     "ID": (id_field, "int"),
                     "Name": (name_field, "str"),
                     "Email": (email_field, "email"),
-                    "Position": (position_field, "str")
+                    "Position": (position_field, "str"),
+                    "Username": (username_field, "username"),
+                    "Password": (password_field, "password")
                 }, db_action)
 
             if selected_item is not None:
                 title = "Update Staff"
             else:
                 title = "Add Staff"
-            frame, id_field, name_field, email_field, position_field \
+            frame, id_field, name_field, email_field, position_field, username_field, password_field \
                 = dialog.staff_dialog(title, submit_action)
-            fields = [id_field, name_field, email_field, position_field]
+            fields = [id_field, name_field, email_field, position_field, username_field, password_field]
         elif dialog_type == "faculty":
             def submit_action():
                 self.helpers.validate({
@@ -652,7 +654,8 @@ class Views(ttk.Frame):
 
     def add_staff_to_db(self, validated_fields):
         self.add_to_db(db_manager.insert_staff, (validated_fields["ID"], validated_fields["Name"],
-                                                 validated_fields["Email"], validated_fields["Position"]),
+                                                 validated_fields["Email"], validated_fields["Position"],
+                                                 validated_fields["Username"], validated_fields["Password"]),
                        "Staff record added successfully.",
                        "Failed to add staff record.")
 
@@ -700,7 +703,8 @@ class Views(ttk.Frame):
 
     def update_staff_in_db(self, validated_fields):
         self.update_in_db((validated_fields["ID"], validated_fields["Name"],
-                           validated_fields["Email"], validated_fields["Position"]),
+                           validated_fields["Email"], validated_fields["Position"],
+                           validated_fields["Username"], validated_fields["Password"]),
                           "staff",
                           "Staff record updated successfully.",
                           "Failed to update staff record.")

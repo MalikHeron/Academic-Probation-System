@@ -2,12 +2,4 @@ root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
-root - INFO - [{'Results': [[6, 'David Jones', 'davidjones@gmail.com', 'SOE', 'ME', 1.45, 2.24, 1.84], [18, 'Harry Moore', 'harry.moore@yahoo.com', 'SOBA', 'HRM', 2.18, 0, 2.18], [21, 'Kathy Thomas', 'kathy.thomas@hotmail.com', 'SOE', 'ME', 1.15, 2.04, 1.62], [22, 'Larry Jackson', 'larry.jackson@hotmail.com', 'SOMAS', 'AS', 1.51, 0, 1.51], [23, 'Mia White', 'mia.white@hotmail.com', 'SOE', 'CE', 1.51, 1.93, 1.72], [24, 'Nick Harris', 'nick.harris@hotmail.com', 'SCIT', 'CS', 2.09, 2.18, 2.14]]}]
-root - INFO - Alert sent to harry.moore@yahoo.com
-root - INFO - Alert sent to mia.white@hotmail.com
-root - INFO - Alert sent to larry.jackson@hotmail.com
-root - INFO - Alert sent to davidjones@gmail.com
-root - INFO - Alert sent to nick.harris@hotmail.com
-root - INFO - Alert sent to kathy.thomas@hotmail.com
-root - INFO - [{'Results': [[3, 'Robert Johnson', 'robertjohnson@gmail.com', 'SCIT', 'CIS', 3.45, 1.84, 2.81], [5, 'Sarah Brown', 'sarahbrown@gmail.com', 'SOE', 'CE', 2.67, 2.69, 2.68], [19, 'Ivy Taylor', 'ivy.taylor@yahoo.com', 'SOMAS', 'AS', 2.21, 0, 2.21], [25, 'Olivia Martin', 'olivia.martin@hotmail.com', 'SCIT', 'CS', 2.28, 2.12, 2.2]]}]
-root - INFO - Alert sent to olivia.martin@hotmail.com
+root - WARNING - index idx_module_details_unique already exists

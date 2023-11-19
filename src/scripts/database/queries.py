@@ -6,15 +6,6 @@ from src.scripts.database.sql import *
 from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 
 
-def create_connection(db_file):
-    connection = None
-    try:
-        connection = sqlite3.connect(db_file)
-    except Error as e:
-        logging.error(f"An error occurred: {e}")
-    return connection
-
-
 class DatabaseManager:
 
     def __init__(self):
@@ -32,6 +23,7 @@ class DatabaseManager:
         self.create_table(sql_create_faculty_table)
         self.create_table(sql_create_programmes_table)
         self.create_table(sql_create_school_table)
+        self.create_table(sql_create_credentials_table)
 
         # Check if database is empty
         if not self.get_students() and not self.get_modules() and not self.get_details():
@@ -43,6 +35,7 @@ class DatabaseManager:
             self.insert_data(sql_insert_faculty)
             self.insert_data(sql_insert_programmes)
             self.insert_data(sql_insert_schools)
+            self.insert_data(sql_insert_credentials)
 
             # Commit changes
             self.conn.commit()
@@ -76,6 +69,11 @@ class DatabaseManager:
     def insert_data(self, insert_data_sql):
         c = self.conn.cursor()
         c.execute(insert_data_sql)
+
+    def get_credentials(self, username, password):
+        c = self.conn.cursor()
+        c.execute(f"""SELECT * FROM credentials WHERE username = '{username}' AND password = '{password}'""")
+        return c.fetchone()
 
     def get_students(self):
         c = self.conn.cursor()
@@ -260,11 +258,16 @@ class DatabaseManager:
 
     def get_programme_name(self, programme_code):
         c = self.conn.cursor()
+        if programme_code == 'None':
+            return None
         c.execute(f"""SELECT programme_name FROM programme WHERE programme_code = '{programme_code}'""")
         return c.fetchone()[0]
 
     def get_programme_director(self, programme_code):
         c = self.conn.cursor()
+        if programme_code == 'None':
+            return None
+
         # Get director id
         c.execute(f"""SELECT director_id FROM programme WHERE programme_code = '{programme_code}'""")
         director_id = c.fetchone()[0]
@@ -367,12 +370,16 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_staff(self, id_number, name, email, position):
+    def insert_staff(self, id_number, name, email, position, username, password):
         try:
             c = self.conn.cursor()
             # Insert details
             c.execute(
                 f"""INSERT INTO staff VALUES ({id_number}, '{name}', '{email}', '{position}')""")
+
+            # Insert credentials
+            c.execute(
+                f"""INSERT INTO credentials VALUES ({id_number}, '{username}', '{password}')""")
 
             # Commit changes
             self.conn.commit()

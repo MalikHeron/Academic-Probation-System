@@ -159,7 +159,7 @@ class Report(ttk.Frame):
             alert_frame.place(relx=0.5, rely=0.95, anchor=tk.CENTER)
 
             # Label
-            self.alert_var.set(f"Sending alerts")
+            self.alert_var.set(f"Sending email alerts")
             self.alert_label = ttk.Label(alert_frame, textvariable=self.alert_var)
             self.alert_label.pack(side=tk.LEFT, padx=(0, 10))
 

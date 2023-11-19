@@ -216,7 +216,7 @@ class Dialog(tk.Toplevel):
 
     def staff_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 550, 350)
+        self.initialize_properties(title, 550, 450)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[50, 0])
@@ -231,24 +231,47 @@ class Dialog(tk.Toplevel):
         # Staff Email label and field
         email_field = self.helpers.create_label_and_field(self.frame, "Email", 4, f_width=self.f_width + 3)
 
-        # School label and field
+        # Position label and field
         ttk.Label(self.frame, text="Position", width=self.l_width, anchor="w").grid(row=5, column=0,
                                                                                     pady=self.y_padding)
-        # Position label and field
         position_field = ttk.Combobox(self.frame, state="readonly",
                                       values=["Administrator", "Advisor", "Director", "Lecturer", "None"],
                                       width=self.f_width,
                                       font=('Helvetica', 11, 'normal'))
         position_field.grid(row=5, column=1)
 
+        # Username label and field
+        username_field = self.helpers.create_label_and_field(self.frame, "Username", 6, f_width=self.f_width + 3)
+        username_field.config(state="disabled")  # Disable username field
+
+        # Password label and field
+        password_field = self.helpers.create_label_and_field(self.frame, "Password", 7, f_width=self.f_width + 3,
+                                                             is_password=True)
+        password_field.config(state="disabled")  # Disable password field
+
         # Create buttons
-        self.helpers.create_dialog_buttons(self.frame, [id_field, name_field, email_field, position_field], 6,
+        self.helpers.create_dialog_buttons(self.frame,
+                                           [id_field, name_field, email_field, position_field, username_field,
+                                            password_field], 8,
                                            submit_action, self.helpers.clear_fields,
                                            self.destroy)
 
         id_field.focus_set()  # Make the entry field focused
 
-        return self.frame, id_field, name_field, email_field, position_field
+        # Event handler for position_field
+        def on_position_changed(event):
+            selected_position = position_field.get()
+            if selected_position == "Administrator":
+                username_field.config(state="enabled")  # Show username field
+                password_field.config(state="enabled")  # Show password field
+            else:
+                username_field.config(state="disabled")  # Disable username field
+                password_field.config(state="disabled")  # Disable password field
+
+        # Bind the event handler to the '<<ComboboxSelected>>' event
+        position_field.bind("<<ComboboxSelected>>", on_position_changed)
+
+        return self.frame, id_field, name_field, email_field, position_field, username_field, password_field
 
     def faculty_dialog(self, title, submit_action):
         # Initialize window properties

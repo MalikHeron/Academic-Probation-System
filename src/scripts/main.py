@@ -40,7 +40,7 @@ class AcademicProbationSystem:
         DatabaseManager()  # initialize database connection
 
     def setup_main_window(self):
-        # This is where the magic happens
+        # Set theme
         sv_ttk.set_theme("light")
 
         # Set window title and icon
@@ -103,6 +103,7 @@ class AcademicProbationSystem:
         img = Image.open("../../res/splash.jpg").resize((800, 600))
         self.background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
+        # Create a canvas
         canvas = tk.Canvas(frame, width=800, height=600)
         canvas.pack(fill=tk.BOTH, expand=True)
         canvas.create_image(0, 0, image=self.background_image, anchor='nw')
@@ -165,7 +166,6 @@ class AcademicProbationSystem:
         tab8 = Report(frame).generate_view()
 
         # Add tabs to notebook
-
         frame.add(tab1, text='Students')
         frame.add(tab2, text='Student Details')
         frame.add(tab3, text='Staff')
