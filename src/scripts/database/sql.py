@@ -50,7 +50,7 @@ sql_create_faculty_table = """CREATE TABLE IF NOT EXISTS faculty (
                             );"""
 
 sql_create_staff_table = """CREATE TABLE IF NOT EXISTS staff (
-                                staff_id integer NOT NULL,
+                                staff_id integer PRIMARY KEY,
                                 name text NOT NULL,
                                 email text NOT NULL,
                                 position text NOT NULL

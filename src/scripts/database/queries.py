@@ -251,6 +251,9 @@ class DatabaseManager:
         c.execute(f"""SELECT advisor_id FROM student_master WHERE id = {student_id}""")
         advisor_id = c.fetchone()[0]
 
+        if advisor_id is None:
+            return None
+
         # Get advisor details
         c.execute(f"""SELECT * FROM staff WHERE staff_id = {advisor_id}""")
         return c.fetchone()
@@ -265,6 +268,9 @@ class DatabaseManager:
         # Get director id
         c.execute(f"""SELECT director_id FROM programme WHERE programme_code = '{programme_code}'""")
         director_id = c.fetchone()[0]
+
+        if director_id is None:
+            return None
 
         # Get director details
         c.execute(f"""SELECT * FROM staff WHERE staff_id = {director_id}""")
@@ -281,9 +287,15 @@ class DatabaseManager:
         c.execute(f"""SELECT faculty_code FROM school WHERE school_code = '{school_code}'""")
         faculty_code = c.fetchone()[0]
 
+        if faculty_code is None:
+            return None
+
         # Get administrator id
         c.execute(f"""SELECT admin_id FROM faculty WHERE faculty_code = '{faculty_code}'""")
         admin_id = c.fetchone()[0]
+
+        if admin_id is None:
+            return None
 
         # Get administrator details
         c.execute(f"""SELECT * FROM staff WHERE staff_id = {admin_id}""")
@@ -327,11 +339,14 @@ class DatabaseManager:
             # Get school, programme and advisor
             school = self.get_school(school_name)
             programme = self.get_programme(programme_name)
-            advisor = self.get_advisor(advisor_name)
+            if advisor_name != 'None':
+                advisor = self.get_advisor(advisor_name)[0]
+            else:
+                advisor = 'NULL'
 
             c.execute(
                 f"""INSERT INTO student_master VALUES ({student_id}, '{name}', '{email}', 
-                '{school[0]}', '{programme[0]}', {advisor[0]})""")
+                '{school[0]}', '{programme[0]}', {advisor})""")
 
             # Commit changes
             self.conn.commit()
@@ -366,12 +381,15 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_faculty(self, faculty_code, admin_name, faculty_name):
+    def insert_faculty(self, faculty_code, faculty_name, admin_name):
         try:
             c = self.conn.cursor()
             # Get admin id
-            c.execute(f"""SELECT staff_id FROM staff WHERE name = '{admin_name}'""")
-            admin_id = c.fetchone()[0]
+            if admin_name != 'None':
+                c.execute(f"""SELECT staff_id FROM staff WHERE name = '{admin_name}'""")
+                admin_id = c.fetchone()[0]
+            else:
+                admin_id = 'NULL'
 
             # Insert details
             c.execute(
@@ -384,17 +402,27 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_programme(self, programme_code, school_code, director_name, programme_name):
+    def insert_programme(self, programme_code, programme_name, school_name, director_name):
         try:
             c = self.conn.cursor()
             # Get director id
-            c.execute(f"""SELECT staff_id FROM staff WHERE name = '{director_name}'""")
-            director_id = c.fetchone()[0]
+            if director_name != 'None':
+                c.execute(f"""SELECT staff_id FROM staff WHERE name = '{director_name}'""")
+                director_id = c.fetchone()[0]
+            else:
+                director_id = 'NULL'
+
+            # Get school code
+            if school_name != 'None':
+                c.execute(f"""SELECT school_code FROM school WHERE school_name = '{school_name}'""")
+                school_code = c.fetchone()[0]
+            else:
+                school_code = 'NULL'
 
             # Insert details
             c.execute(
-                f"""INSERT INTO programme VALUES ('{programme_code}', '{school_code}', {director_id}, 
-                '{programme_name}')""")
+                f"""INSERT INTO programme VALUES ('{programme_code}', '{programme_name}', {director_id}, 
+                '{school_code}')""")
 
             # Commit changes
             self.conn.commit()
@@ -403,16 +431,19 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def insert_school(self, school_code, faculty_name, school_name):
+    def insert_school(self, school_code, school_name, faculty_name):
         try:
             c = self.conn.cursor()
             # Get faculty code
-            c.execute(f"""SELECT faculty_code FROM faculty WHERE faculty_name = '{faculty_name}'""")
-            faculty_code = c.fetchone()[0]
+            if faculty_name != 'None':
+                c.execute(f"""SELECT faculty_code FROM faculty WHERE faculty_name = '{faculty_name}'""")
+                faculty_code = c.fetchone()[0]
+            else:
+                faculty_code = 'NULL'
 
             # Insert details
             c.execute(
-                f"""INSERT INTO school VALUES ('{school_code}', '{faculty_code}', '{school_name}')""")
+                f"""INSERT INTO school VALUES ('{school_code}', '{school_name}', '{faculty_code}')""")
 
             # Commit changes
             self.conn.commit()
@@ -430,11 +461,14 @@ class DatabaseManager:
                     # Get school, programme and advisor
                     school = self.get_school(data[3])
                     programme = self.get_programme(data[4])
-                    advisor = self.get_advisor(data[5])
+                    if data[5] != 'None':
+                        advisor = self.get_advisor(data[5])[0]
+                    else:
+                        advisor = 'NULL'
 
                     c.execute(
                         f"""UPDATE student_master SET name='{data[1]}', email='{data[2]}', school_code='{school[0]}', 
-                    programme_code='{programme[0]}', advisor_id={advisor[0]} WHERE id={data[0]}""")
+                    programme_code='{programme[0]}', advisor_id={advisor} WHERE id={data[0]}""")
                 case "module":
                     c.execute(f"""UPDATE module_master SET name='{data[1]}', credits={data[2]} 
                     WHERE code='{data[0]}'""")
@@ -450,26 +484,38 @@ class DatabaseManager:
                     WHERE staff_id={data[0]}""")
                 case "faculty":
                     # Get admin id
-                    c.execute(f"""SELECT * FROM staff WHERE name = '{data[2]}'""")
-                    admin_id = c.fetchone()[0]
+                    if data[2] != 'None':
+                        c.execute(f"""SELECT * FROM staff WHERE name = '{data[2]}'""")
+                        admin_id = c.fetchone()[0]
+                    else:
+                        admin_id = 'NULL'
 
                     c.execute(f"""UPDATE faculty SET admin_id={admin_id}, faculty_name='{data[1]}' 
                     WHERE faculty_code='{data[0]}'""")
                 case "school":
                     # Get faculty code
-                    c.execute(f"""SELECT * FROM faculty WHERE faculty_name = '{data[2]}'""")
-                    faculty_code = c.fetchone()[0]
+                    if data[2] != 'None':
+                        c.execute(f"""SELECT * FROM faculty WHERE faculty_name = '{data[2]}'""")
+                        faculty_code = c.fetchone()[0]
+                    else:
+                        faculty_code = 'NULL'
 
                     c.execute(f"""UPDATE school SET faculty_code='{faculty_code}', school_name='{data[1]}' 
                     WHERE school_code='{data[0]}'""")
                 case "programme":
                     # Get director id
-                    c.execute(f"""SELECT * FROM staff WHERE name = '{data[3]}'""")
-                    director_id = c.fetchone()[0]
+                    if data[3] != 'None':
+                        c.execute(f"""SELECT * FROM staff WHERE name = '{data[3]}'""")
+                        director_id = c.fetchone()[0]
+                    else:
+                        director_id = 'NULL'
 
                     # Get school code
-                    c.execute(f"""SELECT * FROM school WHERE school_name = '{data[2]}'""")
-                    school_code = c.fetchone()[0]
+                    if data[2] != 'None':
+                        c.execute(f"""SELECT * FROM school WHERE school_name = '{data[2]}'""")
+                        school_code = c.fetchone()[0]
+                    else:
+                        school_code = 'NULL'
 
                     c.execute(
                         f"""UPDATE programme SET director_id={director_id},  programme_name='{data[1]}', 

@@ -85,6 +85,7 @@ class Dialog(tk.Toplevel):
                                                                                    pady=self.y_padding)
         advisor_list = db_manager.get_advisors()
         advisor_names = [advisor[1] for advisor in advisor_list]  # Extract school names
+        advisor_names.append('None')  # Append 'None' to the list
         advisor_field = ttk.Combobox(self.frame, state="readonly", values=advisor_names, width=self.f_width + 12,
                                      font=('Helvetica', 11, 'normal'))
         advisor_field.grid(row=7, column=1)
@@ -234,7 +235,8 @@ class Dialog(tk.Toplevel):
         ttk.Label(self.frame, text="Position", width=self.l_width, anchor="w").grid(row=5, column=0,
                                                                                     pady=self.y_padding)
         # Position label and field
-        position_field = ttk.Combobox(self.frame, state="readonly", values=["Administrator", "Advisor", "Director"],
+        position_field = ttk.Combobox(self.frame, state="readonly",
+                                      values=["Administrator", "Advisor", "Director", "Lecturer", "None"],
                                       width=self.f_width,
                                       font=('Helvetica', 11, 'normal'))
         position_field.grid(row=5, column=1)
@@ -250,17 +252,17 @@ class Dialog(tk.Toplevel):
 
     def faculty_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 550, 300)
+        self.initialize_properties(title, 660, 300)
 
         # Create the input frame
-        self.frame = ttk.Frame(self, padding=[20, 0])
+        self.frame = ttk.Frame(self, padding=[15, 0])
         self.frame.grid(row=0, column=0, sticky="nsew")
 
         # Faculty Code label and field
-        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 3)
+        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 15)
 
         # Faculty Name label and field
-        name_field = self.helpers.create_label_and_field(self.frame, "Faculty Name", 3, f_width=self.f_width + 3)
+        name_field = self.helpers.create_label_and_field(self.frame, "Name", 3, f_width=self.f_width + 15)
 
         # Admin label and field
         ttk.Label(self.frame, text="Administrator", width=self.l_width, anchor="w").grid(row=4, column=0,
@@ -268,8 +270,9 @@ class Dialog(tk.Toplevel):
                                                                                          pady=self.y_padding)
         admin_list = db_manager.get_administrator()
         admin_names = [admin[1] for admin in admin_list]
+        admin_names.append('None')  # Append 'None' to the list
         admin_field = ttk.Combobox(self.frame, state="readonly", values=admin_names,
-                                   width=self.f_width + 1, font=('Helvetica', 11, 'normal'))
+                                   width=self.f_width + 12, font=('Helvetica', 11, 'normal'))
         admin_field.grid(row=4, column=1)
 
         # Create buttons
@@ -283,17 +286,17 @@ class Dialog(tk.Toplevel):
 
     def school_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 550, 300)
+        self.initialize_properties(title, 680, 300)
 
         # Create the input frame
-        self.frame = ttk.Frame(self, padding=[20, 0])
+        self.frame = ttk.Frame(self, padding=[15, 0])
         self.frame.grid(row=0, column=0, sticky="nsew")
 
         # School Code label and field
-        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 3)
+        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 18)
 
         # School Name label and field
-        name_field = self.helpers.create_label_and_field(self.frame, "Name", 3, f_width=self.f_width + 3)
+        name_field = self.helpers.create_label_and_field(self.frame, "Name", 3, f_width=self.f_width + 18)
 
         # Faculty label and field
         ttk.Label(self.frame, text="Faculty", width=self.l_width, anchor="w").grid(row=4, column=0,
@@ -301,8 +304,9 @@ class Dialog(tk.Toplevel):
                                                                                    pady=self.y_padding)
         faculty_list = db_manager.get_faculties()
         faculty_names = [faculty[1] for faculty in faculty_list]
+        faculty_names.append('None')  # Append 'None' to the list
         faculty_field = ttk.Combobox(self.frame, state="readonly", values=faculty_names,
-                                     width=self.f_width + 1, font=('Helvetica', 11, 'normal'))
+                                     width=self.f_width + 15, font=('Helvetica', 11, 'normal'))
         faculty_field.grid(row=4, column=1)
 
         # Create buttons
@@ -316,17 +320,17 @@ class Dialog(tk.Toplevel):
 
     def programme_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 570, 350)
+        self.initialize_properties(title, 660, 350)
 
         # Create the input frame
-        self.frame = ttk.Frame(self, padding=[20, 0])
+        self.frame = ttk.Frame(self, padding=[15, 0])
         self.frame.grid(row=0, column=0, sticky="nsew")
 
         # Programme Code label and field
-        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 6)
+        code_field = self.helpers.create_label_and_field(self.frame, "Code", 2, f_width=self.f_width + 15)
 
         # Programme Name label and field
-        name_field = self.helpers.create_label_and_field(self.frame, "Name", 3, f_width=self.f_width + 6)
+        name_field = self.helpers.create_label_and_field(self.frame, "Name", 3, f_width=self.f_width + 15)
 
         # School label and field
         ttk.Label(self.frame, text="School", width=self.l_width, anchor="w").grid(row=4, column=0,
@@ -334,8 +338,9 @@ class Dialog(tk.Toplevel):
                                                                                   pady=self.y_padding)
         school_list = db_manager.get_schools()
         school_names = [school[1] for school in school_list]
+        school_names.append('None')  # Append 'None' to the list
         school_field = ttk.Combobox(self.frame, state="readonly", values=school_names,
-                                    width=self.f_width + 3, font=('Helvetica', 11, 'normal'))
+                                    width=self.f_width + 12, font=('Helvetica', 11, 'normal'))
         school_field.grid(row=4, column=1)
 
         # Director label and field
@@ -344,8 +349,9 @@ class Dialog(tk.Toplevel):
                                                                                     pady=self.y_padding)
         director_list = db_manager.get_directors()
         director_names = [director[1] for director in director_list]
+        director_names.append('None')  # Append 'None' to the list
         director_field = ttk.Combobox(self.frame, state="readonly", values=director_names,
-                                      width=self.f_width + 3, font=('Helvetica', 11, 'normal'))
+                                      width=self.f_width + 12, font=('Helvetica', 11, 'normal'))
         director_field.grid(row=5, column=1)
 
         # Create buttons

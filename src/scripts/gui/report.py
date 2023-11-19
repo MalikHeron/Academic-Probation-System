@@ -186,9 +186,18 @@ class Report(ttk.Frame):
         password = 'eulp fsbb dore qhza'
 
         # Get the advisor, director, and administrator for the student's programme and school
-        _, advisor_name, advisor_email, _ = advisor
-        _, director_name, director_email, _ = director
-        _, administrator_name, administrator_email, _ = administrator
+        if advisor is None:
+            _, advisor_name, advisor_email, _ = ('', 'None', 'None', '')
+        else:
+            _, advisor_name, advisor_email, _ = advisor
+        if director is None:
+            _, director_name, director_email, _ = ('', 'None', 'None', '')
+        else:
+            _, director_name, director_email, _ = director
+        if administrator is None:
+            _, administrator_name, administrator_email, _ = ('', 'None', 'None', '')
+        else:
+            _, administrator_name, administrator_email, _ = administrator
 
         student_body = f"""
             Email: {email}

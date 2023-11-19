@@ -657,23 +657,23 @@ class Views(ttk.Frame):
                        "Failed to add staff record.")
 
     def add_faculty_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_staff, (validated_fields["Code"], validated_fields["Name"],
-                                                 validated_fields["Administrator"]),
+        self.add_to_db(db_manager.insert_faculty, (validated_fields["Code"], validated_fields["Name"],
+                                                   validated_fields["Administrator"]),
                        "Faculty record added successfully.",
                        "Failed to add faculty record.")
 
     def add_school_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_staff, (validated_fields["Code"], validated_fields["Name"],
-                                                 validated_fields["Faculty"]),
+        self.add_to_db(db_manager.insert_school, (validated_fields["Code"], validated_fields["Name"],
+                                                  validated_fields["Faculty"]),
                        "School record added successfully.",
-                       "Failed to add faculty record.")
+                       "Failed to add school record.")
 
     def add_programme_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_staff,
+        self.add_to_db(db_manager.insert_programme,
                        (validated_fields["Code"], validated_fields["Name"], validated_fields["School"],
                         validated_fields["Director"],),
                        "Programme record added successfully.",
-                       "Failed to add faculty record.")
+                       "Failed to add programme record.")
 
     # Update functions
     def update_student_in_db(self, validated_fields):
@@ -738,7 +738,6 @@ class Views(ttk.Frame):
                     # If fields is None, get the first value
                     if option == 1:
                         values = str(self.tree.item(selected_item)["values"][0]).strip()
-                        print(values)
                     else:
                         # Otherwise, get all the values
                         student_id = str(self.tree.item(selected_item)["values"][0]).strip()
