@@ -3,15 +3,4 @@ root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
-root - INFO - <VirtualEvent event x=0 y=0>
-root - INFO - <VirtualEvent event x=0 y=0>
-root - INFO - [{'Results': [[1, 'John Doe', 'johndoe@gmail.com', 'SCIT', 'CS', 2.68, 3.52, 3.03], [4, 'Michael Williams', 'michaelwilliams@gmail.com', 'SCIT', 'APD', 2.69, 2.51, 2.6], [8, 'James Miller', 'jamesmiller@gmail.com', 'CSN', 'NS', 2.26, 0.82, 1.54], [15, 'Eva Davis', 'eva.davis@yahoo.com', 'SOBA', 'HRM', 2.71, 0, 2.71], [16, 'Frank Miller', 'frank.miller@yahoo.com', 'SOBA', 'ACC', 2.59, 0, 2.59], [28, 'Rita Clark', 'rita.clark@hotmail.com', 'SOE', 'CHE', 1.92, 1.69, 1.84], [30, 'Tina Wright', 'tina.wright@hotmail.com', 'SCIT', 'APD', 1.71, 1.69, 1.7]]}]
-root - ERROR - An error occurred in updating the PDF list: invalid command name ".!dashboard.!notebook.!frame8.!canvas.!frame2.!frame.!treeview"
-root - INFO - Alert sent to rita.clark@hotmail.com
-root - INFO - Alert sent to jamesmiller@gmail.com
-root - INFO - Alert sent to tina.wright@hotmail.com
-root - INFO - <VirtualEvent event x=0 y=0>
-root - INFO - <VirtualEvent event x=0 y=0>
-root - INFO - <VirtualEvent event x=0 y=0>
-root - INFO - <ButtonPress event state=Mod1 num=1 x=247 y=530>
 root - WARNING - index idx_module_details_unique already exists

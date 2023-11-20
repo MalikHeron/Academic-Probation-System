@@ -19,6 +19,7 @@ class Report(ttk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.first_focus = None
         self.min_year = None
         self.max_year = None
         self.generate_button = None
@@ -49,6 +50,7 @@ class Report(ttk.Frame):
         year_label.pack(side=tk.LEFT, padx=(0, 10))
 
         year_var = tk.StringVar()  # Create a StringVar
+        self.first_focus = True  # Flag to check if it's the first time the Spinbox gets focus
         self.year_field = ttk.Spinbox(button_frame, width=f_width - 4,
                                       state="readonly",
                                       textvariable=year_var,
@@ -63,6 +65,11 @@ class Report(ttk.Frame):
 
             # Update the Spinbox range
             self.year_field.configure(from_=self.min_year, to=self.max_year)
+
+            # Set the value to max year the first time the Spinbox gets focus
+            if self.first_focus and self.year_field.focus_get() == self.year_field:
+                year_var.set(self.max_year)  # Set the default value
+                self.first_focus = False  # Update the flag
 
             # Call this function again after 500ms (0.5 second)
             self.after(500, get_years)
