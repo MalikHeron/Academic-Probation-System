@@ -3,7 +3,6 @@ import os
 import smtplib
 import threading
 import tkinter as tk
-from datetime import datetime
 from email.message import EmailMessage
 from tkinter import messagebox
 from tkinter import ttk
@@ -20,6 +19,8 @@ class Report(ttk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.min_year = None
+        self.max_year = None
         self.generate_button = None
         self.alert_label = None
         self.alerts_to_send = None
@@ -46,14 +47,27 @@ class Report(ttk.Frame):
         # Create year labels and entry fields
         year_label = ttk.Label(button_frame, text="Year:")
         year_label.pack(side=tk.LEFT, padx=(0, 10))
-        # Get the current year
-        current_year = datetime.now().year
+
         year_var = tk.StringVar()  # Create a StringVar
-        self.year_field = ttk.Spinbox(button_frame, from_=2016, to=current_year, width=f_width - 4,
+        self.year_field = ttk.Spinbox(button_frame, width=f_width - 4,
                                       state="readonly",
                                       textvariable=year_var,
                                       font=('Helvetica', 11, 'normal'))  # Associate the StringVar with the Spinbox
         self.year_field.pack(side=tk.LEFT, fill='x', expand=False)
+
+        # Get the range of years
+        def get_years():
+            years = db_manager.get_years()
+            self.min_year = min(years)[0]
+            self.max_year = max(years)[0]
+
+            # Update the Spinbox range
+            self.year_field.configure(from_=self.min_year, to=self.max_year)
+
+            # Call this function again after 500ms (0.5 second)
+            self.after(500, get_years)
+
+        get_years()
 
         # Create gpa labels and entry fields
         ttk.Label(button_frame, text="OR", foreground="#7a7a7a").pack(side=tk.LEFT, padx=(20, 20))

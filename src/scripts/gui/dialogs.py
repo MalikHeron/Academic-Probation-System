@@ -203,7 +203,8 @@ class Dialog(tk.Toplevel):
                                                                                 pady=self.y_padding)
         current_year = datetime.now().year  # Get the current year
         year_var = tk.StringVar()  # Create a StringVar
-        year_field = ttk.Spinbox(self.frame, from_=2016, to=current_year, width=self.f_width - 2,
+        year_var.set("2023")  # Set the default value
+        year_field = ttk.Spinbox(self.frame, from_=2000, to=current_year, width=self.f_width - 2,
                                  state="readonly", textvariable=year_var,
                                  font=('Helvetica', 11, 'normal'))  # Associate the StringVar with the Spinbox
         year_field.grid(row=6, column=1, padx=self.x_padding, pady=self.y_padding)

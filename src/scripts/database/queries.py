@@ -146,6 +146,10 @@ class DatabaseManager:
             ORDER BY programme_name""")
         return self.cursor.fetchall()
 
+    def get_years(self):
+        self.cursor.execute("""SELECT DISTINCT year FROM module_details ORDER BY year""")
+        return self.cursor.fetchall()
+
     def get_advisors(self):
 
         self.cursor.execute(f"""SELECT * FROM staff WHERE position = 'Advisor' ORDER BY name""")

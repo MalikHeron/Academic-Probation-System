@@ -398,7 +398,7 @@ class Helpers:
                 self.update_button.config(image=self.dark_update_icon)
                 self.add_button.config(image=self.dark_add_icon)
 
-            # Call this function again after 1000ms (1 second)
+            # Call this function again after 500ms (0.5 second)
             button_frame.after(500, update_icons)
 
         # Call the function once to start the loop
