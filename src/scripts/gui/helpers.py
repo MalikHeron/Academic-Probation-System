@@ -158,10 +158,12 @@ class Helpers:
 
         # Add a Scrollbar to the Treeview
         scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
-        scrollbar.pack(side=tk.RIGHT, fill='y', padx=pad_x, pady=10)
+        scrollbar.grid(row=0, column=1, sticky='ns', padx=pad_x, pady=10)
+        scrollbar.grid_remove()  # Initially hide the scrollbar
 
         # Configure the Treeview
         tree.configure(yscrollcommand=scrollbar.set)
+        tree.grid(row=0, column=0)
 
         # Define columns
         tree["columns"] = columns
@@ -175,6 +177,10 @@ class Helpers:
             # Insert data in table
             for item in data:
                 tree.insert("", "end", values=item)
+
+            # Show the scrollbar if there's enough data to make the table scrollable
+            if len(data) > height:
+                scrollbar.grid()
 
         return tree
 
@@ -205,6 +211,7 @@ class Helpers:
         # Add a Scrollbar to the Treeview
         scrollbar = ttk.Scrollbar(report_frame, orient="vertical", command=gpa_tree.yview)
         scrollbar.pack(side=tk.RIGHT, fill='y')
+        scrollbar.pack_forget()  # Initially hide the scrollbar
 
         # Configure the Treeview
         gpa_tree.configure(yscrollcommand=scrollbar.set)
@@ -221,6 +228,10 @@ class Helpers:
             # Insert data in table
             for item in data:
                 gpa_tree.insert("", "end", values=item)
+
+            # Show the scrollbar if there's enough data to make the table scrollable
+            if len(data) > height:
+                scrollbar.pack(side=tk.RIGHT, fill='y')
 
         gpa_tree.pack(padx=pad)
 
@@ -239,6 +250,7 @@ class Helpers:
         # Pack the Treeview and the Scrollbar into the new frame
         file_tree.pack(side=tk.LEFT, fill='both', expand=True)
         scrollbar.pack(side=tk.RIGHT, fill='y')
+        scrollbar.pack_forget()  # Initially hide the scrollbar
 
         # Configure the Treeview
         file_tree.configure(yscrollcommand=scrollbar.set)
@@ -279,6 +291,10 @@ class Helpers:
         for pdf_file in pdf_files:
             file_size = self.convert_bytes(os.path.getsize(os.path.join(folder_path, pdf_file)))
             file_tree.insert("", "end", values=(pdf_file, file_size))
+
+        # Show the scrollbar if there's enough data to make the table scrollable
+        if len(pdf_files) > height:
+            scrollbar.pack(side=tk.RIGHT, fill='y')
 
         # Open the selected PDF file when clicked
         def open_selected_files(event):

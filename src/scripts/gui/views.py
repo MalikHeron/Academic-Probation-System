@@ -68,7 +68,7 @@ class Views(ttk.Frame):
         self.update_search()
 
         # Pack the tree
-        self.tree.pack(padx=10)
+        self.tree.grid(padx=10)
 
         # Button configurations
         self.helpers.create_crud_buttons(self.student_frame, self.tree, db_manager.get_students, self.add_student,
@@ -112,7 +112,7 @@ class Views(ttk.Frame):
         self.update_search()
 
         # Pack the tree
-        self.tree.pack(padx=10)
+        self.tree.grid(padx=10)
 
         # Button configurations
         self.helpers.create_crud_buttons(self.module_frame, self.tree, db_manager.get_modules, self.add_module,
@@ -155,7 +155,7 @@ class Views(ttk.Frame):
         self.update_search()
 
         # Pack the tree
-        self.tree.pack(padx=10)
+        self.tree.grid(padx=10)
 
         # Button configurations
         self.helpers.create_crud_buttons(self.details_frame, self.tree, db_manager.get_details, self.add_details,
@@ -198,7 +198,7 @@ class Views(ttk.Frame):
         self.update_search()
 
         # Pack the tree
-        self.tree.pack(padx=10)
+        self.tree.grid(padx=10)
 
         # Button configurations
         self.helpers.create_crud_buttons(self.staff_frame, self.tree, db_manager.get_staff, self.add_staff,
@@ -241,7 +241,7 @@ class Views(ttk.Frame):
         self.update_search()
 
         # Pack the tree
-        self.tree.pack(padx=10)
+        self.tree.grid(padx=10)
 
         # Button configurations
         self.helpers.create_crud_buttons(self.faculty_frame, self.tree, db_manager.get_faculties, self.add_faculty,
@@ -284,7 +284,7 @@ class Views(ttk.Frame):
         self.update_search()
 
         # Pack the tree
-        self.tree.pack(padx=10)
+        self.tree.grid(padx=10)
 
         # Button configurations
         self.helpers.create_crud_buttons(self.school_frame, self.tree, db_manager.get_schools, self.add_school,
@@ -327,7 +327,7 @@ class Views(ttk.Frame):
         self.update_search()
 
         # Pack the tree
-        self.tree.pack(padx=10)
+        self.tree.grid(padx=10)
 
         # Button configurations
         self.helpers.create_crud_buttons(self.programme_frame, self.tree, db_manager.get_programmes, self.add_programme,
