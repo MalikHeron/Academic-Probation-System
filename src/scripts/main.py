@@ -16,104 +16,191 @@ from scripts.gui.report import Report
 sys.path.append('../../src')
 
 
-class AcademicProbationSystem:
+class AcademicProbationSystem(tk.Tk):
 
     def __init__(self):
-        self.emoji_icon = None
-        self.greeting_label = None
-        self.light_logout_icon = None
-        self.dark_logout_icon = None
-        self.logout_button = None
-        self.start_time = None
-        self.time_label = None
-        self.dark_theme_icon = None
-        self.light_theme_icon = None
-        self.theme_button = None
-        self.logo_image = None
-        self.background_image = None
-        self.window_height = None
-        self.window_width = None
-        self.splash_window = tk.Tk()
-        self.setup_splash_window()
-        self.splash_window.after(1000, self.load)
-        self.window = None
-        DatabaseManager()  # initialize database connection
+        super().__init__()
 
-    def setup_main_window(self):
-        # Set theme
-        sv_ttk.set_theme("light")
+        # Hide the window
+        self.withdraw()
 
         # Set window title and icon
-        self.window.title('Academic Probation System')
-        self.window.iconbitmap('../../res/icon.ico')
+        self.title('Academic Probation System')
+        self.iconbitmap('../../res/icon.ico')
 
         # Set window size
         self.window_width = 1330
         self.window_height = 820
 
         # Get screen width and height
-        screen_width = self.window.winfo_screenwidth()
-        screen_height = self.window.winfo_screenheight()
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
 
         # Calculate position
         position_top = int(screen_height / 2 - self.window_height / 2)
         position_right = int(screen_width / 2 - self.window_width / 2)
 
         # Set window size and position
-        self.window.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
-        self.window.resizable(False, False)
+        self.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
+        self.resizable(False, False)
 
         # window close event
-        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-    def setup_splash_window(self):
-        # Set window size
-        self.window_width = 800
-        self.window_height = 600
+        # Initialize frames
+        self.frames = {}
 
-        # Get screen width and height
-        screen_width = self.splash_window.winfo_screenwidth()
-        screen_height = self.splash_window.winfo_screenheight()
+        # Set theme
+        sv_ttk.set_theme("light")
 
-        # Calculate position
-        position_top = int(screen_height / 2 - self.window_height / 2)
-        position_right = int(screen_width / 2 - self.window_width / 2)
+        # Create LoginFrame and add it to frames dictionary
+        login_frame = LoginFrame(master=self)
+        self.frames['login'] = login_frame
+        login_frame.grid(row=0, column=0, sticky="nsew")
 
-        # Set window size and position
-        self.splash_window.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
-        self.splash_window.resizable(False, False)
+        # Create MainFrame and add it to frames dictionary
+        main_frame = MainFrame(master=self)
+        self.frames['main'] = main_frame
+        main_frame.grid(row=0, column=0, sticky="nsew")
 
-        # Remove window decorations
-        self.splash_window.overrideredirect(True)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
-        # Set window size and position
-        self.splash_window.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
-        self.splash_window.resizable(False, False)
+        # Raise the login frame
+        self.raise_frame('login')
 
-        # window close event
-        self.splash_window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        # Show the window
+        self.deiconify()
 
-        # Create frames
-        frame = ttk.Frame(self.splash_window)
+    def on_closing(self):
+        if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
+            DatabaseManager().close_connection()  # close database connection
+            self.destroy()
 
-        # Place the frames in the window
-        frame.grid(row=0, column=0, sticky="nsew")
+    def raise_frame(self, name, user=None):
+        # Destroy the current frame
+        for frame in self.frames.values():
+            frame.destroy()
+
+        # Create a new frame and add it to frames dictionary
+        if name == 'login':
+            self.frame = LoginFrame(master=self)
+        elif name == 'main':
+            self.frame = MainFrame(user=user, master=self)
+
+        self.frames[name] = self.frame
+        self.frame.grid(row=0, column=0, sticky="nsew")
+
+    @staticmethod
+    def configure_styles():
+        # Create a style
+        style = ttk.Style()
+
+        # Configure the font style for Button
+        style.configure('TButton', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for Label
+        style.configure('TLabel', font=('Helvetica', 11, 'normal'))
+
+        # Configure the font style for Treeview (table)
+        style.configure('Treeview', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for Treeview (table) headings
+        style.configure('Treeview.Heading', font=("Helvetica", 10, "bold"))
+
+        # Configure the font style for Notebook (tabs)
+        style.configure('TNotebook.Tab', focuscolor='', font=('Helvetica', 10, 'normal'))
+
+    def run(self):
+        self.mainloop()
+
+
+class LoginFrame(tk.Frame):
+    def __init__(self, master=None, **kwargs):
+        super().__init__(master, **kwargs)
+        # Set styles
+        self.master.configure_styles()
+
+        # Set theme
+        sv_ttk.use_dark_theme()
 
         # background image
-        img = Image.open("../../res/splash.jpg").resize((800, 600))
+        img = Image.open("../../res/login-background.png").resize((1350, 850))
         self.background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
+        form_frame = ttk.Label(self, image=self.background_image)
+        form_frame.pack(side="bottom", fill="both", expand=True)
 
-        # Create a canvas
-        canvas = tk.Canvas(frame, width=800, height=600)
-        canvas.pack(fill=tk.BOTH, expand=True)
-        canvas.create_image(0, 0, image=self.background_image, anchor='nw')
+        self.username_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self.username_entry.insert(0, 'Username')
+        self.username_entry.bind('<FocusIn>', self.clear_username)
+        self.username_entry.bind('<FocusOut>', self.fill_username)
+        self.username_entry.place(relx=0.51, rely=0.55, anchor='center')
 
-    def setup_components(self):
+        self.password_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self.password_entry.insert(0, 'Password')
+        self.password_entry.bind('<FocusIn>', self.clear_password)
+        self.password_entry.bind('<FocusOut>', self.fill_password)
+        self.password_entry.place(relx=0.51, rely=0.65, anchor='center')
+
+        #  remember_me = tk.IntVar()
+        #  remember_me_check = ttk.Checkbutton(form_frame, text='Remember me', variable=remember_me)
+        #  remember_me_check.place(relx=0.5, rely=0.6, anchor='center')
+
+        style = ttk.Style()
+        style.configure('Custom.TButton', font=('Helvetica', 11, 'normal'))
+
+        submit_button = ttk.Button(form_frame, text='Login', command=self.check_credentials, style='Custom.TButton')
+        submit_button.place(relx=0.51, rely=0.75, anchor='center')
+
+        #  forgot_password_link = ttk.Button(form_frame, text='Forgot password?', command=self.forgot_password)
+        #  forgot_password_link.place(relx=0.5, rely=0.8, anchor='center')
+
+    def clear_username(self, event):
+        if self.username_entry.get() == 'Username':
+            self.username_entry.delete(0, tk.END)
+
+    def fill_username(self, event):
+        if self.username_entry.get() == '':
+            self.username_entry.insert(0, 'Username')
+
+    def clear_password(self, event):
+        if self.password_entry.get() == 'Password':
+            self.password_entry.delete(0, tk.END)
+            self.password_entry.config(show='*')
+
+    def fill_password(self, event):
+        if self.password_entry.get() == '':
+            self.password_entry.insert(0, 'Password')
+            self.password_entry.config(show='')
+
+    def check_credentials(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        user_id = DatabaseManager().get_credentials(username, password)
+
+        # Check if username and password are correct
+        if user_id:
+            user = DatabaseManager().get_staff_name(user_id)
+            self.master.raise_frame('main', user)
+        else:
+            messagebox.showerror('Login error', 'Incorrect username or password')
+
+    @staticmethod
+    def forgot_password():
+        messagebox.showinfo('Forgot Password', 'Please contact the system administrator.')
+
+
+class MainFrame(tk.Frame):
+    def __init__(self, user=None, master=None, **kwargs):
+        super().__init__(master, **kwargs)
         # Set styles
-        self.configure_styles()
+        self.master.configure_styles()
+
+        # Create a style
+        sv_ttk.use_light_theme()
 
         # Create a ribbon frame below the tabs
-        ribbon_frame = ttk.Frame(self.window)
+        ribbon_frame = ttk.Frame(self)
         ribbon_frame.pack(fill=tk.X)
 
         # Load the icon and keep it in memory
@@ -126,7 +213,7 @@ class AcademicProbationSystem:
 
         # Create a logout button with an icon
         self.logout_button = ttk.Button(ribbon_frame, text="Logout", image=self.dark_logout_icon, compound=tk.LEFT,
-                                        takefocus=False, cursor="hand2", command=self.on_closing)
+                                        takefocus=False, cursor="hand2", command=self.logout)
         self.logout_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
@@ -138,7 +225,7 @@ class AcademicProbationSystem:
         self.emoji_icon = tk.PhotoImage(file="../../res/smile.png")
 
         # Create a label to display the time active
-        self.greeting_label = ttk.Label(ribbon_frame, text='Welcome back, Malik', image=self.emoji_icon,
+        self.greeting_label = ttk.Label(ribbon_frame, text=f'Welcome back, {user}', image=self.emoji_icon,
                                         compound=tk.RIGHT)
         self.greeting_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
 
@@ -153,7 +240,7 @@ class AcademicProbationSystem:
         self.update_time()
 
         # Create frames
-        frame = ttk.Notebook(self.window)
+        frame = ttk.Notebook(self)
 
         # Create tabs
         tab1 = Views(frame).student_view()
@@ -178,65 +265,23 @@ class AcademicProbationSystem:
         # Place the frames in the window
         frame.pack(fill=tk.BOTH, expand=True)
 
-    def on_closing(self):
-        if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
-            DatabaseManager().close_connection()  # close database connection
-            self.window.destroy()
-
-    def load(self):
-        # Destroy the splash window
-        self.splash_window.destroy()
-
-        # Create the main window
-        self.window = tk.Tk()
-
-        # Hide the main window
-        self.window.withdraw()
-
-        # Set up the main window and its components
-        self.setup_main_window()
-        self.setup_components()
-
-        # Show the main window and give it focus
-        self.window.deiconify()
-        self.window.focus_force()
-
-        # Start the main event loop
-        self.window.mainloop()
+    def logout(self):
+        if messagebox.askokcancel("Confirm Logout", "Do you want to logout?"):
+            # Switch back to the login frame
+            self.master.raise_frame('login')
 
     def update_time(self):
         # Get the current date and time
         now = datetime.now()
 
         # Format the date and time
-        # ("%A, %B %d, %Y %I:%M:%S %p")
         date_time = now.strftime("%I:%M:%S %p")
 
         # Update the label
         self.time_label.config(text=date_time)
 
         # Schedule the next update
-        self.window.after(100, self.update_time)
-
-    @staticmethod
-    def configure_styles():
-        # Create a style
-        style = ttk.Style()
-
-        # Configure the font style for Button
-        style.configure('TButton', font=('Helvetica', 10, 'normal'))
-
-        # Configure the font style for Label
-        style.configure('TLabel', font=('Helvetica', 11, 'normal'))
-
-        # Configure the font style for Treeview (table)
-        style.configure('Treeview', font=('Helvetica', 10, 'normal'))
-
-        # Configure the font style for Treeview (table) headings
-        style.configure('Treeview.Heading', font=("Helvetica", 10, "bold"))
-
-        # Configure the font style for Notebook (tabs)
-        style.configure('TNotebook.Tab', focuscolor='', font=('Helvetica', 10, 'normal'))
+        self.after(100, self.update_time)
 
     def switch_theme(self):
         current_theme = sv_ttk.get_theme()
@@ -244,15 +289,10 @@ class AcademicProbationSystem:
             sv_ttk.set_theme("dark")
             self.theme_button.config(text="Light Mode", image=self.light_theme_icon)
             self.logout_button.config(image=self.light_logout_icon)
-            self.configure_styles()
         else:
             sv_ttk.set_theme("light")
             self.theme_button.config(text="Dark Mode", image=self.dark_theme_icon)
             self.logout_button.config(image=self.dark_logout_icon)
-            self.configure_styles()
-
-    def run(self):
-        self.splash_window.mainloop()
 
 
 # Create and run the application
