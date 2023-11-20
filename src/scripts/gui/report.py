@@ -67,7 +67,7 @@ class Report(ttk.Frame):
             self.year_field.configure(from_=self.min_year, to=self.max_year)
 
             # Set the value to max year the first time the Spinbox gets focus
-            if self.first_focus and self.year_field.focus_get() == self.year_field:
+            if self.first_focus:
                 year_var.set(self.max_year)  # Set the default value
                 self.first_focus = False  # Update the flag
 

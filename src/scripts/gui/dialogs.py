@@ -11,6 +11,10 @@ db_manager = DatabaseManager()  # create an instance of DatabaseManager
 class Dialog(tk.Toplevel):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
+        self.first_focus = None
+        self.year_field = None
+        self.max_year = None
+        self.min_year = None
         self.field_name = None
         self.transient(parent)
         self.grab_set()  # This makes the dialog modal
@@ -143,7 +147,7 @@ class Dialog(tk.Toplevel):
                                                                                    padx=self.x_padding,
                                                                                    pady=self.y_padding)
         mod_credits_field = ttk.Combobox(self.frame, state="readonly", values=["1", "2", "3", "4"],
-                                         width=self.f_width - 1, font=('Helvetica', 11, 'normal'))
+                                         width=self.f_width, font=('Helvetica', 11, 'normal'))
         mod_credits_field.grid(row=4, column=1)
 
         # Create buttons
@@ -481,7 +485,7 @@ class Dialog(tk.Toplevel):
 
     def multi_input_dialog(self):
         # Initialize window properties
-        self.initialize_properties("Input Required", 500, 250)
+        self.initialize_properties("Input Required", 500, 350)
 
         # Create the input frame
         frame = ttk.Frame(self)
@@ -512,6 +516,36 @@ class Dialog(tk.Toplevel):
                                            font=('Helvetica', 11, 'normal'))
         self.semester_field.grid(row=2, column=1)
 
+        # Create year labels and entry fields
+        ttk.Label(frame, text="Year", width=self.l_width, anchor="w").grid(row=3, column=0, padx=self.x_padding,
+                                                                           pady=self.y_padding)
+        year_var = tk.StringVar()  # Create a StringVar
+        self.first_focus = True  # Flag to check if it's the first time the Spinbox gets focus
+        self.year_field = ttk.Spinbox(frame, width=self.f_width - 4,
+                                      state="readonly",
+                                      textvariable=year_var,
+                                      font=('Helvetica', 11, 'normal'))  # Associate the StringVar with the Spinbox
+        self.year_field.grid(row=3, column=1)
+
+        # Get the range of years
+        def get_years():
+            years = db_manager.get_years()
+            self.min_year = min(years)[0]
+            self.max_year = max(years)[0]
+
+            # Update the Spinbox range
+            self.year_field.configure(from_=self.min_year, to=self.max_year)
+
+            # Set the value to max year the first time the Spinbox gets focus
+            if self.first_focus:
+                year_var.set(self.max_year)  # Set the default value
+                self.first_focus = False  # Update the flag
+
+            # Call this function again after 500ms (0.5 second)
+            self.after(500, get_years)
+
+        get_years()
+
         def submit_action():
             self.helpers.validate({"ID": (self.id_field, "int"),
                                    "Module": (self.module_field, "str"),
@@ -535,5 +569,5 @@ class Dialog(tk.Toplevel):
 
     def submit_multi(self):
         self.result = [str(self.id_field.get()).strip(), str(self.module_field.get()).strip(),
-                       str(self.semester_field.get()).strip()]
+                       str(self.semester_field.get()).strip(), str(self.year_field.get()).strip()]
         self.destroy()

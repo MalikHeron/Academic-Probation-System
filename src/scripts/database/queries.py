@@ -301,7 +301,7 @@ class DatabaseManager:
 
     def update_knowledge_base(self, year):
         try:
-            self.cursor.execute(f"""SELECT * FROM module_details WHERE year = {year}""")
+            self.cursor.execute(f"""SELECT * FROM module_details WHERE year = '{year}'""")
             results = self.cursor.fetchall()
 
             for result in results:
@@ -320,7 +320,7 @@ class DatabaseManager:
 
             # Insert details
             self.cursor.execute(
-                f"""INSERT INTO module_details VALUES ({id_number}, '{module_code}', {gpa}, {semester}, {year})""")
+                f"""INSERT INTO module_details VALUES ({id_number}, '{module_code}', {gpa}, {semester}, '{year}')""")
 
             # Commit changes
             self.conn.commit()
@@ -470,7 +470,7 @@ class DatabaseManager:
                     module_code = self.cursor.fetchone()[0]
 
                     self.cursor.execute(f"""UPDATE module_details SET grade_points={data[2]}, 
-                    semester={data[3]}, year={data[4]}
+                    semester={data[3]}, year='{data[4]}'
                     WHERE student_id={data[0]} AND module_code='{module_code}'""")
                 case "staff":
                     self.cursor.execute(f"""UPDATE staff SET name='{data[1]}', email='{data[2]}', position='{data[3]}' 
@@ -533,7 +533,7 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_student(self, student_id):
+    def delete_student(self, student_id):
         try:
             # Check if the student exists
             self.cursor.execute(f"""SELECT * FROM student_master WHERE id = {student_id}""")
@@ -552,7 +552,7 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_module(self, module):
+    def delete_module(self, module):
         try:
             # Get module code
             module_code = self.get_module_code(module)
@@ -577,7 +577,7 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_details(self, student_id, module_name, semester):
+    def delete_details(self, student_id, module_name, semester, year):
         try:
             # Get module code
             self.cursor.execute(f"""SELECT code FROM module_master WHERE name = '{module_name}'""")
@@ -585,7 +585,7 @@ class DatabaseManager:
 
             # Check if the module exists
             self.cursor.execute(f"""SELECT * FROM module_details WHERE student_id = {student_id} 
-                            AND module_code = '{module_code}' AND semester = {semester}""")
+                            AND module_code = '{module_code}' AND semester = {semester} AND year = '{year}'""")
             if self.cursor.fetchone() is None:
                 logging.error(
                     f"Record with student id [{student_id}], module code [{module_code}] "
@@ -603,7 +603,7 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_staff(self, staff_id):
+    def delete_staff(self, staff_id):
         try:
             # Check if the staff exists
             self.cursor.execute(f"""SELECT * FROM staff WHERE staff_id = {staff_id}""")
@@ -627,7 +627,7 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_faculty(self, faculty):
+    def delete_faculty(self, faculty):
         try:
             # Get faculty code
             faculty_code = self.get_faculty_code(faculty)
@@ -652,7 +652,7 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_school(self, school):
+    def delete_school(self, school):
         try:
             # Get school code
             school_code = self.get_school_code(school)
@@ -679,7 +679,7 @@ class DatabaseManager:
             logging.error(f"An error occurred: {e}")
             return False
 
-    def remove_programme(self, programme):
+    def delete_programme(self, programme):
         try:
             # Get programme code
             programme_code = self.get_programme_code(programme)

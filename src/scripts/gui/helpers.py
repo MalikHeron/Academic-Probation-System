@@ -19,23 +19,21 @@ class Helpers:
 
     def __init__(self):
         self.refresh_button = None
-        self.remove_button = None
+        self.delete_button = None
         self.update_button = None
         self.add_button = None
 
         # Load the icon and keep it in memory
         self.dark_refresh_icon = tk.PhotoImage(file="../../res/reload-dark.png")
-        self.dark_remove_icon = tk.PhotoImage(file="../../res/remove-dark.png")
+        self.dark_delete_icon = tk.PhotoImage(file="../../res/delete-dark.png")
         self.dark_update_icon = tk.PhotoImage(file="../../res/update-dark.png")
         self.dark_add_icon = tk.PhotoImage(file="../../res/add-dark.png")
 
         # Load the icon and keep it in memory
         self.light_refresh_icon = tk.PhotoImage(file="../../res/reload-light.png")
-        self.light_remove_icon = tk.PhotoImage(file="../../res/remove-light.png")
+        self.light_delete_icon = tk.PhotoImage(file="../../res/delete-light.png")
         self.light_update_icon = tk.PhotoImage(file="../../res/update-light.png")
         self.light_add_icon = tk.PhotoImage(file="../../res/add-light.png")
-        self.dark_delete_icon = None
-        self.light_delete_icon = None
 
     @staticmethod
     def create_pdf(data, year, gpa, directory):
@@ -312,7 +310,7 @@ class Helpers:
         def delete_file():
             selected_items = file_tree.selection()  # get selected items
 
-            if messagebox.askokcancel("Confirm", "Delete the selected report(s)?"):
+            if messagebox.askokcancel("Confirm", "Are you sure you want to delete the selected item(s)?"):
                 # Delete all selected items
                 for selected_item in selected_items:
                     file_path = os.path.join(folder_path, file_tree.item(selected_item)['values'][0])
@@ -344,7 +342,7 @@ class Helpers:
         button.pack(side="left", padx=pad_x, pady=pady, anchor='center')
         return button
 
-    def create_dialog_buttons(self, frame, fields, row, submit_action, clear_fields, close_view, x_padding=5,
+    def create_dialog_buttons(self, frame, fields, row, submit_action, clear_fields, destroy, x_padding=5,
                               y_padding=20):
         # Submit and Cancel buttons
         button_frame = ttk.Frame(frame)
@@ -353,9 +351,9 @@ class Helpers:
         # Create the buttons
         self.create_button_widget(button_frame, "Clear", lambda: clear_fields(*fields))
         self.create_button_widget(button_frame, "Submit", submit_action)
-        self.create_button_widget(button_frame, "Close", lambda: close_view())
+        self.create_button_widget(button_frame, "Cancel", lambda: destroy())
 
-    def create_crud_buttons(self, frame, tree, data_func, add, update, remove, refresh):
+    def create_crud_buttons(self, frame, tree, data_func, add, update, delete, refresh):
         # Create a new frame to hold the buttons
         button_frame = ttk.Frame(frame)
 
@@ -367,16 +365,16 @@ class Helpers:
                                         cursor="hand2",
                                         takefocus=False, image=self.light_update_icon,
                                         compound=tk.LEFT)
-        self.remove_button = ttk.Button(button_frame, text="Remove", command=lambda: remove(), style='TButton',
+        self.delete_button = ttk.Button(button_frame, text="Delete", command=lambda: delete(), style='TButton',
                                         cursor="hand2",
-                                        takefocus=False, image=self.light_remove_icon,
+                                        takefocus=False, image=self.light_delete_icon,
                                         compound=tk.LEFT)
         self.refresh_button = ttk.Button(button_frame, text="Refresh", command=lambda: refresh(frame, data_func),
                                          style='TButton',
                                          cursor="hand2", takefocus=False, image=self.light_refresh_icon,
                                          compound=tk.LEFT)
         # Place the buttons
-        buttons = [self.add_button, self.update_button, self.remove_button, self.refresh_button]
+        buttons = [self.add_button, self.update_button, self.delete_button, self.refresh_button]
 
         # Pack the buttons into the new frame
         for button in buttons:
@@ -389,12 +387,12 @@ class Helpers:
             current_theme = sv_ttk.get_theme()
             if current_theme == "light":
                 self.refresh_button.config(image=self.light_refresh_icon)
-                self.remove_button.config(image=self.light_remove_icon)
+                self.delete_button.config(image=self.light_delete_icon)
                 self.update_button.config(image=self.light_update_icon)
                 self.add_button.config(image=self.light_add_icon)
             else:
                 self.refresh_button.config(image=self.dark_refresh_icon)
-                self.remove_button.config(image=self.dark_remove_icon)
+                self.delete_button.config(image=self.dark_delete_icon)
                 self.update_button.config(image=self.dark_update_icon)
                 self.add_button.config(image=self.dark_add_icon)
 

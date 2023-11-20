@@ -73,7 +73,7 @@ class Views(ttk.Frame):
         # Button configurations
         self.helpers.create_crud_buttons(self.student_frame, self.tree, db_manager.get_students, self.add_student,
                                          self.update_student,
-                                         self.remove_student,
+                                         self.delete_student,
                                          self.refresh)
 
         return self.student_frame
@@ -117,7 +117,7 @@ class Views(ttk.Frame):
         # Button configurations
         self.helpers.create_crud_buttons(self.module_frame, self.tree, db_manager.get_modules, self.add_module,
                                          self.update_module,
-                                         self.remove_module, self.refresh)
+                                         self.delete_module, self.refresh)
 
         return self.module_frame
 
@@ -160,7 +160,7 @@ class Views(ttk.Frame):
         # Button configurations
         self.helpers.create_crud_buttons(self.details_frame, self.tree, db_manager.get_details, self.add_details,
                                          self.update_details,
-                                         self.remove_details, self.refresh)
+                                         self.delete_details, self.refresh)
 
         return self.details_frame
 
@@ -203,7 +203,7 @@ class Views(ttk.Frame):
         # Button configurations
         self.helpers.create_crud_buttons(self.staff_frame, self.tree, db_manager.get_staff, self.add_staff,
                                          self.update_staff,
-                                         self.remove_staff, self.refresh)
+                                         self.delete_staff, self.refresh)
 
         return self.staff_frame
 
@@ -246,7 +246,7 @@ class Views(ttk.Frame):
         # Button configurations
         self.helpers.create_crud_buttons(self.faculty_frame, self.tree, db_manager.get_faculties, self.add_faculty,
                                          self.update_faculty,
-                                         self.remove_faculty, self.refresh)
+                                         self.delete_faculty, self.refresh)
 
         return self.faculty_frame
 
@@ -289,7 +289,7 @@ class Views(ttk.Frame):
         # Button configurations
         self.helpers.create_crud_buttons(self.school_frame, self.tree, db_manager.get_schools, self.add_school,
                                          self.update_school,
-                                         self.remove_school, self.refresh)
+                                         self.delete_school, self.refresh)
 
         return self.school_frame
 
@@ -332,7 +332,7 @@ class Views(ttk.Frame):
         # Button configurations
         self.helpers.create_crud_buttons(self.programme_frame, self.tree, db_manager.get_programmes, self.add_programme,
                                          self.update_programme,
-                                         self.remove_programme, self.refresh)
+                                         self.delete_programme, self.refresh)
 
         return self.programme_frame
 
@@ -378,7 +378,7 @@ class Views(ttk.Frame):
                     "Module": (module_field, "str"),
                     "GPA": (gpa_field, "float"),
                     "Semester": (semester_field, "int"),
-                    "Year": (year_field, "int")
+                    "Year": (year_field, "str")
                 }, db_action, dialog, destroy)
 
             if selected_item is not None:
@@ -735,14 +735,14 @@ class Views(ttk.Frame):
                                  "Programme record updated successfully.",
                                  "Failed to update programme record.")
 
-    # Remove functions
-    def remove_item(self, remove_func, parent_frame, option=1, dialog_prompt=None):
+    # Delete functions
+    def delete_item(self, delete_func, parent_frame, option=1, dialog_prompt=None):
         # Get the selected item from the tree
         selected_items = self.tree.selection()
 
         # If an item is selected, get its values
         if selected_items:
-            if messagebox.askokcancel("Confirm", "Are you sure you want to remove the selected item(s)?"):
+            if messagebox.askokcancel("Confirm", "Are you sure you want to delete the selected item(s)?"):
                 for selected_item in selected_items:
                     # If fields is None, get the first value
                     if option == 1:
@@ -752,20 +752,21 @@ class Views(ttk.Frame):
                         student_id = str(self.tree.item(selected_item)["values"][0]).strip()
                         module_code = str(self.tree.item(selected_item)["values"][1]).strip()
                         semester = str(self.tree.item(selected_item)["values"][3]).strip()
-                        values = [student_id, module_code, semester]
+                        year = str(self.tree.item(selected_item)["values"][4]).strip()
+                        values = [student_id, module_code, semester, year]
 
-                    # Call the remove function with the appropriate arguments
+                    # Call the delete function with the appropriate arguments
                     if option == 1:
-                        removed = remove_func(values)
+                        deleted = delete_func(values)
                     else:
-                        removed = remove_func(*values)
+                        deleted = delete_func(*values)
 
-                    # If the item was successfully removed, delete it from the tree
-                    if removed is True:
+                    # If the item was successfully deleted, delete it from the tree
+                    if deleted is True:
                         self.tree.delete(selected_item)
                     else:
                         # Display an error message
-                        messagebox.showerror("Error", "Failed to remove record.")
+                        messagebox.showerror("Error", "Failed to delete record.")
             else:
                 return
         else:
@@ -791,15 +792,15 @@ class Views(ttk.Frame):
                 if values is None:
                     return
 
-            # If options is 1, call the remove function with a single argument
+            # If options is 1, call the delete function with a single argument
             # Otherwise, unpack the values and pass them as arguments
             if option == 1:
-                removed = remove_func(values)
+                deleted = delete_func(values)
             else:
-                removed = remove_func(*values)
+                deleted = delete_func(*values)
 
-            # If the item was successfully removed
-            if removed is True:
+            # If the item was successfully deleted
+            if deleted is True:
                 # If an item was selected, delete it from the tree
                 if selected_items:
                     self.tree.delete(selected_items)
@@ -828,48 +829,48 @@ class Views(ttk.Frame):
                                 break
             else:
                 # Display an error message
-                messagebox.showerror("Error", "Failed to remove record.")
+                messagebox.showerror("Error", "Failed to delete record.")
 
         # Update the record count
-        match remove_func:
-            case db_manager.remove_student:
+        match delete_func:
+            case db_manager.delete_student:
                 self.refresh(parent_frame, db_manager.get_students)
-            case db_manager.remove_module:
+            case db_manager.delete_module:
                 self.refresh(parent_frame, db_manager.get_modules)
-            case db_manager.remove_details:
+            case db_manager.delete_details:
                 self.refresh(parent_frame, db_manager.get_details)
-            case db_manager.remove_staff:
+            case db_manager.delete_staff:
                 self.refresh(parent_frame, db_manager.get_staff)
-            case db_manager.remove_faculty:
+            case db_manager.delete_faculty:
                 self.refresh(parent_frame, db_manager.get_faculties)
-            case db_manager.remove_school:
+            case db_manager.delete_school:
                 self.refresh(parent_frame, db_manager.get_schools)
-            case db_manager.remove_programme:
+            case db_manager.delete_programme:
                 self.refresh(parent_frame, db_manager.get_programmes)
 
         # Refresh the tree view
         self.tree.update_idletasks()
 
-    def remove_student(self):
-        self.remove_item(db_manager.remove_student, self.student_frame, dialog_prompt="Student ID")
+    def delete_student(self):
+        self.delete_item(db_manager.delete_student, self.student_frame, dialog_prompt="Student ID")
 
-    def remove_module(self):
-        self.remove_item(db_manager.remove_module, self.module_frame, dialog_prompt="Module")
+    def delete_module(self):
+        self.delete_item(db_manager.delete_module, self.module_frame, dialog_prompt="Module")
 
-    def remove_details(self):
-        self.remove_item(db_manager.remove_details, self.details_frame, 2)
+    def delete_details(self):
+        self.delete_item(db_manager.delete_details, self.details_frame, 2)
 
-    def remove_staff(self):
-        self.remove_item(db_manager.remove_staff, self.staff_frame, dialog_prompt="Staff ID")
+    def delete_staff(self):
+        self.delete_item(db_manager.delete_staff, self.staff_frame, dialog_prompt="Staff ID")
 
-    def remove_faculty(self):
-        self.remove_item(db_manager.remove_faculty, self.faculty_frame, dialog_prompt="Faculty")
+    def delete_faculty(self):
+        self.delete_item(db_manager.delete_faculty, self.faculty_frame, dialog_prompt="Faculty")
 
-    def remove_school(self):
-        self.remove_item(db_manager.remove_school, self.school_frame, dialog_prompt="School")
+    def delete_school(self):
+        self.delete_item(db_manager.delete_school, self.school_frame, dialog_prompt="School")
 
-    def remove_programme(self):
-        self.remove_item(db_manager.remove_programme, self.programme_frame, dialog_prompt="Programme")
+    def delete_programme(self):
+        self.delete_item(db_manager.delete_programme, self.programme_frame, dialog_prompt="Programme")
 
     def update_search(self):
         # Update search function whenever search text is changed
