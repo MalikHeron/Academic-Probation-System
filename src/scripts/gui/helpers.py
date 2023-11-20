@@ -132,6 +132,31 @@ class Helpers:
 
         return search_entry
 
+    @staticmethod
+    def configure_scrollbar(canvas, frame, height, pad_x=0):
+        def on_configure(event):
+            # Update scroll region after starting 'mainloop'
+            # When all widgets are in canvas
+            canvas.configure(scrollregion=canvas.bbox('all'))
+
+            # Set second frame's size to canvas's size
+            frame.configure(width=event.width)
+
+        canvas.bind('<Configure>', on_configure)
+
+        # Create Treeview in second frame
+        tree = ttk.Treeview(frame, show='headings', style="Treeview", height=height)
+
+        # Add a Scrollbar to the Treeview
+        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
+        scrollbar.grid(row=0, column=1, sticky='ns', padx=pad_x, pady=10)
+        scrollbar.grid_remove()  # Initially hide the scrollbar
+
+        # Configure the Treeview
+        tree.configure(yscrollcommand=scrollbar.set)
+
+        return tree, scrollbar
+
     def create_view_table(self, frame, columns, column_widths, column_alignments, height=23, data=None, pad_x=0):
         # Create Canvas in new window
         canvas = tk.Canvas(frame)
@@ -143,26 +168,10 @@ class Helpers:
         # Add that new frame to a new window on the canvas
         canvas.create_window((0, 0), window=second_frame, anchor="nw")
 
-        def on_configure(event):
-            # Update scroll region after starting 'mainloop'
-            # When all widgets are in canvas
-            canvas.configure(scrollregion=canvas.bbox('all'))
+        # Configure the scrollbar
+        tree, scrollbar = self.configure_scrollbar(canvas, second_frame, height, pad_x)
 
-            # Set second frame's size to canvas's size
-            second_frame.configure(width=event.width)
-
-        canvas.bind('<Configure>', on_configure)
-
-        # Create Treeview in second frame
-        tree = ttk.Treeview(second_frame, show='headings', style="Treeview", height=height)
-
-        # Add a Scrollbar to the Treeview
-        scrollbar = ttk.Scrollbar(second_frame, orient="vertical", command=tree.yview)
-        scrollbar.grid(row=0, column=1, sticky='ns', padx=pad_x, pady=10)
-        scrollbar.grid_remove()  # Initially hide the scrollbar
-
-        # Configure the Treeview
-        tree.configure(yscrollcommand=scrollbar.set)
+        # Pack the Treeview into the new frame
         tree.grid(row=0, column=0)
 
         # Define columns
@@ -195,26 +204,8 @@ class Helpers:
         # Add that new frame to a new window on the canvas
         canvas.create_window((0, 0), window=report_frame, anchor="ne")
 
-        def on_configure(event):
-            # Update scroll region after starting 'mainloop'
-            # When all widgets are in canvas
-            canvas.configure(scrollregion=canvas.bbox('all'))
-
-            # Set second frame's size to canvas's size
-            report_frame.configure(width=event.width)
-
-        canvas.bind('<Configure>', on_configure)
-
-        # Create Treeview in second frame
-        gpa_tree = ttk.Treeview(report_frame, show='headings', style="Treeview", height=height)
-
-        # Add a Scrollbar to the Treeview
-        scrollbar = ttk.Scrollbar(report_frame, orient="vertical", command=gpa_tree.yview)
-        scrollbar.pack(side=tk.RIGHT, fill='y')
-        scrollbar.pack_forget()  # Initially hide the scrollbar
-
-        # Configure the Treeview
-        gpa_tree.configure(yscrollcommand=scrollbar.set)
+        # Configure the scrollbar
+        gpa_tree, gpa_scrollbar = self.configure_scrollbar(canvas, report_frame, height)
 
         # Define columns
         gpa_tree["columns"] = columns
@@ -231,7 +222,7 @@ class Helpers:
 
             # Show the scrollbar if there's enough data to make the table scrollable
             if len(data) > height:
-                scrollbar.pack(side=tk.RIGHT, fill='y')
+                gpa_scrollbar.pack(side=tk.RIGHT, fill='y')
 
         gpa_tree.pack(padx=pad)
 
@@ -298,6 +289,7 @@ class Helpers:
 
         # Open the selected PDF file when clicked
         def open_selected_files(event):
+            logging.info(event)
             for selected_item in file_tree.selection():
                 self.open_pdf(os.path.join(folder_path, file_tree.item(selected_item)['values'][0]))
 
@@ -329,6 +321,7 @@ class Helpers:
 
         # Update delete button state based on treeview selection
         def update_delete_button(event):
+            logging.info(event)
             if file_tree.selection():
                 delete_button.config(state="normal")
             else:
@@ -345,10 +338,10 @@ class Helpers:
         return gpa_tree
 
     @staticmethod
-    def create_button_widget(frame, text, command, pad_x=5, pad_y=20, width=10):
+    def create_button_widget(frame, text, command, pad_x=5, pady=20, width=10):
         button = ttk.Button(frame, text=text, width=width, command=command, style='TButton', cursor="hand2",
                             takefocus=False)
-        button.pack(side="left", padx=pad_x, pady=pad_y, anchor='center')
+        button.pack(side="left", padx=pad_x, pady=pady, anchor='center')
         return button
 
     def create_dialog_buttons(self, frame, fields, row, submit_action, clear_fields, close_view, x_padding=5,
@@ -415,6 +408,7 @@ class Helpers:
         self.update_button.config(state='disabled')
 
         def on_tree_select(event):
+            logging.info(event)
             # Enable the update button when only one item is selected
             selected = tree.selection()
             if len(selected) == 1:
@@ -426,8 +420,8 @@ class Helpers:
         tree.bind('<<TreeviewSelect>>', on_tree_select)
 
     @staticmethod
-    def create_label_and_field(frame, text, row, pad_x=0, pad_y=20, f_width=25, l_width=11, is_password=False):
-        ttk.Label(frame, text=text, width=l_width, anchor="w").grid(row=row, column=0, padx=pad_x, pady=pad_y)
+    def create_label_and_field(frame, text, row, padx=0, pad_y=20, f_width=25, l_width=11, is_password=False):
+        ttk.Label(frame, text=text, width=l_width, anchor="w").grid(row=row, column=0, padx=padx, pady=pad_y)
 
         # Create field
         if is_password:
@@ -551,19 +545,21 @@ class Helpers:
 
     def update_pdf_list(self, folder_path, pdf_files, tree):
         try:
-            while True:
-                new_pdf_files = self.get_pdf_files(folder_path)
-                if new_pdf_files != pdf_files:
-                    # Clear the tree
-                    tree.delete(*tree.get_children())
+            new_pdf_files = self.get_pdf_files(folder_path)
+            if new_pdf_files != pdf_files:
+                # Clear the tree
+                tree.delete(*tree.get_children())
 
-                    # Update the list of files
-                    pdf_files = new_pdf_files
-                    for pdf_file in pdf_files:
-                        file_size = self.convert_bytes(os.path.getsize(os.path.join(folder_path, pdf_file)))
-                        tree.insert("", "end", values=(pdf_file, file_size))
+                # Update the list of files
+                pdf_files = new_pdf_files
+                for pdf_file in pdf_files:
+                    file_size = self.convert_bytes(os.path.getsize(os.path.join(folder_path, pdf_file)))
+                    tree.insert("", "end", values=(pdf_file, file_size))
+
+            # Schedule the next update
+            tree.after(1000, self.update_pdf_list, folder_path, pdf_files, tree)  # Update every 1 second
         except Exception as e:
-            logging.error("An error occurred in updating the PDF list:", e)
+            logging.error(f"An error occurred in updating the PDF list: {e}")
 
     @staticmethod
     def open_pdf(pdf_file_path):

@@ -110,10 +110,12 @@ cumulative_gpa_all_students(Results) :-
             student(StudentID, Name, Email, School, Programme),
             % If cumulative_gpa/5 succeeds then format and print the student's name and cumulative GPA
             (   cumulative_gpa(StudentID, Name, GPA1, GPA2, CumulativeGPA) ->
-                format('Student: ~w, Cumulative GPA: ~2f~n', [Name, CumulativeGPA])
+                % format('Student: ~w, Cumulative GPA: ~2f~n', [Name, CumulativeGPA])
+                true
             % If cumulative_gpa/5 fails then print that no GPA was calculated for this student
             ;   CumulativeGPA = 'No GPA calculated',
-                format('Student: ~w, No GPA calculated~n', [Name])
+                % format('Student: ~w, No GPA calculated~n', [Name])
+                true
             )
         ),
         % The variable that will hold the results

@@ -84,6 +84,7 @@ class Login(tk.Frame):
         if user_id:
             full_name = DatabaseManager().get_staff_name(user_id)
             first_name = full_name.split(' ')[0]  # This will get the first name
+            # Raise the dashboard frame
             self.master.raise_frame('dashboard', first_name)
         else:
             messagebox.showerror('Login error', 'Incorrect username or password')

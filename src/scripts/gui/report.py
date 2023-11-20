@@ -358,6 +358,10 @@ class Report(ttk.Frame):
             # Update the label with a failure message in red
             self.alert_var.set(f"Error sending email alerts!")
             self.alert_label.config(foreground='red')
+            # Enable the generate button
+            self.generate_button.config(state="normal")
+            # Schedule the removal of the label
+            self.generate_frame.after(2000, self.remove_alerts)  # 2000 milliseconds = 2 seconds
 
     def remove_alerts(self):
         # Remove the label
