@@ -336,7 +336,7 @@ class Views(ttk.Frame):
 
         return self.programme_frame
 
-    def create_dialog(self, dialog_type, db_action, selected_item=None):
+    def create_dialog(self, dialog_type, db_action, destroy=False, selected_item=None):
         # Create an instance of Dialog
         dialog = Dialog(self)
         fields = []  # Create an empty list to store the fields
@@ -348,7 +348,7 @@ class Views(ttk.Frame):
                                        "Email": (email_field, "email"),
                                        "School": (school_field, "str"),
                                        "Programme": (programme_field, "str"),
-                                       "Advisor": (advisor_field, "str")}, db_action)
+                                       "Advisor": (advisor_field, "str")}, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update Student"
@@ -363,7 +363,7 @@ class Views(ttk.Frame):
                     "Module Code": (code_field, "str"),
                     "Module Name": (name_field, "str"),
                     "Credits": (credits_field, "int")
-                }, self.update_module_in_db)
+                }, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update Module"
@@ -379,7 +379,7 @@ class Views(ttk.Frame):
                     "GPA": (gpa_field, "float"),
                     "Semester": (semester_field, "int"),
                     "Year": (year_field, "int")
-                }, db_action)
+                }, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update Details"
@@ -387,7 +387,7 @@ class Views(ttk.Frame):
                 title = "Add Details"
             frame, id_field, module_field, gpa_field, semester_field, year_field, year_var \
                 = dialog.details_dialog(title, submit_action)
-            fields = [id_field, gpa_field, module_field, semester_field, year_field, year_var]
+            fields = [id_field, module_field, gpa_field, semester_field, year_field, year_var]
         elif dialog_type == "staff":
             def submit_action():
                 self.helpers.validate({
@@ -397,7 +397,7 @@ class Views(ttk.Frame):
                     "Position": (position_field, "str"),
                     "Username": (username_field, "username"),
                     "Password": (password_field, "password")
-                }, db_action)
+                }, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update Staff"
@@ -412,7 +412,7 @@ class Views(ttk.Frame):
                     "Code": (code_field, "str"),
                     "Name": (name_field, "str"),
                     "Administrator": (admin_field, "str")
-                }, db_action)
+                }, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update Faculty"
@@ -427,7 +427,7 @@ class Views(ttk.Frame):
                     "Code": (code_field, "str"),
                     "Name": (name_field, "str"),
                     "Faculty": (faculty_field, "str")
-                }, db_action)
+                }, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update School"
@@ -443,7 +443,7 @@ class Views(ttk.Frame):
                     "Name": (name_field, "str"),
                     "School": (school_field, "str"),
                     "Director": (director_field, "str")
-                }, db_action)
+                }, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update Programme"
@@ -476,7 +476,7 @@ class Views(ttk.Frame):
         # Get the selected item from the tree
         selected_item = self.tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("student", self.update_student_in_db, selected_item)
+        self.create_dialog("student", self.update_student_in_db, True, selected_item)
 
     def add_module(self):
         # Call the dialog box with no arguments
@@ -486,7 +486,7 @@ class Views(ttk.Frame):
         # Get the selected item from the tree
         selected_item = self.tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("module", self.update_module_in_db, selected_item)
+        self.create_dialog("module", self.update_module_in_db, True, selected_item)
 
     def add_details(self):
         self.create_dialog("details", self.add_detail_to_db)
@@ -495,7 +495,7 @@ class Views(ttk.Frame):
         # Get the selected item from the tree
         selected_item = self.tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("details", self.update_detail_in_db, selected_item)
+        self.create_dialog("details", self.update_detail_in_db, True, selected_item)
 
     def add_staff(self):
         self.create_dialog("staff", self.add_staff_to_db)
@@ -504,7 +504,7 @@ class Views(ttk.Frame):
         # Get the selected item from the tree
         selected_item = self.tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("staff", self.update_staff_in_db, selected_item)
+        self.create_dialog("staff", self.update_staff_in_db, True, selected_item)
 
     def add_faculty(self):
         self.create_dialog("faculty", self.add_faculty_to_db)
@@ -513,7 +513,7 @@ class Views(ttk.Frame):
         # Get the selected item from the tree
         selected_item = self.tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("faculty", self.update_faculty_in_db, selected_item)
+        self.create_dialog("faculty", self.update_faculty_in_db, True, selected_item)
 
     def add_school(self):
         self.create_dialog("school", self.add_school_to_db)
@@ -522,7 +522,7 @@ class Views(ttk.Frame):
         # Get the selected item from the tree
         selected_item = self.tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("school", self.update_school_in_db, selected_item)
+        self.create_dialog("school", self.update_school_in_db, True, selected_item)
 
     def add_programme(self):
         self.create_dialog("programme", self.add_programme_to_db)
@@ -531,7 +531,7 @@ class Views(ttk.Frame):
         # Get the selected item from the tree
         selected_item = self.tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("programme", self.update_programme_in_db, selected_item)
+        self.create_dialog("programme", self.update_programme_in_db, True, selected_item)
 
     # Refresh functions
     def refresh(self, frame, get_data_func):
@@ -606,6 +606,8 @@ class Views(ttk.Frame):
             # Display an error message
             messagebox.showerror("Error", error_message)
 
+        return success
+
     def update_in_db(self, data, table_name, success_message, error_message):
         # Insert the record into the database
         success = db_manager.update_record(data, table_name)
@@ -631,104 +633,107 @@ class Views(ttk.Frame):
             # Display an error message
             messagebox.showerror("Error", error_message)
 
+        return success
+
     # Add functions
     def add_student_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_student, (validated_fields["ID"], validated_fields["Full Name"],
-                                                   validated_fields["Email"], validated_fields["School"],
-                                                   validated_fields["Programme"], validated_fields["Advisor"]),
-                       "Student record added successfully.",
-                       "Failed to add student record.")
+        return self.add_to_db(db_manager.insert_student, (validated_fields["ID"], validated_fields["Full Name"],
+                                                          validated_fields["Email"], validated_fields["School"],
+                                                          validated_fields["Programme"], validated_fields["Advisor"]),
+                              "Student record added successfully.",
+                              "Failed to add student record.")
 
     def add_module_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_module, (validated_fields["Module Code"], validated_fields["Module Name"],
-                                                  validated_fields["Credits"]),
-                       "Module record added successfully.",
-                       "Failed to add module record.")
+        return self.add_to_db(db_manager.insert_module,
+                              (validated_fields["Module Code"], validated_fields["Module Name"],
+                               validated_fields["Credits"]),
+                              "Module record added successfully.",
+                              "Failed to add module record.")
 
     def add_detail_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module"],
-                                                  validated_fields["GPA"], validated_fields["Semester"],
-                                                  validated_fields["Year"]),
-                       "Detail record added successfully.",
-                       "Failed to add detail record.")
+        return self.add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module"],
+                                                         validated_fields["GPA"], validated_fields["Semester"],
+                                                         validated_fields["Year"]),
+                              "Detail record added successfully.",
+                              "Failed to add detail record.")
 
     def add_staff_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_staff, (validated_fields["ID"], validated_fields["Name"],
-                                                 validated_fields["Email"], validated_fields["Position"],
-                                                 validated_fields["Username"], validated_fields["Password"]),
-                       "Staff record added successfully.",
-                       "Failed to add staff record.")
+        return self.add_to_db(db_manager.insert_staff, (validated_fields["ID"], validated_fields["Name"],
+                                                        validated_fields["Email"], validated_fields["Position"],
+                                                        validated_fields["Username"], validated_fields["Password"]),
+                              "Staff record added successfully.",
+                              "Failed to add staff record.")
 
     def add_faculty_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_faculty, (validated_fields["Code"], validated_fields["Name"],
-                                                   validated_fields["Administrator"]),
-                       "Faculty record added successfully.",
-                       "Failed to add faculty record.")
+        return self.add_to_db(db_manager.insert_faculty, (validated_fields["Code"], validated_fields["Name"],
+                                                          validated_fields["Administrator"]),
+                              "Faculty record added successfully.",
+                              "Failed to add faculty record.")
 
     def add_school_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_school, (validated_fields["Code"], validated_fields["Name"],
-                                                  validated_fields["Faculty"]),
-                       "School record added successfully.",
-                       "Failed to add school record.")
+        return self.add_to_db(db_manager.insert_school, (validated_fields["Code"], validated_fields["Name"],
+                                                         validated_fields["Faculty"]),
+                              "School record added successfully.",
+                              "Failed to add school record.")
 
     def add_programme_to_db(self, validated_fields):
-        self.add_to_db(db_manager.insert_programme,
-                       (validated_fields["Code"], validated_fields["Name"], validated_fields["School"],
-                        validated_fields["Director"],),
-                       "Programme record added successfully.",
-                       "Failed to add programme record.")
+        return self.add_to_db(db_manager.insert_programme,
+                              (validated_fields["Code"], validated_fields["Name"], validated_fields["School"],
+                               validated_fields["Director"],),
+                              "Programme record added successfully.",
+                              "Failed to add programme record.")
 
     # Update functions
     def update_student_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["ID"], validated_fields["Full Name"],
-                           validated_fields["Email"], validated_fields["School"],
-                           validated_fields["Programme"], validated_fields["Advisor"]),
-                          "student",
-                          "Student record updated successfully.",
-                          "Failed to update student record.")
+        return self.update_in_db((validated_fields["ID"], validated_fields["Full Name"],
+                                  validated_fields["Email"], validated_fields["School"],
+                                  validated_fields["Programme"], validated_fields["Advisor"]),
+                                 "student",
+                                 "Student record updated successfully.",
+                                 "Failed to update student record.")
 
     def update_detail_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["ID"], validated_fields["Module"],
-                           validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
-                          "details",
-                          "Module detail record updated successfully.",
-                          "Failed to update module detail record.")
+        return self.update_in_db((validated_fields["ID"], validated_fields["Module"],
+                                  validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
+                                 "details",
+                                 "Module detail record updated successfully.",
+                                 "Failed to update module detail record.")
 
     def update_module_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Module Code"], validated_fields["Module Name"],
-                           validated_fields["Credits"]),
-                          "module",
-                          "Module record updated successfully.",
-                          "Failed to update module record.")
+        return self.update_in_db((validated_fields["Module Code"], validated_fields["Module Name"],
+                                  validated_fields["Credits"]),
+                                 "module",
+                                 "Module record updated successfully.",
+                                 "Failed to update module record.")
 
     def update_staff_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["ID"], validated_fields["Name"],
-                           validated_fields["Email"], validated_fields["Position"],
-                           validated_fields["Username"], validated_fields["Password"]),
-                          "staff",
-                          "Staff record updated successfully.",
-                          "Failed to update staff record.")
+        return self.update_in_db((validated_fields["ID"], validated_fields["Name"],
+                                  validated_fields["Email"], validated_fields["Position"],
+                                  validated_fields["Username"], validated_fields["Password"]),
+                                 "staff",
+                                 "Staff record updated successfully.",
+                                 "Failed to update staff record.")
 
     def update_faculty_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Code"], validated_fields["Name"],
-                           validated_fields["Administrator"]),
-                          "faculty",
-                          "Faculty record updated successfully.",
-                          "Failed to update faculty record.")
+        return self.update_in_db((validated_fields["Code"], validated_fields["Name"],
+                                  validated_fields["Administrator"]),
+                                 "faculty",
+                                 "Faculty record updated successfully.",
+                                 "Failed to update faculty record.")
 
     def update_school_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Code"], validated_fields["Name"],
-                           validated_fields["Faculty"]),
-                          "school",
-                          "School record updated successfully.",
-                          "Failed to update school record.")
+        return self.update_in_db((validated_fields["Code"], validated_fields["Name"],
+                                  validated_fields["Faculty"]),
+                                 "school",
+                                 "School record updated successfully.",
+                                 "Failed to update school record.")
 
     def update_programme_in_db(self, validated_fields):
-        self.update_in_db((validated_fields["Code"], validated_fields["Name"],
-                           validated_fields["School"], validated_fields["Director"]),
-                          "programme",
-                          "Programme record updated successfully.",
-                          "Failed to update programme record.")
+        return self.update_in_db((validated_fields["Code"], validated_fields["Name"],
+                                  validated_fields["School"], validated_fields["Director"]),
+                                 "programme",
+                                 "Programme record updated successfully.",
+                                 "Failed to update programme record.")
 
     # Remove functions
     def remove_item(self, remove_func, parent_frame, option=1, dialog_prompt=None):
@@ -846,25 +851,25 @@ class Views(ttk.Frame):
         self.tree.update_idletasks()
 
     def remove_student(self):
-        self.remove_item(db_manager.remove_student, self.student_frame, dialog_prompt="Student ID:")
+        self.remove_item(db_manager.remove_student, self.student_frame, dialog_prompt="Student ID")
 
     def remove_module(self):
-        self.remove_item(db_manager.remove_module, self.module_frame, dialog_prompt="Module:")
+        self.remove_item(db_manager.remove_module, self.module_frame, dialog_prompt="Module")
 
     def remove_details(self):
         self.remove_item(db_manager.remove_details, self.details_frame, 2)
 
     def remove_staff(self):
-        self.remove_item(db_manager.remove_staff, self.staff_frame, dialog_prompt="Staff ID:")
+        self.remove_item(db_manager.remove_staff, self.staff_frame, dialog_prompt="Staff ID")
 
     def remove_faculty(self):
-        self.remove_item(db_manager.remove_faculty, self.faculty_frame, dialog_prompt="Faculty:")
+        self.remove_item(db_manager.remove_faculty, self.faculty_frame, dialog_prompt="Faculty")
 
     def remove_school(self):
-        self.remove_item(db_manager.remove_school, self.school_frame, dialog_prompt="School:")
+        self.remove_item(db_manager.remove_school, self.school_frame, dialog_prompt="School")
 
     def remove_programme(self):
-        self.remove_item(db_manager.remove_programme, self.programme_frame, dialog_prompt="Programme:")
+        self.remove_item(db_manager.remove_programme, self.programme_frame, dialog_prompt="Programme")
 
     def update_search(self):
         # Update search function whenever search text is changed

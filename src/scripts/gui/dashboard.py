@@ -11,8 +11,8 @@ from scripts.gui.views import Views
 
 
 class Dashboard(tk.Frame):
-    def __init__(self, user=None, master=None, **kwargs):
-        super().__init__(master, **kwargs)
+    def __init__(self, user=None, master=None):
+        super().__init__(master)
         # Set styles
         self.master.configure_styles()
 
@@ -41,11 +41,17 @@ class Dashboard(tk.Frame):
                                        command=self.switch_theme, takefocus=False, cursor="hand2")
         self.theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
-        # Load the icon and keep it in memory
-        self.emoji_icon = tk.PhotoImage(file="../../res/smile.png")
+        # Load the icons and keep them in memory
+        self.emoji_icons = {
+            "morning": tk.PhotoImage(file="../../res/smile_teeth.png"),
+            "afternoon": tk.PhotoImage(file="../../res/smile.png"),
+            "evening": tk.PhotoImage(file="../../res/sunglass.png"),
+            "night": tk.PhotoImage(file="../../res/sleep.png"),
+            "late_night": tk.PhotoImage(file="../../res/cry.png"),
+        }
 
         # Create a label to display the time active
-        self.greeting_label = ttk.Label(ribbon_frame, text=f'Welcome back, {user}', image=self.emoji_icon,
+        self.greeting_label = ttk.Label(ribbon_frame, text=f'Welcome back, {user}', image=self.emoji_icons["morning"],
                                         compound=tk.RIGHT)
         self.greeting_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
 
@@ -93,6 +99,21 @@ class Dashboard(tk.Frame):
     def update_time(self):
         # Get the current date and time
         now = datetime.now()
+        hour = now.hour
+
+        if 5 <= hour < 12:
+            emoji = self.emoji_icons["morning"]
+        elif 12 <= hour < 17:
+            emoji = self.emoji_icons["afternoon"]
+        elif 17 <= hour < 21:
+            emoji = self.emoji_icons["evening"]
+        elif 21 <= hour < 24:
+            emoji = self.emoji_icons["night"]
+        else:  # from midnight to 5am
+            emoji = self.emoji_icons["late_night"]
+
+        # Update the label
+        self.greeting_label.config(image=emoji)
 
         # Format the date and time
         date_time = now.strftime("%I:%M:%S %p")

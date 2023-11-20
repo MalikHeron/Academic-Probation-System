@@ -455,8 +455,7 @@ class Helpers:
                 field.delete(0, tk.END)
                 field.insert(0, "2016")
 
-    @staticmethod
-    def validate(fields, submit_func, args=True):
+    def validate(self, fields, submit_func, dialog=None, destroy=False, args=True):
         validated_fields = {}  # Store the validated fields
         field_widgets = []  # Store the field widgets
 
@@ -525,7 +524,12 @@ class Helpers:
 
         if args:
             # If all fields are successfully validated, call the submit function
-            submit_func(validated_fields)
+            success = submit_func(validated_fields)
+            # Destroy the dialog if specified
+            if success and destroy:
+                dialog.destroy()
+            elif success:
+                self.clear_fields(*field_widgets)
         else:
             submit_func()  # Call the submit function
 

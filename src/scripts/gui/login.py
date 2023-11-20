@@ -9,8 +9,8 @@ from scripts.database.queries import DatabaseManager
 
 
 class Login(tk.Frame):
-    def __init__(self, master=None, **kwargs):
-        super().__init__(master, **kwargs)
+    def __init__(self, master=None):
+        super().__init__(master)
         # Set styles
         self.master.configure_styles()
 
@@ -25,12 +25,14 @@ class Login(tk.Frame):
         form_frame = ttk.Label(self, image=self.background_image)
         form_frame.pack(side="bottom", fill="both", expand=True)
 
+        # Create username label and entry
         self.username_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
         self.username_entry.insert(0, 'Username')
         self.username_entry.bind('<FocusIn>', self.clear_username)
         self.username_entry.bind('<FocusOut>', self.fill_username)
         self.username_entry.place(relx=0.51, rely=0.55, anchor='center')
 
+        # Create password label and entry
         self.password_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
         self.password_entry.insert(0, 'Password')
         self.password_entry.bind('<FocusIn>', self.clear_password)
@@ -44,10 +46,12 @@ class Login(tk.Frame):
         style = ttk.Style()
         style.configure('Custom.TButton', font=('Helvetica', 11, 'normal'))
 
-        submit_button = ttk.Button(form_frame, text='Login', width=15, command=self.check_credentials,
-                                   style='Custom.TButton', cursor='hand2')
-        submit_button.place(relx=0.51, rely=0.72, anchor='center')
+        # Create login button
+        login_button = ttk.Button(form_frame, text='Login', width=15, command=self.check_credentials,
+                                  style='Custom.TButton', cursor='hand2')
+        login_button.place(relx=0.51, rely=0.72, anchor='center')
 
+        # Create forgot password link
         forgot_password_link = ttk.Label(form_frame, text='Forgot password?', cursor='hand2',
                                          font=('Helvetica', 10, 'normal', 'underline'))
         forgot_password_link.place(relx=0.51, rely=0.78, anchor='center')

@@ -3,8 +3,6 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-import sv_ttk
-
 from database.queries import DatabaseManager
 from scripts.gui.dashboard import Dashboard
 from scripts.gui.login import Login
@@ -47,19 +45,17 @@ class AcademicProbationSystem(tk.Tk):
         # Initialize frames
         self.frames = {}
 
-        # Set theme
-        sv_ttk.set_theme("light")
-
-        # Create LoginFrame and add it to frames dictionary
+        # Initialize Login and add it to frames dictionary
         login_frame = Login(master=self)
         self.frames['login'] = login_frame
         login_frame.grid(row=0, column=0, sticky="nsew")
 
-        # Create MainFrame and add it to frames dictionary
-        main_frame = Dashboard(master=self)
-        self.frames['main'] = main_frame
-        main_frame.grid(row=0, column=0, sticky="nsew")
+        # Initialize Dashboard and add it to frames dictionary
+        dashboard_frame = Dashboard(master=self)
+        self.frames['dashboard'] = dashboard_frame
+        dashboard_frame.grid(row=0, column=0, sticky="nsew")
 
+        # Fill the entire window
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
@@ -70,6 +66,7 @@ class AcademicProbationSystem(tk.Tk):
         self.deiconify()
 
     def on_closing(self):
+        # Ask the user if they want to quit
         if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
             DatabaseManager().close_connection()  # close database connection
             self.destroy()
