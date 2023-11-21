@@ -62,6 +62,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.student_frame, columns, column_widths, column_alignments,
+                                                   self.delete_student,
                                                    data=self.data)
 
         # Update search function whenever search text is changed
@@ -105,6 +106,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.module_frame, columns, column_widths, column_alignments,
+                                                   self.delete_module,
                                                    data=self.data,
                                                    pad_x=530)
 
@@ -148,6 +150,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.details_frame, columns, column_widths, column_alignments,
+                                                   self.delete_details,
                                                    data=self.data,
                                                    pad_x=430)
 
@@ -191,6 +194,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.staff_frame, columns, column_widths, column_alignments,
+                                                   self.delete_staff,
                                                    data=self.data,
                                                    pad_x=480)
 
@@ -234,6 +238,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.faculty_frame, columns, column_widths, column_alignments,
+                                                   self.delete_faculty,
                                                    data=self.data,
                                                    pad_x=380)
 
@@ -277,6 +282,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.school_frame, columns, column_widths, column_alignments,
+                                                   self.delete_school,
                                                    data=self.data,
                                                    pad_x=0)
 
@@ -320,6 +326,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self.tree = self.helpers.create_view_table(self.programme_frame, columns, column_widths, column_alignments,
+                                                   self.delete_programme,
                                                    data=self.data,
                                                    pad_x=80)
 

@@ -155,7 +155,8 @@ class Helpers:
 
         return tree, scrollbar
 
-    def create_view_table(self, frame, columns, column_widths, column_alignments, height=23, data=None, pad_x=0):
+    def create_view_table(self, frame, columns, column_widths, column_alignments, remove_func, height=23, data=None,
+                          pad_x=0):
         # Create Canvas in new window
         canvas = tk.Canvas(frame)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
@@ -188,6 +189,12 @@ class Helpers:
             # Show the scrollbar if there's enough data to make the table scrollable
             if len(data) > height:
                 scrollbar.grid()
+
+        def delete_record(event):
+            remove_func()
+            
+        # Bind the function to the Delete key press event
+        tree.bind('<Delete>', delete_record)
 
         return tree
 
@@ -307,7 +314,7 @@ class Helpers:
         delete_button = ttk.Button(pdf_frame, text="Delete", state="disabled", cursor="hand2", takefocus=False)
 
         # Function to delete a file
-        def delete_file():
+        def delete_file(event):
             selected_items = file_tree.selection()  # get selected items
 
             if messagebox.askokcancel("Confirm", "Are you sure you want to delete the selected item(s)?"):
@@ -327,6 +334,9 @@ class Helpers:
 
         # Bind the function to the treeview select event
         file_tree.bind('<<TreeviewSelect>>', update_delete_button)
+
+        # Bind the function to the Delete key press event
+        file_tree.bind('<Delete>', delete_file)
 
         # Set the command of the delete button to the delete_file function
         delete_button.config(command=delete_file)
@@ -390,7 +400,7 @@ class Helpers:
                 self.delete_button.config(image=self.light_delete_icon)
                 self.update_button.config(image=self.light_update_icon)
                 self.add_button.config(image=self.light_add_icon)
-            else:
+            elif current_theme == "dark":
                 self.refresh_button.config(image=self.dark_refresh_icon)
                 self.delete_button.config(image=self.dark_delete_icon)
                 self.update_button.config(image=self.dark_update_icon)

@@ -416,8 +416,8 @@ class DatabaseManager:
 
             # Insert details
             self.cursor.execute(
-                f"""INSERT INTO programme VALUES ('{programme_code}', '{programme_name}', {director_id}, 
-                '{school_code}')""")
+                f"""INSERT INTO programme VALUES ('{programme_code}', '{programme_name}', '{school_code}', 
+                {director_id})""")
 
             # Commit changes
             self.conn.commit()
