@@ -192,7 +192,7 @@ class Helpers:
 
         def delete_record(event):
             remove_func()
-            
+
         # Bind the function to the Delete key press event
         tree.bind('<Delete>', delete_record)
 
@@ -421,11 +421,18 @@ class Helpers:
             selected = tree.selection()
             if len(selected) == 1:
                 self.update_button.config(state='normal')
+                tree.bind('<Control-u>', lambda e: update())
             else:
                 self.update_button.config(state='disabled')
+                tree.bind('<Control-u>', lambda e: None)
 
         # Bind the function to the tree's selection event
         tree.bind('<<TreeviewSelect>>', on_tree_select)
+
+        # Bind the functions to the keyboard shortcuts
+        tree.bind('<Control-a>', lambda event: add())
+        tree.bind('<Control-r>', lambda event: refresh(frame, data_func))
+        tree.bind('<Control-d>', lambda event: delete())
 
     @staticmethod
     def create_label_and_field(frame, text, row, padx=0, pad_y=20, f_width=25, l_width=11, is_password=False):
