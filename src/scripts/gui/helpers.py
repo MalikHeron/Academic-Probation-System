@@ -18,22 +18,22 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 class Helpers:
 
     def __init__(self):
-        self.refresh_button = None
-        self.delete_button = None
-        self.update_button = None
-        self.add_button = None
+        self._refresh_button = None
+        self._delete_button = None
+        self._update_button = None
+        self._add_button = None
 
         # Load the icon and keep it in memory
-        self.dark_refresh_icon = tk.PhotoImage(file="../../res/reload-dark.png")
-        self.dark_delete_icon = tk.PhotoImage(file="../../res/delete-dark.png")
-        self.dark_update_icon = tk.PhotoImage(file="../../res/update-dark.png")
-        self.dark_add_icon = tk.PhotoImage(file="../../res/add-dark.png")
+        self._dark_refresh_icon = tk.PhotoImage(file="../../res/reload-dark.png")
+        self._dark_delete_icon = tk.PhotoImage(file="../../res/delete-dark.png")
+        self._dark_update_icon = tk.PhotoImage(file="../../res/update-dark.png")
+        self._dark_add_icon = tk.PhotoImage(file="../../res/add-dark.png")
 
         # Load the icon and keep it in memory
-        self.light_refresh_icon = tk.PhotoImage(file="../../res/reload-light.png")
-        self.light_delete_icon = tk.PhotoImage(file="../../res/delete-light.png")
-        self.light_update_icon = tk.PhotoImage(file="../../res/update-light.png")
-        self.light_add_icon = tk.PhotoImage(file="../../res/add-light.png")
+        self._light_refresh_icon = tk.PhotoImage(file="../../res/reload-light.png")
+        self._light_delete_icon = tk.PhotoImage(file="../../res/delete-light.png")
+        self._light_update_icon = tk.PhotoImage(file="../../res/update-light.png")
+        self._light_add_icon = tk.PhotoImage(file="../../res/add-light.png")
 
     @staticmethod
     def create_pdf(data, year, gpa, directory):
@@ -90,7 +90,7 @@ class Helpers:
             print('\rSending alert... ' + c, end='', flush=True)
             time.sleep(0.1)
 
-    def sort_column(self, tree, col, reverse):
+    def _sort_column(self, tree, col, reverse):
         column_data = [(tree.set(child_id, col), child_id) for child_id in tree.get_children('')]
 
         # Check if the column data are digits and sort accordingly
@@ -104,7 +104,7 @@ class Helpers:
             tree.move(child_id, '', index)
 
         # reverse sort next time column is clicked
-        tree.heading(col, command=lambda: self.sort_column(tree, col, not reverse))
+        tree.heading(col, command=lambda: self._sort_column(tree, col, not reverse))
 
     @staticmethod
     def search(tree, data, search_text):
@@ -131,7 +131,7 @@ class Helpers:
         return search_entry
 
     @staticmethod
-    def configure_scrollbar(canvas, frame, height, pad_x=0):
+    def _configure_scrollbar(canvas, frame, height, pad_x=0):
         def on_configure(event):
             # Update scroll region after starting 'mainloop'
             # When all widgets are in canvas
@@ -168,7 +168,7 @@ class Helpers:
         canvas.create_window((0, 0), window=second_frame, anchor="nw")
 
         # Configure the scrollbar
-        tree, scrollbar = self.configure_scrollbar(canvas, second_frame, height, pad_x)
+        tree, scrollbar = self._configure_scrollbar(canvas, second_frame, height, pad_x)
 
         # Pack the Treeview into the new frame
         tree.grid(row=0, column=0)
@@ -179,7 +179,7 @@ class Helpers:
         # Format columns
         for col, width, align in zip(columns, column_widths, column_alignments):
             tree.column(col, width=width, anchor=align)
-            tree.heading(col, text=col, command=lambda _col=col: self.sort_column(tree, _col, False))
+            tree.heading(col, text=col, command=lambda _col=col: self._sort_column(tree, _col, False))
 
         if data is not None:
             # Insert data in table
@@ -191,6 +191,7 @@ class Helpers:
                 scrollbar.grid()
 
         def delete_record(event):
+            logging.info(event)
             remove_func()
 
         # Bind the function to the Delete key press event
@@ -210,7 +211,7 @@ class Helpers:
         canvas.create_window((0, 0), window=report_frame, anchor="ne")
 
         # Configure the scrollbar
-        gpa_tree, gpa_scrollbar = self.configure_scrollbar(canvas, report_frame, height)
+        gpa_tree, gpa_scrollbar = self._configure_scrollbar(canvas, report_frame, height)
 
         # Define columns
         gpa_tree["columns"] = columns
@@ -218,7 +219,7 @@ class Helpers:
         # Format columns
         for col, width, align in zip(columns, column_widths, column_alignments):
             gpa_tree.column(col, width=width, anchor=align)
-            gpa_tree.heading(col, text=col, command=lambda _col=col: self.sort_column(gpa_tree, _col, False))
+            gpa_tree.heading(col, text=col, command=lambda _col=col: self._sort_column(gpa_tree, _col, False))
 
         if data is not None:
             # Insert data in table
@@ -277,7 +278,7 @@ class Helpers:
         # Format columns
         for col, width, align in zip(pdf_columns, pdf_widths, pdf_alignments):
             file_tree.column(col, width=width, anchor=align)
-            file_tree.heading(col, text=col, command=lambda _col=col: self.sort_column(file_tree, _col, False))
+            file_tree.heading(col, text=col, command=lambda _col=col: self._sort_column(file_tree, _col, False))
 
         # Get all the PDF files from a folder
         folder_path = "../../reports"  # Replace with your folder path
@@ -305,7 +306,7 @@ class Helpers:
         file_tree.bind('<Return>', open_selected_files)
 
         # Start a thread to update the list in real time
-        threading.Thread(target=self.update_pdf_list, args=(folder_path, pdf_files, file_tree),
+        threading.Thread(target=self._update_pdf_list, args=(folder_path, pdf_files, file_tree),
                          daemon=True).start()
 
         file_tree.pack(padx=(30, pad))
@@ -315,6 +316,7 @@ class Helpers:
 
         # Function to delete a file
         def delete_file(event):
+            logging.info(event)
             selected_items = file_tree.selection()  # get selected items
 
             if messagebox.askokcancel("Confirm", "Are you sure you want to delete the selected item(s)?"):
@@ -339,7 +341,7 @@ class Helpers:
         file_tree.bind('<Delete>', delete_file)
 
         # Set the command of the delete button to the delete_file function
-        delete_button.config(command=delete_file)
+        delete_button.config(command=lambda: delete_file(None))
 
         delete_button.pack(padx=(30, pad), pady=(10, 0))
 
@@ -367,24 +369,24 @@ class Helpers:
         # Create a new frame to hold the buttons
         button_frame = ttk.Frame(frame)
 
-        self.add_button = ttk.Button(button_frame, text="Add", command=add, style='TButton', cursor="hand2",
-                                     takefocus=False,
-                                     image=self.light_add_icon,
-                                     compound=tk.LEFT)
-        self.update_button = ttk.Button(button_frame, text="Update", command=lambda: update(), style='TButton',
-                                        cursor="hand2",
-                                        takefocus=False, image=self.light_update_icon,
-                                        compound=tk.LEFT)
-        self.delete_button = ttk.Button(button_frame, text="Delete", command=lambda: delete(), style='TButton',
-                                        cursor="hand2",
-                                        takefocus=False, image=self.light_delete_icon,
-                                        compound=tk.LEFT)
-        self.refresh_button = ttk.Button(button_frame, text="Refresh", command=lambda: refresh(frame, data_func),
-                                         style='TButton',
-                                         cursor="hand2", takefocus=False, image=self.light_refresh_icon,
+        self._add_button = ttk.Button(button_frame, text="Add", command=add, style='TButton', cursor="hand2",
+                                      takefocus=False,
+                                      image=self._light_add_icon,
+                                      compound=tk.LEFT)
+        self._update_button = ttk.Button(button_frame, text="Update", command=lambda: update(), style='TButton',
+                                         cursor="hand2",
+                                         takefocus=False, image=self._light_update_icon,
                                          compound=tk.LEFT)
+        self._delete_button = ttk.Button(button_frame, text="Delete", command=lambda: delete(), style='TButton',
+                                         cursor="hand2",
+                                         takefocus=False, image=self._light_delete_icon,
+                                         compound=tk.LEFT)
+        self._refresh_button = ttk.Button(button_frame, text="Refresh", command=lambda: refresh(frame, data_func),
+                                          style='TButton',
+                                          cursor="hand2", takefocus=False, image=self._light_refresh_icon,
+                                          compound=tk.LEFT)
         # Place the buttons
-        buttons = [self.add_button, self.update_button, self.delete_button, self.refresh_button]
+        buttons = [self._add_button, self._update_button, self._delete_button, self._refresh_button]
 
         # Pack the buttons into the new frame
         for button in buttons:
@@ -396,15 +398,15 @@ class Helpers:
         def update_icons():
             current_theme = sv_ttk.get_theme()
             if current_theme == "light":
-                self.refresh_button.config(image=self.light_refresh_icon)
-                self.delete_button.config(image=self.light_delete_icon)
-                self.update_button.config(image=self.light_update_icon)
-                self.add_button.config(image=self.light_add_icon)
+                self._refresh_button.config(image=self._light_refresh_icon)
+                self._delete_button.config(image=self._light_delete_icon)
+                self._update_button.config(image=self._light_update_icon)
+                self._add_button.config(image=self._light_add_icon)
             elif current_theme == "dark":
-                self.refresh_button.config(image=self.dark_refresh_icon)
-                self.delete_button.config(image=self.dark_delete_icon)
-                self.update_button.config(image=self.dark_update_icon)
-                self.add_button.config(image=self.dark_add_icon)
+                self._refresh_button.config(image=self._dark_refresh_icon)
+                self._delete_button.config(image=self._dark_delete_icon)
+                self._update_button.config(image=self._dark_update_icon)
+                self._add_button.config(image=self._dark_add_icon)
 
             # Call this function again after 500ms (0.5 second)
             button_frame.after(500, update_icons)
@@ -413,17 +415,17 @@ class Helpers:
         update_icons()
 
         # Initially disable the update button
-        self.update_button.config(state='disabled')
+        self._update_button.config(state='disabled')
 
         def on_tree_select(event):
             logging.info(event)
             # Enable the update button when only one item is selected
             selected = tree.selection()
             if len(selected) == 1:
-                self.update_button.config(state='normal')
+                self._update_button.config(state='normal')
                 tree.bind('<Control-u>', lambda e: update())
             else:
-                self.update_button.config(state='disabled')
+                self._update_button.config(state='disabled')
                 tree.bind('<Control-u>', lambda e: None)
 
         # Bind the function to the tree's selection event
@@ -558,7 +560,7 @@ class Helpers:
         return [f for f in os.listdir(folder_path) if
                 os.path.isfile(os.path.join(folder_path, f)) and f.endswith('.pdf')]
 
-    def update_pdf_list(self, folder_path, pdf_files, tree):
+    def _update_pdf_list(self, folder_path, pdf_files, tree):
         try:
             new_pdf_files = self.get_pdf_files(folder_path)
             if new_pdf_files != pdf_files:
@@ -572,7 +574,7 @@ class Helpers:
                     tree.insert("", "end", values=(pdf_file, file_size))
 
             # Schedule the next update
-            tree.after(1000, self.update_pdf_list, folder_path, pdf_files, tree)  # Update every 1 second
+            tree.after(1000, self._update_pdf_list, folder_path, pdf_files, tree)  # Update every 1 second
         except Exception as e:
             logging.error(f"An error occurred in updating the PDF list: {e}")
 

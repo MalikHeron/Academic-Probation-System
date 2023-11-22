@@ -19,38 +19,38 @@ class Views(ttk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.search_bar = None
-        self.data = None
-        self.tree = None
-        self.record_count_label = None
-        self.student_frame = None
-        self.details_frame = None
-        self.module_frame = None
-        self.faculty_frame = None
-        self.staff_frame = None
-        self.school_frame = None
-        self.programme_frame = None
-        self.helpers = Helpers()  # create an instance of Helpers
-        self.parent = parent
-        self.record_count_var = tk.StringVar()
+        self._search_bar = None
+        self._data = None
+        self._tree = None
+        self._record_count_label = None
+        self._student_frame = None
+        self._details_frame = None
+        self._module_frame = None
+        self._faculty_frame = None
+        self._staff_frame = None
+        self._school_frame = None
+        self._programme_frame = None
+        self._helpers = Helpers()  # create an instance of Helpers
+        self._parent = parent
+        self._record_count_var = tk.StringVar()
 
     # View functions
     def student_view(self):
         # Create student frame
-        self.student_frame = ttk.Frame(self.parent)
-        self.student_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._student_frame = ttk.Frame(self._parent)
+        self._student_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Get data
-        self.data = db_manager.get_students()
+        self._data = db_manager.get_students()
 
         # Set global record count
         global student_count
-        student_count = len(self.data)
+        student_count = len(self._data)
 
         # Labels
-        self.record_count_var.set(f"Number of Records: {student_count}")
-        self.record_count_label = ttk.Label(self.student_frame, textvariable=self.record_count_var)
-        self.record_count_label.pack(side="top", pady=(10, 0))
+        self._record_count_var.set(f"Number of Records: {student_count}")
+        self._record_count_label = ttk.Label(self._student_frame, textvariable=self._record_count_var)
+        self._record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
         columns = ("ID", "Student Name", "Student Email", "School", "Programme", "Advisor")
@@ -58,43 +58,43 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "w", "w", "w", "w"]
 
         # Create search bar
-        self.search_bar = self.helpers.create_search_bar(self.student_frame)
+        self._search_bar = self._helpers.create_search_bar(self._student_frame)
 
         # Create Treeview
-        self.tree = self.helpers.create_view_table(self.student_frame, columns, column_widths, column_alignments,
-                                                   self.delete_student,
-                                                   data=self.data)
+        self._tree = self._helpers.create_view_table(self._student_frame, columns, column_widths, column_alignments,
+                                                     self._delete_student,
+                                                     data=self._data)
 
         # Update search function whenever search text is changed
-        self.update_search()
+        self._update_search()
 
         # Pack the tree
-        self.tree.grid(padx=10)
+        self._tree.grid(padx=10)
 
         # Button configurations
-        self.helpers.create_crud_buttons(self.student_frame, self.tree, db_manager.get_students, self.add_student,
-                                         self.update_student,
-                                         self.delete_student,
-                                         self.refresh)
+        self._helpers.create_crud_buttons(self._student_frame, self._tree, db_manager.get_students, self._add_student,
+                                          self._update_student,
+                                          self._delete_student,
+                                          self._refresh)
 
-        return self.student_frame
+        return self._student_frame
 
     def module_view(self):
         # Create module frame
-        self.module_frame = ttk.Frame(self.parent)
-        self.module_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._module_frame = ttk.Frame(self._parent)
+        self._module_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Get data
-        self.data = db_manager.get_modules()
+        self._data = db_manager.get_modules()
 
         # Set global record count
         global module_count
-        module_count = len(self.data)
+        module_count = len(self._data)
 
         # Labels
-        self.record_count_var.set(f"Number of Records: {module_count}")
-        self.record_count_label = ttk.Label(self.module_frame, textvariable=self.record_count_var)
-        self.record_count_label.pack(side="top", pady=(10, 0))
+        self._record_count_var.set(f"Number of Records: {module_count}")
+        self._record_count_label = ttk.Label(self._module_frame, textvariable=self._record_count_var)
+        self._record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
         columns = ("Module Code", "Module Name", "Accreditation")
@@ -102,43 +102,43 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "center"]
 
         # Create search bar
-        self.search_bar = self.helpers.create_search_bar(self.module_frame)
+        self._search_bar = self._helpers.create_search_bar(self._module_frame)
 
         # Create Treeview
-        self.tree = self.helpers.create_view_table(self.module_frame, columns, column_widths, column_alignments,
-                                                   self.delete_module,
-                                                   data=self.data,
-                                                   pad_x=530)
+        self._tree = self._helpers.create_view_table(self._module_frame, columns, column_widths, column_alignments,
+                                                     self._delete_module,
+                                                     data=self._data,
+                                                     pad_x=530)
 
         # Update search function whenever search text is changed
-        self.update_search()
+        self._update_search()
 
         # Pack the tree
-        self.tree.grid(padx=10)
+        self._tree.grid(padx=10)
 
         # Button configurations
-        self.helpers.create_crud_buttons(self.module_frame, self.tree, db_manager.get_modules, self.add_module,
-                                         self.update_module,
-                                         self.delete_module, self.refresh)
+        self._helpers.create_crud_buttons(self._module_frame, self._tree, db_manager.get_modules, self._add_module,
+                                          self._update_module,
+                                          self._delete_module, self._refresh)
 
-        return self.module_frame
+        return self._module_frame
 
     def details_view(self):
         # Create details frame
-        self.details_frame = ttk.Frame(self.parent)
-        self.details_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._details_frame = ttk.Frame(self._parent)
+        self._details_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Get data
-        self.data = db_manager.get_details()
+        self._data = db_manager.get_details()
 
         # Set global record count
         global details_count
-        details_count = len(self.data)
+        details_count = len(self._data)
 
         # Labels
-        self.record_count_var.set(f"Number of Records: {details_count}")
-        self.record_count_label = ttk.Label(self.details_frame, textvariable=self.record_count_var)
-        self.record_count_label.pack(side="top", pady=(10, 0))
+        self._record_count_var.set(f"Number of Records: {details_count}")
+        self._record_count_label = ttk.Label(self._details_frame, textvariable=self._record_count_var)
+        self._record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
         columns = ("Student ID", "Module", "Grade Point Average", "Semester", "Year")
@@ -146,43 +146,43 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "center", "center", "center"]
 
         # Create search bar
-        self.search_bar = self.helpers.create_search_bar(self.details_frame)
+        self._search_bar = self._helpers.create_search_bar(self._details_frame)
 
         # Create Treeview
-        self.tree = self.helpers.create_view_table(self.details_frame, columns, column_widths, column_alignments,
-                                                   self.delete_details,
-                                                   data=self.data,
-                                                   pad_x=430)
+        self._tree = self._helpers.create_view_table(self._details_frame, columns, column_widths, column_alignments,
+                                                     self._delete_details,
+                                                     data=self._data,
+                                                     pad_x=430)
 
         # Update search function whenever search text is changed
-        self.update_search()
+        self._update_search()
 
         # Pack the tree
-        self.tree.grid(padx=10)
+        self._tree.grid(padx=10)
 
         # Button configurations
-        self.helpers.create_crud_buttons(self.details_frame, self.tree, db_manager.get_details, self.add_details,
-                                         self.update_details,
-                                         self.delete_details, self.refresh)
+        self._helpers.create_crud_buttons(self._details_frame, self._tree, db_manager.get_details, self._add_details,
+                                          self._update_details,
+                                          self._delete_details, self._refresh)
 
-        return self.details_frame
+        return self._details_frame
 
     def staff_view(self):
         # Create staff frame
-        self.staff_frame = ttk.Frame(self.parent)
-        self.staff_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._staff_frame = ttk.Frame(self._parent)
+        self._staff_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Get data
-        self.data = db_manager.get_staff()
+        self._data = db_manager.get_staff()
 
         # Set global record count
         global staff_count
-        staff_count = len(self.data)
+        staff_count = len(self._data)
 
         # Labels
-        self.record_count_var.set(f"Number of Records: {staff_count}")
-        self.record_count_label = ttk.Label(self.staff_frame, textvariable=self.record_count_var)
-        self.record_count_label.pack(side="top", pady=(10, 0))
+        self._record_count_var.set(f"Number of Records: {staff_count}")
+        self._record_count_label = ttk.Label(self._staff_frame, textvariable=self._record_count_var)
+        self._record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
         columns = ("Staff ID", "Name", "Email", "Position")
@@ -190,43 +190,43 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "w", "w"]
 
         # Create search bar
-        self.search_bar = self.helpers.create_search_bar(self.staff_frame)
+        self._search_bar = self._helpers.create_search_bar(self._staff_frame)
 
         # Create Treeview
-        self.tree = self.helpers.create_view_table(self.staff_frame, columns, column_widths, column_alignments,
-                                                   self.delete_staff,
-                                                   data=self.data,
-                                                   pad_x=480)
+        self._tree = self._helpers.create_view_table(self._staff_frame, columns, column_widths, column_alignments,
+                                                     self._delete_staff,
+                                                     data=self._data,
+                                                     pad_x=480)
 
         # Update search function whenever search text is changed
-        self.update_search()
+        self._update_search()
 
         # Pack the tree
-        self.tree.grid(padx=10)
+        self._tree.grid(padx=10)
 
         # Button configurations
-        self.helpers.create_crud_buttons(self.staff_frame, self.tree, db_manager.get_staff, self.add_staff,
-                                         self.update_staff,
-                                         self.delete_staff, self.refresh)
+        self._helpers.create_crud_buttons(self._staff_frame, self._tree, db_manager.get_staff, self._add_staff,
+                                          self._update_staff,
+                                          self._delete_staff, self._refresh)
 
-        return self.staff_frame
+        return self._staff_frame
 
     def faculty_view(self):
         # Create faculty frame
-        self.faculty_frame = ttk.Frame(self.parent)
-        self.faculty_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._faculty_frame = ttk.Frame(self._parent)
+        self._faculty_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Get data
-        self.data = db_manager.get_faculties()
+        self._data = db_manager.get_faculties()
 
         # Set global record count
         global faculty_count
-        faculty_count = len(self.data)
+        faculty_count = len(self._data)
 
         # Labels
-        self.record_count_var.set(f"Number of Records: {faculty_count}")
-        self.record_count_label = ttk.Label(self.faculty_frame, textvariable=self.record_count_var)
-        self.record_count_label.pack(side="top", pady=(10, 0))
+        self._record_count_var.set(f"Number of Records: {faculty_count}")
+        self._record_count_label = ttk.Label(self._faculty_frame, textvariable=self._record_count_var)
+        self._record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
         columns = ("Faculty Code", "Faculty Name", "Administrator",)
@@ -234,43 +234,43 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "w"]
 
         # Create search bar
-        self.search_bar = self.helpers.create_search_bar(self.faculty_frame)
+        self._search_bar = self._helpers.create_search_bar(self._faculty_frame)
 
         # Create Treeview
-        self.tree = self.helpers.create_view_table(self.faculty_frame, columns, column_widths, column_alignments,
-                                                   self.delete_faculty,
-                                                   data=self.data,
-                                                   pad_x=380)
+        self._tree = self._helpers.create_view_table(self._faculty_frame, columns, column_widths, column_alignments,
+                                                     self._delete_faculty,
+                                                     data=self._data,
+                                                     pad_x=380)
 
         # Update search function whenever search text is changed
-        self.update_search()
+        self._update_search()
 
         # Pack the tree
-        self.tree.grid(padx=10)
+        self._tree.grid(padx=10)
 
         # Button configurations
-        self.helpers.create_crud_buttons(self.faculty_frame, self.tree, db_manager.get_faculties, self.add_faculty,
-                                         self.update_faculty,
-                                         self.delete_faculty, self.refresh)
+        self._helpers.create_crud_buttons(self._faculty_frame, self._tree, db_manager.get_faculties, self._add_faculty,
+                                          self._update_faculty,
+                                          self._delete_faculty, self._refresh)
 
-        return self.faculty_frame
+        return self._faculty_frame
 
     def school_view(self):
         # Create school frame
-        self.school_frame = ttk.Frame(self.parent)
-        self.school_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._school_frame = ttk.Frame(self._parent)
+        self._school_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Get data
-        self.data = db_manager.get_schools()
+        self._data = db_manager.get_schools()
 
         # Set global record count
         global school_count
-        school_count = len(self.data)
+        school_count = len(self._data)
 
         # Labels
-        self.record_count_var.set(f"Number of Records: {school_count}")
-        self.record_count_label = ttk.Label(self.school_frame, textvariable=self.record_count_var)
-        self.record_count_label.pack(side="top", pady=(10, 0))
+        self._record_count_var.set(f"Number of Records: {school_count}")
+        self._record_count_label = ttk.Label(self._school_frame, textvariable=self._record_count_var)
+        self._record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
         columns = ("School Code", "School Name", "Faculty", "Administrator")
@@ -278,43 +278,43 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "w", "w"]
 
         # Create search bar
-        self.search_bar = self.helpers.create_search_bar(self.school_frame)
+        self._search_bar = self._helpers.create_search_bar(self._school_frame)
 
         # Create Treeview
-        self.tree = self.helpers.create_view_table(self.school_frame, columns, column_widths, column_alignments,
-                                                   self.delete_school,
-                                                   data=self.data,
-                                                   pad_x=0)
+        self._tree = self._helpers.create_view_table(self._school_frame, columns, column_widths, column_alignments,
+                                                     self._delete_school,
+                                                     data=self._data,
+                                                     pad_x=0)
 
         # Update search function whenever search text is changed
-        self.update_search()
+        self._update_search()
 
         # Pack the tree
-        self.tree.grid(padx=10)
+        self._tree.grid(padx=10)
 
         # Button configurations
-        self.helpers.create_crud_buttons(self.school_frame, self.tree, db_manager.get_schools, self.add_school,
-                                         self.update_school,
-                                         self.delete_school, self.refresh)
+        self._helpers.create_crud_buttons(self._school_frame, self._tree, db_manager.get_schools, self._add_school,
+                                          self._update_school,
+                                          self._delete_school, self._refresh)
 
-        return self.school_frame
+        return self._school_frame
 
     def programme_view(self):
         # Create programme frame
-        self.programme_frame = ttk.Frame(self.parent)
-        self.programme_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._programme_frame = ttk.Frame(self._parent)
+        self._programme_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Get data
-        self.data = db_manager.get_programmes()
+        self._data = db_manager.get_programmes()
 
         # Set global record count
         global programme_count
-        programme_count = len(self.data)
+        programme_count = len(self._data)
 
         # Labels
-        self.record_count_var.set(f"Number of Records: {programme_count}")
-        self.record_count_label = ttk.Label(self.programme_frame, textvariable=self.record_count_var)
-        self.record_count_label.pack(side="top", pady=(10, 0))
+        self._record_count_var.set(f"Number of Records: {programme_count}")
+        self._record_count_label = ttk.Label(self._programme_frame, textvariable=self._record_count_var)
+        self._record_count_label.pack(side="top", pady=(10, 0))
 
         # Define columns
         columns = ("Programme Code", "Programme Name", "School", "Director",)
@@ -322,40 +322,41 @@ class Views(ttk.Frame):
         column_alignments = ["center", "w", "w", "w"]
 
         # Create search bar
-        self.search_bar = self.helpers.create_search_bar(self.programme_frame)
+        self._search_bar = self._helpers.create_search_bar(self._programme_frame)
 
         # Create Treeview
-        self.tree = self.helpers.create_view_table(self.programme_frame, columns, column_widths, column_alignments,
-                                                   self.delete_programme,
-                                                   data=self.data,
-                                                   pad_x=80)
+        self._tree = self._helpers.create_view_table(self._programme_frame, columns, column_widths, column_alignments,
+                                                     self._delete_programme,
+                                                     data=self._data,
+                                                     pad_x=80)
 
         # Update search function whenever search text is changed
-        self.update_search()
+        self._update_search()
 
         # Pack the tree
-        self.tree.grid(padx=10)
+        self._tree.grid(padx=10)
 
         # Button configurations
-        self.helpers.create_crud_buttons(self.programme_frame, self.tree, db_manager.get_programmes, self.add_programme,
-                                         self.update_programme,
-                                         self.delete_programme, self.refresh)
+        self._helpers.create_crud_buttons(self._programme_frame, self._tree, db_manager.get_programmes,
+                                          self._add_programme,
+                                          self._update_programme,
+                                          self._delete_programme, self._refresh)
 
-        return self.programme_frame
+        return self._programme_frame
 
-    def create_dialog(self, dialog_type, db_action, destroy=False, selected_item=None):
+    def __create_dialog(self, dialog_type, db_action, destroy=False, selected_item=None):
         # Create an instance of Dialog
         dialog = Dialog(self)
         fields = []  # Create an empty list to store the fields
 
         if dialog_type == "student":
             def submit_action():
-                self.helpers.validate({"ID": (id_field, "int"),
-                                       "Full Name": (name_field, "str"),
-                                       "Email": (email_field, "email"),
-                                       "School": (school_field, "str"),
-                                       "Programme": (programme_field, "str"),
-                                       "Advisor": (advisor_field, "str")}, db_action, dialog, destroy)
+                self._helpers.validate({"ID": (id_field, "int"),
+                                        "Full Name": (name_field, "str"),
+                                        "Email": (email_field, "email"),
+                                        "School": (school_field, "str"),
+                                        "Programme": (programme_field, "str"),
+                                        "Advisor": (advisor_field, "str")}, db_action, dialog, destroy)
 
             if selected_item is not None:
                 title = "Update Student"
@@ -366,7 +367,7 @@ class Views(ttk.Frame):
             fields = [id_field, name_field, email_field, school_field, programme_field, advisor_field]
         elif dialog_type == "module":
             def submit_action():
-                self.helpers.validate({
+                self._helpers.validate({
                     "Module Code": (code_field, "str"),
                     "Module Name": (name_field, "str"),
                     "Credits": (credits_field, "int")
@@ -380,7 +381,7 @@ class Views(ttk.Frame):
             fields = [code_field, name_field, credits_field]
         elif dialog_type == "details":
             def submit_action():
-                self.helpers.validate({
+                self._helpers.validate({
                     "ID": (id_field, "int"),
                     "Module": (module_field, "str"),
                     "GPA": (gpa_field, "float"),
@@ -397,7 +398,7 @@ class Views(ttk.Frame):
             fields = [id_field, module_field, gpa_field, semester_field, year_field, year_var]
         elif dialog_type == "staff":
             def submit_action():
-                self.helpers.validate({
+                self._helpers.validate({
                     "ID": (id_field, "int"),
                     "Name": (name_field, "str"),
                     "Email": (email_field, "email"),
@@ -415,7 +416,7 @@ class Views(ttk.Frame):
             fields = [id_field, name_field, email_field, position_field, username_field, password_field]
         elif dialog_type == "faculty":
             def submit_action():
-                self.helpers.validate({
+                self._helpers.validate({
                     "Code": (code_field, "str"),
                     "Name": (name_field, "str"),
                     "Administrator": (admin_field, "str")
@@ -430,7 +431,7 @@ class Views(ttk.Frame):
             fields = [code_field, name_field, admin_field]
         elif dialog_type == "school":
             def submit_action():
-                self.helpers.validate({
+                self._helpers.validate({
                     "Code": (code_field, "str"),
                     "Name": (name_field, "str"),
                     "Faculty": (faculty_field, "str")
@@ -445,7 +446,7 @@ class Views(ttk.Frame):
             fields = [code_field, name_field, faculty_field]
         elif dialog_type == "programme":
             def submit_action():
-                self.helpers.validate({
+                self._helpers.validate({
                     "Code": (code_field, "str"),
                     "Name": (name_field, "str"),
                     "School": (school_field, "str"),
@@ -462,7 +463,7 @@ class Views(ttk.Frame):
 
         if selected_item is not None:
             for i, field in enumerate(fields):
-                values = self.tree.item(selected_item)["values"]
+                values = self._tree.item(selected_item)["values"]
                 if i < len(values):
                     if hasattr(field, 'set'):
                         field.set(str(values[i]).strip())
@@ -475,120 +476,120 @@ class Views(ttk.Frame):
 
         dialog.wait_window()  # This will wait until the dialog is destroyed
 
-    def add_student(self):
+    def _add_student(self):
         # Call the dialog box with no arguments
-        self.create_dialog("student", self.add_student_to_db)
+        self.__create_dialog("student", self._add_student_to_db)
 
-    def update_student(self):
+    def _update_student(self):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_item = self._tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("student", self.update_student_in_db, True, selected_item)
+        self.__create_dialog("student", self._update_student_in_db, True, selected_item)
 
-    def add_module(self):
+    def _add_module(self):
         # Call the dialog box with no arguments
-        self.create_dialog("module", self.add_module_to_db)
+        self.__create_dialog("module", self._add_module_to_db)
 
-    def update_module(self):
+    def _update_module(self):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_item = self._tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("module", self.update_module_in_db, True, selected_item)
+        self.__create_dialog("module", self._update_module_in_db, True, selected_item)
 
-    def add_details(self):
-        self.create_dialog("details", self.add_detail_to_db)
+    def _add_details(self):
+        self.__create_dialog("details", self._add_detail_to_db)
 
-    def update_details(self):
+    def _update_details(self):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_item = self._tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("details", self.update_detail_in_db, True, selected_item)
+        self.__create_dialog("details", self._update_detail_in_db, True, selected_item)
 
-    def add_staff(self):
-        self.create_dialog("staff", self.add_staff_to_db)
+    def _add_staff(self):
+        self.__create_dialog("staff", self._add_staff_to_db)
 
-    def update_staff(self):
+    def _update_staff(self):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_item = self._tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("staff", self.update_staff_in_db, True, selected_item)
+        self.__create_dialog("staff", self._update_staff_in_db, True, selected_item)
 
-    def add_faculty(self):
-        self.create_dialog("faculty", self.add_faculty_to_db)
+    def _add_faculty(self):
+        self.__create_dialog("faculty", self._add_faculty_to_db)
 
-    def update_faculty(self):
+    def _update_faculty(self):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_item = self._tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("faculty", self.update_faculty_in_db, True, selected_item)
+        self.__create_dialog("faculty", self._update_faculty_in_db, True, selected_item)
 
-    def add_school(self):
-        self.create_dialog("school", self.add_school_to_db)
+    def _add_school(self):
+        self.__create_dialog("school", self._add_school_to_db)
 
-    def update_school(self):
+    def _update_school(self):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_item = self._tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("school", self.update_school_in_db, True, selected_item)
+        self.__create_dialog("school", self._update_school_in_db, True, selected_item)
 
-    def add_programme(self):
-        self.create_dialog("programme", self.add_programme_to_db)
+    def _add_programme(self):
+        self.__create_dialog("programme", self._add_programme_to_db)
 
-    def update_programme(self):
+    def _update_programme(self):
         # Get the selected item from the tree
-        selected_item = self.tree.selection()
+        selected_item = self._tree.selection()
         # Call the dialog box with the selected item
-        self.create_dialog("programme", self.update_programme_in_db, True, selected_item)
+        self.__create_dialog("programme", self._update_programme_in_db, True, selected_item)
 
     # Refresh functions
-    def refresh(self, frame, get_data_func):
+    def _refresh(self, frame, get_data_func):
         # Clear the tree
-        self.tree.delete(*self.tree.get_children())
+        self._tree.delete(*self._tree.get_children())
 
         # Get data
-        self.data = get_data_func()
+        self._data = get_data_func()
 
         match get_data_func:
             case db_manager.get_students:
                 global student_count
-                student_count = len(self.data)
+                student_count = len(self._data)
                 record_count = student_count
             case db_manager.get_details:
                 global details_count
-                details_count = len(self.data)
+                details_count = len(self._data)
                 record_count = details_count
             case db_manager.get_modules:
                 global module_count
-                module_count = len(self.data)
+                module_count = len(self._data)
                 record_count = module_count
             case db_manager.get_staff:
                 global staff_count
-                staff_count = len(self.data)
+                staff_count = len(self._data)
                 record_count = staff_count
             case db_manager.get_faculties:
                 global faculty_count
-                faculty_count = len(self.data)
+                faculty_count = len(self._data)
                 record_count = faculty_count
             case db_manager.get_schools:
                 global school_count
-                school_count = len(self.data)
+                school_count = len(self._data)
                 record_count = school_count
             case db_manager.get_programmes:
                 global programme_count
-                programme_count = len(self.data)
+                programme_count = len(self._data)
                 record_count = programme_count
 
         # Update the record count
-        frame.after(100, lambda: self.record_count_var.set(f"Number of Records: {record_count}"))
+        frame.after(100, lambda: self._record_count_var.set(f"Number of Records: {record_count}"))
 
         # Insert data in table
-        for item in self.data:
-            self.tree.insert("", "end", values=item)
+        for item in self._data:
+            self._tree.insert("", "end", values=item)
 
         # Update the tree view
-        self.tree.update_idletasks()
+        self._tree.update_idletasks()
 
-    def add_to_db(self, add_record, data, success_message, error_message):
+    def _add_to_db(self, add_record, data, success_message, error_message):
         # Insert the record into the database
         success = add_record(*data)
         if success:
@@ -596,26 +597,26 @@ class Views(ttk.Frame):
             messagebox.showinfo("Success", success_message)
             match add_record:
                 case db_manager.insert_student:
-                    self.refresh(self.student_frame, db_manager.get_students)
+                    self._refresh(self._student_frame, db_manager.get_students)
                 case db_manager.insert_detail:
-                    self.refresh(self.details_frame, db_manager.get_details)
+                    self._refresh(self._details_frame, db_manager.get_details)
                 case db_manager.insert_module:
-                    self.refresh(self.module_frame, db_manager.get_modules)
+                    self._refresh(self._module_frame, db_manager.get_modules)
                 case db_manager.insert_staff:
-                    self.refresh(self.staff_frame, db_manager.get_staff)
+                    self._refresh(self._staff_frame, db_manager.get_staff)
                 case db_manager.insert_faculty:
-                    self.refresh(self.faculty_frame, db_manager.get_faculties)
+                    self._refresh(self._faculty_frame, db_manager.get_faculties)
                 case db_manager.insert_school:
-                    self.refresh(self.school_frame, db_manager.get_schools)
+                    self._refresh(self._school_frame, db_manager.get_schools)
                 case db_manager.insert_programme:
-                    self.refresh(self.programme_frame, db_manager.get_programmes)
+                    self._refresh(self._programme_frame, db_manager.get_programmes)
         else:
             # Display an error message
             messagebox.showerror("Error", error_message)
 
         return success
 
-    def update_in_db(self, data, table_name, success_message, error_message):
+    def _update_in_db(self, data, table_name, success_message, error_message):
         # Insert the record into the database
         success = db_manager.update_record(data, table_name)
         if success:
@@ -623,19 +624,19 @@ class Views(ttk.Frame):
             messagebox.showinfo("Success", success_message)
             match table_name:
                 case "student":
-                    self.refresh(self.student_frame, db_manager.get_students)
+                    self._refresh(self._student_frame, db_manager.get_students)
                 case "details":
-                    self.refresh(self.details_frame, db_manager.get_details)
+                    self._refresh(self._details_frame, db_manager.get_details)
                 case "module":
-                    self.refresh(self.module_frame, db_manager.get_modules)
+                    self._refresh(self._module_frame, db_manager.get_modules)
                 case "staff":
-                    self.refresh(self.staff_frame, db_manager.get_staff)
+                    self._refresh(self._staff_frame, db_manager.get_staff)
                 case "faculty":
-                    self.refresh(self.faculty_frame, db_manager.get_faculties)
+                    self._refresh(self._faculty_frame, db_manager.get_faculties)
                 case "school":
-                    self.refresh(self.school_frame, db_manager.get_schools)
+                    self._refresh(self._school_frame, db_manager.get_schools)
                 case "programme":
-                    self.refresh(self.programme_frame, db_manager.get_programmes)
+                    self._refresh(self._programme_frame, db_manager.get_programmes)
         else:
             # Display an error message
             messagebox.showerror("Error", error_message)
@@ -643,109 +644,109 @@ class Views(ttk.Frame):
         return success
 
     # Add functions
-    def add_student_to_db(self, validated_fields):
-        return self.add_to_db(db_manager.insert_student, (validated_fields["ID"], validated_fields["Full Name"],
-                                                          validated_fields["Email"], validated_fields["School"],
-                                                          validated_fields["Programme"], validated_fields["Advisor"]),
-                              "Student record added successfully.",
-                              "Failed to add student record.")
+    def _add_student_to_db(self, validated_fields):
+        return self._add_to_db(db_manager.insert_student, (validated_fields["ID"], validated_fields["Full Name"],
+                                                           validated_fields["Email"], validated_fields["School"],
+                                                           validated_fields["Programme"], validated_fields["Advisor"]),
+                               "Student record added successfully.",
+                               "Failed to add student record.")
 
-    def add_module_to_db(self, validated_fields):
-        return self.add_to_db(db_manager.insert_module,
-                              (validated_fields["Module Code"], validated_fields["Module Name"],
-                               validated_fields["Credits"]),
-                              "Module record added successfully.",
-                              "Failed to add module record.")
+    def _add_module_to_db(self, validated_fields):
+        return self._add_to_db(db_manager.insert_module,
+                               (validated_fields["Module Code"], validated_fields["Module Name"],
+                                validated_fields["Credits"]),
+                               "Module record added successfully.",
+                               "Failed to add module record.")
 
-    def add_detail_to_db(self, validated_fields):
-        return self.add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module"],
-                                                         validated_fields["GPA"], validated_fields["Semester"],
-                                                         validated_fields["Year"]),
-                              "Detail record added successfully.",
-                              "Failed to add detail record.")
+    def _add_detail_to_db(self, validated_fields):
+        return self._add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module"],
+                                                          validated_fields["GPA"], validated_fields["Semester"],
+                                                          validated_fields["Year"]),
+                               "Detail record added successfully.",
+                               "Failed to add detail record.")
 
-    def add_staff_to_db(self, validated_fields):
-        return self.add_to_db(db_manager.insert_staff, (validated_fields["ID"], validated_fields["Name"],
-                                                        validated_fields["Email"], validated_fields["Position"],
-                                                        validated_fields["Username"], validated_fields["Password"]),
-                              "Staff record added successfully.",
-                              "Failed to add staff record.")
+    def _add_staff_to_db(self, validated_fields):
+        return self._add_to_db(db_manager.insert_staff, (validated_fields["ID"], validated_fields["Name"],
+                                                         validated_fields["Email"], validated_fields["Position"],
+                                                         validated_fields["Username"], validated_fields["Password"]),
+                               "Staff record added successfully.",
+                               "Failed to add staff record.")
 
-    def add_faculty_to_db(self, validated_fields):
-        return self.add_to_db(db_manager.insert_faculty, (validated_fields["Code"], validated_fields["Name"],
-                                                          validated_fields["Administrator"]),
-                              "Faculty record added successfully.",
-                              "Failed to add faculty record.")
+    def _add_faculty_to_db(self, validated_fields):
+        return self._add_to_db(db_manager.insert_faculty, (validated_fields["Code"], validated_fields["Name"],
+                                                           validated_fields["Administrator"]),
+                               "Faculty record added successfully.",
+                               "Failed to add faculty record.")
 
-    def add_school_to_db(self, validated_fields):
-        return self.add_to_db(db_manager.insert_school, (validated_fields["Code"], validated_fields["Name"],
-                                                         validated_fields["Faculty"]),
-                              "School record added successfully.",
-                              "Failed to add school record.")
+    def _add_school_to_db(self, validated_fields):
+        return self._add_to_db(db_manager.insert_school, (validated_fields["Code"], validated_fields["Name"],
+                                                          validated_fields["Faculty"]),
+                               "School record added successfully.",
+                               "Failed to add school record.")
 
-    def add_programme_to_db(self, validated_fields):
-        return self.add_to_db(db_manager.insert_programme,
-                              (validated_fields["Code"], validated_fields["Name"], validated_fields["School"],
-                               validated_fields["Director"],),
-                              "Programme record added successfully.",
-                              "Failed to add programme record.")
+    def _add_programme_to_db(self, validated_fields):
+        return self._add_to_db(db_manager.insert_programme,
+                               (validated_fields["Code"], validated_fields["Name"], validated_fields["School"],
+                                validated_fields["Director"],),
+                               "Programme record added successfully.",
+                               "Failed to add programme record.")
 
     # Update functions
-    def update_student_in_db(self, validated_fields):
-        return self.update_in_db((validated_fields["ID"], validated_fields["Full Name"],
-                                  validated_fields["Email"], validated_fields["School"],
-                                  validated_fields["Programme"], validated_fields["Advisor"]),
-                                 "student",
-                                 "Student record updated successfully.",
-                                 "Failed to update student record.")
+    def _update_student_in_db(self, validated_fields):
+        return self._update_in_db((validated_fields["ID"], validated_fields["Full Name"],
+                                   validated_fields["Email"], validated_fields["School"],
+                                   validated_fields["Programme"], validated_fields["Advisor"]),
+                                  "student",
+                                  "Student record updated successfully.",
+                                  "Failed to update student record.")
 
-    def update_detail_in_db(self, validated_fields):
-        return self.update_in_db((validated_fields["ID"], validated_fields["Module"],
-                                  validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
-                                 "details",
-                                 "Module detail record updated successfully.",
-                                 "Failed to update module detail record.")
+    def _update_detail_in_db(self, validated_fields):
+        return self._update_in_db((validated_fields["ID"], validated_fields["Module"],
+                                   validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
+                                  "details",
+                                  "Module detail record updated successfully.",
+                                  "Failed to update module detail record.")
 
-    def update_module_in_db(self, validated_fields):
-        return self.update_in_db((validated_fields["Module Code"], validated_fields["Module Name"],
-                                  validated_fields["Credits"]),
-                                 "module",
-                                 "Module record updated successfully.",
-                                 "Failed to update module record.")
+    def _update_module_in_db(self, validated_fields):
+        return self._update_in_db((validated_fields["Module Code"], validated_fields["Module Name"],
+                                   validated_fields["Credits"]),
+                                  "module",
+                                  "Module record updated successfully.",
+                                  "Failed to update module record.")
 
-    def update_staff_in_db(self, validated_fields):
-        return self.update_in_db((validated_fields["ID"], validated_fields["Name"],
-                                  validated_fields["Email"], validated_fields["Position"],
-                                  validated_fields["Username"], validated_fields["Password"]),
-                                 "staff",
-                                 "Staff record updated successfully.",
-                                 "Failed to update staff record.")
+    def _update_staff_in_db(self, validated_fields):
+        return self._update_in_db((validated_fields["ID"], validated_fields["Name"],
+                                   validated_fields["Email"], validated_fields["Position"],
+                                   validated_fields["Username"], validated_fields["Password"]),
+                                  "staff",
+                                  "Staff record updated successfully.",
+                                  "Failed to update staff record.")
 
-    def update_faculty_in_db(self, validated_fields):
-        return self.update_in_db((validated_fields["Code"], validated_fields["Name"],
-                                  validated_fields["Administrator"]),
-                                 "faculty",
-                                 "Faculty record updated successfully.",
-                                 "Failed to update faculty record.")
+    def _update_faculty_in_db(self, validated_fields):
+        return self._update_in_db((validated_fields["Code"], validated_fields["Name"],
+                                   validated_fields["Administrator"]),
+                                  "faculty",
+                                  "Faculty record updated successfully.",
+                                  "Failed to update faculty record.")
 
-    def update_school_in_db(self, validated_fields):
-        return self.update_in_db((validated_fields["Code"], validated_fields["Name"],
-                                  validated_fields["Faculty"]),
-                                 "school",
-                                 "School record updated successfully.",
-                                 "Failed to update school record.")
+    def _update_school_in_db(self, validated_fields):
+        return self._update_in_db((validated_fields["Code"], validated_fields["Name"],
+                                   validated_fields["Faculty"]),
+                                  "school",
+                                  "School record updated successfully.",
+                                  "Failed to update school record.")
 
-    def update_programme_in_db(self, validated_fields):
-        return self.update_in_db((validated_fields["Code"], validated_fields["Name"],
-                                  validated_fields["School"], validated_fields["Director"]),
-                                 "programme",
-                                 "Programme record updated successfully.",
-                                 "Failed to update programme record.")
+    def _update_programme_in_db(self, validated_fields):
+        return self._update_in_db((validated_fields["Code"], validated_fields["Name"],
+                                   validated_fields["School"], validated_fields["Director"]),
+                                  "programme",
+                                  "Programme record updated successfully.",
+                                  "Failed to update programme record.")
 
     # Delete functions
-    def delete_item(self, delete_func, parent_frame, option=1, dialog_prompt=None):
+    def _delete_item(self, delete_func, parent_frame, option=1, dialog_prompt=None):
         # Get the selected item from the tree
-        selected_items = self.tree.selection()
+        selected_items = self._tree.selection()
 
         # If an item is selected, get its values
         if selected_items:
@@ -753,13 +754,13 @@ class Views(ttk.Frame):
                 for selected_item in selected_items:
                     # If fields is None, get the first value
                     if option == 1:
-                        values = str(self.tree.item(selected_item)["values"][0]).strip()
+                        values = str(self._tree.item(selected_item)["values"][0]).strip()
                     else:
                         # Otherwise, get all the values
-                        student_id = str(self.tree.item(selected_item)["values"][0]).strip()
-                        module_code = str(self.tree.item(selected_item)["values"][1]).strip()
-                        semester = str(self.tree.item(selected_item)["values"][3]).strip()
-                        year = str(self.tree.item(selected_item)["values"][4]).strip()
+                        student_id = str(self._tree.item(selected_item)["values"][0]).strip()
+                        module_code = str(self._tree.item(selected_item)["values"][1]).strip()
+                        semester = str(self._tree.item(selected_item)["values"][3]).strip()
+                        year = str(self._tree.item(selected_item)["values"][4]).strip()
                         values = [student_id, module_code, semester, year]
 
                     # Call the delete function with the appropriate arguments
@@ -770,7 +771,7 @@ class Views(ttk.Frame):
 
                     # If the item was successfully deleted, delete it from the tree
                     if deleted is True:
-                        self.tree.delete(selected_item)
+                        self._tree.delete(selected_item)
                     else:
                         # Display an error message
                         messagebox.showerror("Error", "Failed to delete record.")
@@ -783,7 +784,7 @@ class Views(ttk.Frame):
                 dialog = Dialog(parent_frame)
                 dialog.single_input_dialog(dialog_prompt)
                 dialog.wait_window()  # This will wait until the dialog is destroyed
-                values = dialog.result
+                values = dialog._result
 
                 # If the user cancelled the dialog box, return
                 if values is None:
@@ -793,7 +794,7 @@ class Views(ttk.Frame):
                 dialog = Dialog(parent_frame)
                 dialog.multi_input_dialog()
                 dialog.wait_window()  # This will wait until the dialog is destroyed
-                values = dialog.result
+                values = dialog._result
 
                 # If the user cancelled the dialog box, return
                 if values is None:
@@ -810,29 +811,29 @@ class Views(ttk.Frame):
             if deleted is True:
                 # If an item was selected, delete it from the tree
                 if selected_items:
-                    self.tree.delete(selected_items)
+                    self._tree.delete(selected_items)
                 else:
                     # If no item was selected, find and delete the item from the tree
-                    for item in self.tree.get_children():
+                    for item in self._tree.get_children():
                         # Get the first value of the item
-                        tree_id = str(self.tree.item(item)["values"][0]).strip()
-                        tree_code = str(self.tree.item(item)["values"][1]).strip()
+                        tree_id = str(self._tree.item(item)["values"][0]).strip()
+                        tree_code = str(self._tree.item(item)["values"][1]).strip()
 
                         # If option is 1, compare the first value
                         if option == 1:
                             if tree_id == values:
-                                self.tree.delete(item)
+                                self._tree.delete(item)
                                 break
                             elif tree_code == values:
-                                self.tree.delete(item)
+                                self._tree.delete(item)
                                 break
                         else:
                             # Otherwise, compare all the values
-                            tree_mod = str(self.tree.item(item)["values"][1]).strip()
-                            tree_sem = str(self.tree.item(item)["values"][3]).strip()
+                            tree_mod = str(self._tree.item(item)["values"][1]).strip()
+                            tree_sem = str(self._tree.item(item)["values"][3]).strip()
 
                             if tree_id == values[0] and tree_mod == values[1] and tree_sem == values[2]:
-                                self.tree.delete(item)
+                                self._tree.delete(item)
                                 break
             else:
                 # Display an error message
@@ -841,45 +842,45 @@ class Views(ttk.Frame):
         # Update the record count
         match delete_func:
             case db_manager.delete_student:
-                self.refresh(parent_frame, db_manager.get_students)
+                self._refresh(parent_frame, db_manager.get_students)
             case db_manager.delete_module:
-                self.refresh(parent_frame, db_manager.get_modules)
+                self._refresh(parent_frame, db_manager.get_modules)
             case db_manager.delete_details:
-                self.refresh(parent_frame, db_manager.get_details)
+                self._refresh(parent_frame, db_manager.get_details)
             case db_manager.delete_staff:
-                self.refresh(parent_frame, db_manager.get_staff)
+                self._refresh(parent_frame, db_manager.get_staff)
             case db_manager.delete_faculty:
-                self.refresh(parent_frame, db_manager.get_faculties)
+                self._refresh(parent_frame, db_manager.get_faculties)
             case db_manager.delete_school:
-                self.refresh(parent_frame, db_manager.get_schools)
+                self._refresh(parent_frame, db_manager.get_schools)
             case db_manager.delete_programme:
-                self.refresh(parent_frame, db_manager.get_programmes)
+                self._refresh(parent_frame, db_manager.get_programmes)
 
         # Refresh the tree view
-        self.tree.update_idletasks()
+        self._tree.update_idletasks()
 
-    def delete_student(self):
-        self.delete_item(db_manager.delete_student, self.student_frame, dialog_prompt="Student ID")
+    def _delete_student(self):
+        self._delete_item(db_manager.delete_student, self._student_frame, dialog_prompt="Student ID")
 
-    def delete_module(self):
-        self.delete_item(db_manager.delete_module, self.module_frame, dialog_prompt="Module")
+    def _delete_module(self):
+        self._delete_item(db_manager.delete_module, self._module_frame, dialog_prompt="Module")
 
-    def delete_details(self):
-        self.delete_item(db_manager.delete_details, self.details_frame, 2)
+    def _delete_details(self):
+        self._delete_item(db_manager.delete_details, self._details_frame, 2)
 
-    def delete_staff(self):
-        self.delete_item(db_manager.delete_staff, self.staff_frame, dialog_prompt="Staff ID")
+    def _delete_staff(self):
+        self._delete_item(db_manager.delete_staff, self._staff_frame, dialog_prompt="Staff ID")
 
-    def delete_faculty(self):
-        self.delete_item(db_manager.delete_faculty, self.faculty_frame, dialog_prompt="Faculty")
+    def _delete_faculty(self):
+        self._delete_item(db_manager.delete_faculty, self._faculty_frame, dialog_prompt="Faculty")
 
-    def delete_school(self):
-        self.delete_item(db_manager.delete_school, self.school_frame, dialog_prompt="School")
+    def _delete_school(self):
+        self._delete_item(db_manager.delete_school, self._school_frame, dialog_prompt="School")
 
-    def delete_programme(self):
-        self.delete_item(db_manager.delete_programme, self.programme_frame, dialog_prompt="Programme")
+    def _delete_programme(self):
+        self._delete_item(db_manager.delete_programme, self._programme_frame, dialog_prompt="Programme")
 
-    def update_search(self):
+    def _update_search(self):
         # Update search function whenever search text is changed
-        self.search_bar.bind('<KeyRelease>',
-                             lambda event: self.helpers.search(self.tree, self.data, self.search_bar.get()))
+        self._search_bar.bind('<KeyRelease>',
+                              lambda event: self._helpers.search(self._tree, self._data, self._search_bar.get()))

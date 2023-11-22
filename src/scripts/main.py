@@ -24,35 +24,35 @@ class AcademicProbationSystem(tk.Tk):
         self.iconbitmap('../../res/icon.ico')
 
         # Set window size
-        self.window_width = 1330
-        self.window_height = 820
+        self._window_width = 1330
+        self._window_height = 820
 
         # Get screen width and height
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
         # Calculate position
-        position_top = int(screen_height / 2 - self.window_height / 2)
-        position_right = int(screen_width / 2 - self.window_width / 2)
+        position_top = int(screen_height / 2 - self._window_height / 2)
+        position_right = int(screen_width / 2 - self._window_width / 2)
 
         # Set window size and position
-        self.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
+        self.geometry(f"{self._window_width}x{self._window_height}+{position_right}+{position_top}")
         self.resizable(False, False)
 
         # window close event
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.protocol("WM_DELETE_WINDOW", self._on_closing)
 
         # Initialize frames
-        self.frames = {}
+        self._frames = {}
 
         # Initialize Login and add it to frames dictionary
         login_frame = Login(master=self)
-        self.frames['login'] = login_frame
+        self._frames['login'] = login_frame
         login_frame.grid(row=0, column=0, sticky="nsew")
 
         # Initialize Dashboard and add it to frames dictionary
         dashboard_frame = Dashboard(master=self)
-        self.frames['dashboard'] = dashboard_frame
+        self._frames['dashboard'] = dashboard_frame
         dashboard_frame.grid(row=0, column=0, sticky="nsew")
 
         # Fill the entire window
@@ -65,7 +65,7 @@ class AcademicProbationSystem(tk.Tk):
         # Show the window
         self.deiconify()
 
-    def on_closing(self):
+    def _on_closing(self):
         # Ask the user if they want to quit
         if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
             DatabaseManager().close_connection()  # close database connection
@@ -73,7 +73,7 @@ class AcademicProbationSystem(tk.Tk):
 
     def raise_frame(self, name, user=None):
         # Destroy the current frame
-        for frame in self.frames.values():
+        for frame in self._frames.values():
             frame.destroy()
 
         # Create a new frame and add it to frames dictionary
@@ -82,7 +82,7 @@ class AcademicProbationSystem(tk.Tk):
         elif name == 'dashboard':
             self.frame = Dashboard(user=user, master=self)
 
-        self.frames[name] = self.frame
+        self._frames[name] = self.frame
         self.frame.grid(row=0, column=0, sticky="nsew")
 
     @staticmethod

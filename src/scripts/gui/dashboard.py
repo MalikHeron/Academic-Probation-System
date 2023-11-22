@@ -24,25 +24,25 @@ class Dashboard(tk.Frame):
         ribbon_frame.pack(fill=tk.X)
 
         # Load the icon and keep it in memory
-        self.dark_theme_icon = tk.PhotoImage(file="../../res/switch-light.png")
-        self.light_theme_icon = tk.PhotoImage(file="../../res/switch-dark.png")
+        self._dark_theme_icon = tk.PhotoImage(file="../../res/switch-light.png")
+        self._light_theme_icon = tk.PhotoImage(file="../../res/switch-dark.png")
 
         # Load the icon and keep it in memory
-        self.dark_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
-        self.light_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
+        self._dark_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
+        self._light_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
 
         # Create a logout button with an icon
-        self.logout_button = ttk.Button(ribbon_frame, text="Logout", image=self.dark_logout_icon, compound=tk.LEFT,
-                                        takefocus=False, cursor="hand2", command=self.logout)
-        self.logout_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
+        self._logout_button = ttk.Button(ribbon_frame, text="Logout", image=self._dark_logout_icon, compound=tk.LEFT,
+                                         takefocus=False, cursor="hand2", command=self._logout)
+        self._logout_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
-        self.theme_button = ttk.Button(ribbon_frame, text="Dark Mode", image=self.dark_theme_icon, compound=tk.LEFT,
-                                       command=self.switch_theme, takefocus=False, cursor="hand2")
-        self.theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
+        self._theme_button = ttk.Button(ribbon_frame, text="Dark Mode", image=self._dark_theme_icon, compound=tk.LEFT,
+                                        command=self.switch_theme, takefocus=False, cursor="hand2")
+        self._theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Load the icons and keep them in memory
-        self.emoji_icons = {
+        self._emoji_icons = {
             "morning": tk.PhotoImage(file="../../res/smile_teeth.png"),
             "afternoon": tk.PhotoImage(file="../../res/smile.png"),
             "evening": tk.PhotoImage(file="../../res/sunglass.png"),
@@ -51,19 +51,19 @@ class Dashboard(tk.Frame):
         }
 
         # Create a label to display the time active
-        self.greeting_label = ttk.Label(ribbon_frame, text=f'Welcome back, {user}', image=self.emoji_icons["morning"],
-                                        compound=tk.RIGHT)
-        self.greeting_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
+        self._greeting_label = ttk.Label(ribbon_frame, text=f'Welcome back, {user}', image=self._emoji_icons["morning"],
+                                         compound=tk.RIGHT)
+        self._greeting_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
 
         # Create a label to display the time active
-        self.time_label = ttk.Label(ribbon_frame, text="")
-        self.time_label.pack(side=tk.RIGHT, padx=(0, 20), pady=(5, 5))
+        self._time_label = ttk.Label(ribbon_frame, text="")
+        self._time_label.pack(side=tk.RIGHT, padx=(0, 20), pady=(5, 5))
 
         # Record the start time
-        self.start_time = time.time()
+        self._start_time = time.time()
 
         # Update the time active every second
-        self.update_time()
+        self._update_time()
 
         # Create frames
         frame = ttk.Notebook(self)
@@ -91,46 +91,46 @@ class Dashboard(tk.Frame):
         # Place the frames in the window
         frame.pack(fill=tk.BOTH, expand=True)
 
-    def logout(self):
+    def _logout(self):
         if messagebox.askokcancel("Confirm Logout", "Do you want to logout?"):
             # Switch back to the login frame
             self.master.raise_frame('login')
 
-    def update_time(self):
+    def _update_time(self):
         # Get the current date and time
         now = datetime.now()
         hour = now.hour
 
         if 5 <= hour < 12:
-            emoji = self.emoji_icons["morning"]
+            emoji = self._emoji_icons["morning"]
         elif 12 <= hour < 17:
-            emoji = self.emoji_icons["afternoon"]
+            emoji = self._emoji_icons["afternoon"]
         elif 17 <= hour < 21:
-            emoji = self.emoji_icons["evening"]
+            emoji = self._emoji_icons["evening"]
         elif 21 <= hour < 24:
-            emoji = self.emoji_icons["night"]
+            emoji = self._emoji_icons["night"]
         else:  # from midnight to 5am
-            emoji = self.emoji_icons["late_night"]
+            emoji = self._emoji_icons["late_night"]
 
         # Update the label
-        self.greeting_label.config(image=emoji)
+        self._greeting_label.config(image=emoji)
 
         # Format the date and time
         date_time = now.strftime("%I:%M:%S %p")
 
         # Update the label
-        self.time_label.config(text=date_time)
+        self._time_label.config(text=date_time)
 
         # Schedule the next update
-        self.after(100, self.update_time)
+        self.after(100, self._update_time)
 
     def switch_theme(self):
         current_theme = sv_ttk.get_theme()
         if current_theme == "light":
             sv_ttk.set_theme("dark")
-            self.theme_button.config(text="Light Mode", image=self.light_theme_icon)
-            self.logout_button.config(image=self.light_logout_icon)
+            self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
+            self._logout_button.config(image=self._light_logout_icon)
         else:
             sv_ttk.set_theme("light")
-            self.theme_button.config(text="Dark Mode", image=self.dark_theme_icon)
-            self.logout_button.config(image=self.dark_logout_icon)
+            self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
+            self._logout_button.config(image=self._dark_logout_icon)

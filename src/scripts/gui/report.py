@@ -8,46 +8,49 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkinter.ttk import Progressbar
 
+from dotenv import load_dotenv
+
 from scripts.database.queries import DatabaseManager
 from scripts.gui.helpers import Helpers
 from scripts.prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
+load_dotenv('../.env')
 
 
 class Report(ttk.Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.first_focus = None
-        self.min_year = None
-        self.max_year = None
-        self.generate_button = None
-        self.alert_label = None
-        self.student_alerts = None
-        self.advisor_alerts = None
-        self.director_alerts = None
-        self.administrator_alerts = None
-        self.progressbar = None
-        self.generate_frame = None
-        self.gpa_field = None
-        self.year_field = None
-        self.sender = 'academicprobationsystem2023@gmail.com'
-        self.password = 'eulp fsbb dore qhza'
-        self.helpers = Helpers()
-        self.parent = parent
-        self.alert_var = tk.StringVar()
+        self._first_focus = None
+        self._min_year = None
+        self._max_year = None
+        self._generate_button = None
+        self._alert_label = None
+        self._student_alerts = None
+        self._advisor_alerts = None
+        self._director_alerts = None
+        self._administrator_alerts = None
+        self._progressbar = None
+        self._generate_frame = None
+        self._gpa_field = None
+        self._year_field = None
+        self._sender = os.getenv('EMAIL')  # get the sender's email address
+        self._password = os.getenv('PASSWORD')  # get the sender's password
+        self._helpers = Helpers()
+        self._parent = parent
+        self._alert_var = tk.StringVar()
 
     def generate_view(self):
         # Create report frame
-        self.generate_frame = ttk.Frame(self.parent)
-        self.generate_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self._generate_frame = ttk.Frame(self._parent)
+        self._generate_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Padding
         x_padding, y_padding, f_width, l_width = 20, 20, 20, 11
 
         # Create button frame
-        button_frame = ttk.Frame(self.generate_frame)
+        button_frame = ttk.Frame(self._generate_frame)
         button_frame.pack(fill='x', padx=10, pady=20)
 
         # Create year labels and entry fields
@@ -55,26 +58,26 @@ class Report(ttk.Frame):
         year_label.pack(side=tk.LEFT, padx=(0, 10))
 
         year_var = tk.StringVar()  # Create a StringVar
-        self.first_focus = True  # Flag to check if it's the first time the Spinbox gets focus
-        self.year_field = ttk.Spinbox(button_frame, width=f_width - 4,
-                                      state="readonly",
-                                      textvariable=year_var,
-                                      font=('Helvetica', 11, 'normal'))  # Associate the StringVar with the Spinbox
-        self.year_field.pack(side=tk.LEFT, fill='x', expand=False)
+        self._first_focus = True  # Flag to check if it's the first time the Spinbox gets focus
+        self._year_field = ttk.Spinbox(button_frame, width=f_width - 4,
+                                       state="readonly",
+                                       textvariable=year_var,
+                                       font=('Helvetica', 11, 'normal'))  # Associate the StringVar with the Spinbox
+        self._year_field.pack(side=tk.LEFT, fill='x', expand=False)
 
         # Get the range of years
         def get_years():
             years = db_manager.get_years()
-            self.min_year = min(years)[0]
-            self.max_year = max(years)[0]
+            self._min_year = min(years)[0]
+            self._max_year = max(years)[0]
 
             # Update the Spinbox range
-            self.year_field.configure(from_=self.min_year, to=self.max_year)
+            self._year_field.configure(from_=self._min_year, to=self._max_year)
 
             # Set the value to max year the first time the Spinbox gets focus
-            if self.first_focus:
-                year_var.set(self.max_year)  # Set the default value
-                self.first_focus = False  # Update the flag
+            if self._first_focus:
+                year_var.set(self._max_year)  # Set the default value
+                self._first_focus = False  # Update the flag
 
             # Call this function again after 500ms (0.5 second)
             self.after(500, get_years)
@@ -87,16 +90,16 @@ class Report(ttk.Frame):
         # Create gpa labels and entry fields
         gpa_label = ttk.Label(button_frame, text="GPA:")
         gpa_label.pack(side=tk.LEFT, padx=(0, 10))
-        self.gpa_field = ttk.Entry(button_frame, width=f_width, font=('Helvetica', 11, 'normal'))
-        self.gpa_field.pack(side=tk.LEFT, fill='x', expand=False)
+        self._gpa_field = ttk.Entry(button_frame, width=f_width, font=('Helvetica', 11, 'normal'))
+        self._gpa_field.pack(side=tk.LEFT, fill='x', expand=False)
 
         def submit_action():
-            self.helpers.validate({"Year": (self.year_field, "int")}, lambda: self.submit(tree), args=False)
+            self._helpers.validate({"Year": (self._year_field, "int")}, lambda: self._submit(tree), args=False)
 
         # Create generate button
-        self.generate_button = ttk.Button(button_frame, text="Generate", command=submit_action, style='Accent.TButton',
-                                          cursor="hand2")
-        self.generate_button.pack(side=tk.LEFT, fill='x', expand=False, padx=(10, 0))
+        self._generate_button = ttk.Button(button_frame, text="Generate", command=submit_action, style='Accent.TButton',
+                                           cursor="hand2")
+        self._generate_button.pack(side=tk.LEFT, fill='x', expand=False, padx=(10, 0))
 
         # Define columns
         columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
@@ -104,14 +107,14 @@ class Report(ttk.Frame):
         column_alignments = ['center', 'w', 'center', 'center', 'center']
 
         # Create Treeview
-        tree = self.helpers.create_report_tables(self.generate_frame, columns, column_widths, column_alignments, 10)
+        tree = self._helpers.create_report_tables(self._generate_frame, columns, column_widths, column_alignments, 10)
 
-        return self.generate_frame
+        return self._generate_frame
 
-    def submit(self, tree):
+    def _submit(self, tree):
         # Get data
-        year = self.year_field.get()
-        gpa = self.gpa_field.get()
+        year = self._year_field.get()
+        gpa = self._gpa_field.get()
 
         if gpa != "":
             # Validate GPA
@@ -131,9 +134,9 @@ class Report(ttk.Frame):
         messagebox.showinfo("Summary", f"Requesting students from {year}\nwith a maximum GPA of {gpa}")
 
         # show the report
-        self.view_report(year, gpa, tree)
+        self._view_report(year, gpa, tree)
 
-    def view_report(self, year, gpa, tree):
+    def _view_report(self, year, gpa, tree):
         # Update the knowledge base with the given year
         db_manager.update_knowledge_base(year)
 
@@ -141,7 +144,7 @@ class Report(ttk.Frame):
         tree.delete(*tree.get_children())
 
         # Initialize the counter for the number of student alerts to be sent
-        self.student_alerts = 0
+        self._student_alerts = 0
 
         # Initialize the data for the PDF report
         pdf_data = [["Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA"]]
@@ -182,10 +185,10 @@ class Report(ttk.Frame):
         pdf_data.append([student_id, name, gpa1, gpa2, cumulative_gpa])
 
         # Increment the counter for student alerts
-        self.student_alerts += 1
+        self._student_alerts += 1
 
         # Disable the generate button to prevent further requests while processing
-        self.generate_button.config(state="disabled")
+        self._generate_button.config(state="disabled")
 
         # Get the advisor, director, and administrator for the student's programme and school
         advisor = db_manager.get_student_advisor(student_id)
@@ -234,9 +237,9 @@ class Report(ttk.Frame):
     def _send_alerts(self, advisor_students, director_students, administrator_students, advisors, directors,
                      administrators, gpa):
         # Set the counters for the number of alerts to be sent
-        self.advisor_alerts = len(advisor_students)
-        self.director_alerts = len(director_students)
-        self.administrator_alerts = len(administrator_students)
+        self._advisor_alerts = len(advisor_students)
+        self._director_alerts = len(director_students)
+        self._administrator_alerts = len(administrator_students)
 
         # Create new threads to send alerts to advisors, directors, and administrators
         for advisor_id, advisor in advisors.items():
@@ -255,27 +258,27 @@ class Report(ttk.Frame):
 
     def _create_pdf_and_show_alerts(self, pdf_data, year, gpa):
         # If there are alerts to send, show the label and progress bar and create the PDF
-        if (self.student_alerts > 0 or self.advisor_alerts > 0
-                or self.director_alerts > 0 or self.administrator_alerts > 0):
+        if (self._student_alerts > 0 or self._advisor_alerts > 0
+                or self._director_alerts > 0 or self._administrator_alerts > 0):
             # Create an alert frame
-            alert_frame = ttk.Frame(self.generate_frame)
+            alert_frame = ttk.Frame(self._generate_frame)
             alert_frame.place(relx=0.5, rely=0.95, anchor=tk.CENTER)
 
             # Create a label to display the status of the email alerts
-            self.alert_var.set(f"Sending email alerts")
-            self.alert_label = ttk.Label(alert_frame, textvariable=self.alert_var)
-            self.alert_label.pack(side=tk.LEFT, padx=(0, 10))
+            self._alert_var.set(f"Sending email alerts")
+            self._alert_label = ttk.Label(alert_frame, textvariable=self._alert_var)
+            self._alert_label.pack(side=tk.LEFT, padx=(0, 10))
 
             # Create a progress bar to indicate that email alerts are being sent
-            self.progressbar = Progressbar(alert_frame, mode='indeterminate')
-            self.progressbar.pack(side=tk.LEFT, fill='x', expand=False)
-            self.progressbar.start(3)
+            self._progressbar = Progressbar(alert_frame, mode='indeterminate')
+            self._progressbar.pack(side=tk.LEFT, fill='x', expand=False)
+            self._progressbar.start(3)
 
             # Specify the directory where the report will be saved
             directory = "../../reports/"
 
             # Create a PDF with the data
-            report_name = self.helpers.create_pdf(pdf_data, year, gpa, directory)
+            report_name = self._helpers.create_pdf(pdf_data, year, gpa, directory)
 
             # Check if the file was created successfully
             if os.path.exists(report_name):
@@ -286,18 +289,18 @@ class Report(ttk.Frame):
     def send_email(self, recipient, subject, body):
         message = EmailMessage()
         message['Subject'] = subject
-        message['From'] = self.sender
-        message['To'] = self.sender
+        message['From'] = self._sender
+        message['To'] = self._sender  # recipient
         message.set_content(body)
 
         done = [False]
-        t = threading.Thread(target=self.helpers.animate, args=(done,))
+        t = threading.Thread(target=self._helpers.animate, args=(done,))
         t.start()
 
         try:
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
-            server.login(self.sender, self.password)
+            server.login(self._sender, self._password)
             server.send_message(message)
             server.quit()
 
@@ -352,7 +355,7 @@ class Report(ttk.Frame):
 
         subject = 'Alert: You are on Academic Probation'
         if self.send_email(email, subject, body):
-            self.student_alerts -= 1
+            self._student_alerts -= 1
             self._check_alerts_sent()
 
     def send_advisor_alerts(self, advisor, advisor_students, gpa):
@@ -388,7 +391,7 @@ class Report(ttk.Frame):
 
         subject = 'Urgent: Student Academic Performance'
         if self.send_email(advisor['email'], subject, body):
-            self.advisor_alerts -= 1
+            self._advisor_alerts -= 1
             self._check_alerts_sent()
 
     def send_director_alerts(self, director, director_students, gpa):
@@ -423,7 +426,7 @@ class Report(ttk.Frame):
 
         subject = 'Concern Regarding Student Academic Performance'
         if self.send_email(director['email'], subject, body):
-            self.advisor_alerts -= 1
+            self._advisor_alerts -= 1
             self._check_alerts_sent()
 
     def send_administrator_alerts(self, administrator, administrator_students, gpa):
@@ -459,17 +462,17 @@ class Report(ttk.Frame):
 
         subject = 'Notification of Student Academic Performance'
         if self.send_email(administrator['email'], subject, body):
-            self.advisor_alerts -= 1
+            self._advisor_alerts -= 1
             self._check_alerts_sent()
 
     def _check_alerts_sent(self, message="Email alerts sent!", color='green'):
-        if self.student_alerts == 0:
-            self.progressbar.destroy()
-            self.alert_var.set(message)
-            self.alert_label.config(foreground=color)
-            self.generate_button.config(state="normal")
-            self.generate_frame.after(2000, self.remove_alerts)
+        if self._student_alerts == 0:
+            self._progressbar.destroy()
+            self._alert_var.set(message)
+            self._alert_label.config(foreground=color)
+            self._generate_button.config(state="normal")
+            self._generate_frame.after(2000, self._remove_alerts)
 
-    def remove_alerts(self):
+    def _remove_alerts(self):
         # Remove the label
-        self.alert_var.set("")
+        self._alert_var.set("")

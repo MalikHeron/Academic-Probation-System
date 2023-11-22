@@ -19,25 +19,25 @@ class Login(tk.Frame):
 
         # background image
         img = Image.open("../../res/login-background.png").resize((1350, 850))
-        self.background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
+        self._background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
         # Create form frame
-        form_frame = ttk.Label(self, image=self.background_image)
+        form_frame = ttk.Label(self, image=self._background_image)
         form_frame.pack(side="bottom", fill="both", expand=True)
 
         # Create username label and entry
-        self.username_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
-        self.username_entry.insert(0, 'Username')
-        self.username_entry.bind('<FocusIn>', self.clear_username)
-        self.username_entry.bind('<FocusOut>', self.fill_username)
-        self.username_entry.place(relx=0.51, rely=0.55, anchor='center')
+        self._username_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self._username_entry.insert(0, 'Username')
+        self._username_entry.bind('<FocusIn>', self._clear_username)
+        self._username_entry.bind('<FocusOut>', self._fill_username)
+        self._username_entry.place(relx=0.51, rely=0.55, anchor='center')
 
         # Create password label and entry
-        self.password_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
-        self.password_entry.insert(0, 'Password')
-        self.password_entry.bind('<FocusIn>', self.clear_password)
-        self.password_entry.bind('<FocusOut>', self.fill_password)
-        self.password_entry.place(relx=0.51, rely=0.65, anchor='center')
+        self._password_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self._password_entry.insert(0, 'Password')
+        self._password_entry.bind('<FocusIn>', self._clear_password)
+        self._password_entry.bind('<FocusOut>', self._fill_password)
+        self._password_entry.place(relx=0.51, rely=0.65, anchor='center')
 
         # remember_me = tk.IntVar()
         # remember_me_check = ttk.Checkbutton(form_frame, text='Remember me', variable=remember_me)
@@ -47,7 +47,7 @@ class Login(tk.Frame):
         style.configure('Custom.TButton', font=('Helvetica', 11, 'normal'))
 
         # Create login button
-        login_button = ttk.Button(form_frame, text='Login', width=15, command=self.check_credentials,
+        login_button = ttk.Button(form_frame, text='Login', width=15, command=self._check_credentials,
                                   style='Custom.TButton', cursor='hand2')
         login_button.place(relx=0.51, rely=0.72, anchor='center')
 
@@ -55,29 +55,29 @@ class Login(tk.Frame):
         forgot_password_link = ttk.Label(form_frame, text='Forgot password?', cursor='hand2',
                                          font=('Helvetica', 10, 'normal', 'underline'))
         forgot_password_link.place(relx=0.51, rely=0.78, anchor='center')
-        forgot_password_link.bind("<Button-1>", self.forgot_password)
+        forgot_password_link.bind("<Button-1>", self.__forgot_password)
 
-    def clear_username(self, event):
-        if self.username_entry.get() == 'Username':
-            self.username_entry.delete(0, tk.END)
+    def _clear_username(self, event):
+        if self._username_entry.get() == 'Username':
+            self._username_entry.delete(0, tk.END)
 
-    def fill_username(self, event):
-        if self.username_entry.get() == '':
-            self.username_entry.insert(0, 'Username')
+    def _fill_username(self, event):
+        if self._username_entry.get() == '':
+            self._username_entry.insert(0, 'Username')
 
-    def clear_password(self, event):
-        if self.password_entry.get() == 'Password':
-            self.password_entry.delete(0, tk.END)
-            self.password_entry.config(show='*')
+    def _clear_password(self, event):
+        if self._password_entry.get() == 'Password':
+            self._password_entry.delete(0, tk.END)
+            self._password_entry.config(show='*')
 
-    def fill_password(self, event):
-        if self.password_entry.get() == '':
-            self.password_entry.insert(0, 'Password')
-            self.password_entry.config(show='')
+    def _fill_password(self, event):
+        if self._password_entry.get() == '':
+            self._password_entry.insert(0, 'Password')
+            self._password_entry.config(show='')
 
-    def check_credentials(self):
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+    def _check_credentials(self):
+        username = self._username_entry.get()
+        password = self._password_entry.get()
         user_id = DatabaseManager().get_credentials(username, password)
 
         # Check if username and password are correct
@@ -90,5 +90,5 @@ class Login(tk.Frame):
             messagebox.showerror('Login error', 'Incorrect username or password')
 
     @staticmethod
-    def forgot_password(event=None):
+    def __forgot_password(event=None):
         messagebox.showinfo('Forgot Password', 'Please contact the system administrator.')
