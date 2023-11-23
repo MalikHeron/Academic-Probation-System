@@ -130,8 +130,7 @@ class Helpers:
 
         return search_entry
 
-    @staticmethod
-    def _configure_scrollbar(canvas, frame, height, pad_x=0):
+    def _configure_scrollbar(self, canvas, frame, height, pad_x=0):
         def on_configure(event):
             # Update scroll region after starting 'mainloop'
             # When all widgets are in canvas
@@ -150,10 +149,31 @@ class Helpers:
         scrollbar.grid(row=0, column=1, sticky='ns', padx=pad_x, pady=10)
         scrollbar.grid_remove()  # Initially hide the scrollbar
 
+        # Update the scrollbar every 100ms
+        self.update_scrollbar(tree, scrollbar)
+
         # Configure the Treeview
         tree.configure(yscrollcommand=scrollbar.set)
 
         return tree, scrollbar
+
+    def update_scrollbar(self, tree, scrollbar, height=23, grid=True):
+        # Check if the number of items in the tree is greater than the specified height
+        if len(tree.get_children()) > height:
+            # If grid is True, use the grid method to show the scrollbar
+            if grid:
+                scrollbar.grid()
+            # If grid is False, use the pack method to show the scrollbar
+            else:
+                scrollbar.pack(side=tk.RIGHT, fill='y')
+        else:
+            # If the number of items in the tree is not greater than the height, hide the scrollbar
+            if grid:
+                scrollbar.grid_remove()
+            else:
+                scrollbar.pack_forget()
+        # Call this function again after 100 milliseconds to keep the scrollbar updated
+        tree.after(100, lambda: self.update_scrollbar(tree, scrollbar, grid=grid))
 
     def create_view_table(self, frame, columns, column_widths, column_alignments, remove_func, height=23, data=None,
                           pad_x=0):
@@ -185,10 +205,6 @@ class Helpers:
             # Insert data in table
             for item in data:
                 tree.insert("", "end", values=item)
-
-            # Show the scrollbar if there's enough data to make the table scrollable
-            if len(data) > height:
-                scrollbar.grid()
 
         def delete_record(event):
             logging.info(event)
@@ -226,10 +242,6 @@ class Helpers:
             for item in data:
                 gpa_tree.insert("", "end", values=item)
 
-            # Show the scrollbar if there's enough data to make the table scrollable
-            if len(data) > height:
-                gpa_scrollbar.pack(side=tk.RIGHT, fill='y')
-
         gpa_tree.pack(padx=pad)
 
         # Create another frame inside the canvas
@@ -248,6 +260,9 @@ class Helpers:
         file_tree.pack(side=tk.LEFT, fill='both', expand=True)
         scrollbar.pack(side=tk.RIGHT, fill='y')
         scrollbar.pack_forget()  # Initially hide the scrollbar
+
+        # Update the scrollbar every 100ms
+        self.update_scrollbar(file_tree, scrollbar, grid=False)
 
         # Configure the Treeview
         file_tree.configure(yscrollcommand=scrollbar.set)
@@ -288,10 +303,6 @@ class Helpers:
         for pdf_file in pdf_files:
             file_size = self.convert_bytes(os.path.getsize(os.path.join(folder_path, pdf_file)))
             file_tree.insert("", "end", values=(pdf_file, file_size))
-
-        # Show the scrollbar if there's enough data to make the table scrollable
-        if len(pdf_files) > height:
-            scrollbar.pack(side=tk.RIGHT, fill='y')
 
         # Open the selected PDF file when clicked
         def open_selected_files(event):

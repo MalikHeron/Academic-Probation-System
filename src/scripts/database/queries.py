@@ -248,7 +248,7 @@ class DatabaseManager:
         self.cursor.execute(f"""SELECT advisor_id FROM student_master WHERE id = {student_id}""")
         advisor_id = self.cursor.fetchone()[0]
 
-        if advisor_id is None:
+        if advisor_id == 'None':
             return None
 
         # Get advisor details
