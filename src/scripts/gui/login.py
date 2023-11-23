@@ -18,7 +18,7 @@ class Login(tk.Frame):
         sv_ttk.use_dark_theme()
 
         # background image
-        img = Image.open("../../res/login-background.png").resize((1350, 850))
+        img = Image.open("../../res/login-background.png").resize((1350, 893))
         self._background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
         # Create form frame
@@ -30,14 +30,14 @@ class Login(tk.Frame):
         self._username_entry.insert(0, 'Username')
         self._username_entry.bind('<FocusIn>', self._clear_username)
         self._username_entry.bind('<FocusOut>', self._fill_username)
-        self._username_entry.place(relx=0.51, rely=0.55, anchor='center')
+        self._username_entry.place(relx=0.51, rely=0.58, anchor='center')
 
         # Create password label and entry
         self._password_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
         self._password_entry.insert(0, 'Password')
         self._password_entry.bind('<FocusIn>', self._clear_password)
         self._password_entry.bind('<FocusOut>', self._fill_password)
-        self._password_entry.place(relx=0.51, rely=0.65, anchor='center')
+        self._password_entry.place(relx=0.51, rely=0.66, anchor='center')
 
         # remember_me = tk.IntVar()
         # remember_me_check = ttk.Checkbutton(form_frame, text='Remember me', variable=remember_me)
@@ -49,12 +49,12 @@ class Login(tk.Frame):
         # Create login button
         login_button = ttk.Button(form_frame, text='Login', width=15, command=self._check_credentials,
                                   style='Custom.TButton', cursor='hand2')
-        login_button.place(relx=0.51, rely=0.72, anchor='center')
+        login_button.place(relx=0.51, rely=0.74, anchor='center')
 
         # Create forgot password link
         forgot_password_link = ttk.Label(form_frame, text='Forgot password?', cursor='hand2',
                                          font=('Helvetica', 10, 'normal', 'underline'))
-        forgot_password_link.place(relx=0.51, rely=0.78, anchor='center')
+        forgot_password_link.place(relx=0.51, rely=0.80, anchor='center')
         forgot_password_link.bind("<Button-1>", self.__forgot_password)
 
     def _clear_username(self, event):

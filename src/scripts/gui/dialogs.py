@@ -572,3 +572,7 @@ class Dialog(tk.Toplevel):
         self._result = [str(self._id_field.get()).strip(), str(self._module_field.get()).strip(),
                         str(self._semester_field.get()).strip(), str(self._year_field.get()).strip()]
         self.destroy()
+
+    @property
+    def result(self):
+        return self._result

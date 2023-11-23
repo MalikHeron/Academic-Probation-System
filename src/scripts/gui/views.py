@@ -784,7 +784,7 @@ class Views(ttk.Frame):
                 dialog = Dialog(parent_frame)
                 dialog.single_input_dialog(dialog_prompt)
                 dialog.wait_window()  # This will wait until the dialog is destroyed
-                values = dialog._result
+                values = dialog.result
 
                 # If the user cancelled the dialog box, return
                 if values is None:
@@ -794,7 +794,7 @@ class Views(ttk.Frame):
                 dialog = Dialog(parent_frame)
                 dialog.multi_input_dialog()
                 dialog.wait_window()  # This will wait until the dialog is destroyed
-                values = dialog._result
+                values = dialog.result
 
                 # If the user cancelled the dialog box, return
                 if values is None:

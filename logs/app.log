@@ -3,22 +3,26 @@ root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
 root - WARNING - index idx_module_details_unique already exists
-root - INFO - <VirtualEvent event x=0 y=0>
-root - INFO - [{'Results': [[2, 'Jane Smith', 'janesmith@gmail.com', 'SCIT', 'CNS', 2.48, 2.78, 2.56], [7, 'Emily Davis', 'emilydavis@gmail.com', 'SOE', 'CHE', 1.45, 2.2, 1.81], [20, 'Jack Anderson', 'jack.anderson@yahoo.com', 'CSN', 'MW', 2.11, 0, 2.11], [26, 'Peter Thompson', 'peter.thompson@hotmail.com', 'SONAS', 'FC', 1.55, 2.85, 2.17]]}]
+root - INFO - [{'Results': [[17, 'Grace Wilson', 'grace.wilson@yahoo.com', 'SOMAS', 'AS', 2.42, 0, 2.42], [27, 'Quincy Allen', 'quincy.allen@hotmail.com', 'CSN', 'NS', 1.99, 0.69, 1.52], [29, 'Sam King', 'sam.king@hotmail.com', 'SCIT', 'CIS', 1.49, 2.94, 2.02]]}]
 root - ERROR - An error occurred in updating the PDF list: invalid command name ".!dashboard.!notebook.!frame8.!canvas.!frame2.!frame.!treeview"
-root - INFO - Alert sent to peter.thompson@hotmail.com
-root - INFO - Alert sent to sarahheron@hotmail.com
-root - INFO - Alert sent to davidthomas@hotmail.com
-root - INFO - Alert sent to davidanderson@gmail.com
-root - INFO - Alert sent to danielgrant@gmail.com
-root - INFO - Alert sent to emmapitterson@hotmail.com
-root - INFO - Alert sent to jack.anderson@yahoo.com
-root - INFO - Alert sent to jessicgilpin@hotmail.com
+root - INFO - Alert sent to michaelhorne@hotmail.com
 root - INFO - Alert sent to janeswhite@gmail.com
-root - INFO - Alert sent to oliviamartin@yahoo.com
-root - INFO - Alert sent to michaelbrown@gmail.com
-root - INFO - Alert sent to emilydavis@gmail.com
-root - INFO - <VirtualEvent event x=0 y=0>
-root - INFO - <ButtonPress event state=Mod1 num=1 x=125 y=462>
-root - INFO - <VirtualEvent event x=0 y=0>
+root - INFO - Alert sent to robertjohnson@gmail.com
+root - INFO - Alert sent to sarahwhite@gmail.com
+root - INFO - Alert sent to davidthomas@hotmail.com
+root - INFO - Alert sent to quincy.allen@hotmail.com
+root - INFO - Alert sent to jessicgilpin@hotmail.com
+root - INFO - Alert sent to sam.king@hotmail.com
+root - INFO - [{'Results': [[17, 'Grace Wilson', 'grace.wilson@yahoo.com', 'SOMAS', 'AS', 2.42, 0, 2.42], [27, 'Quincy Allen', 'quincy.allen@hotmail.com', 'CSN', 'NS', 1.99, 0.69, 1.52], [29, 'Sam King', 'sam.king@hotmail.com', 'SCIT', 'CIS', 1.49, 2.94, 2.02]]}]
+root - INFO - Alert sent to sam.king@hotmail.com
+root - INFO - Alert sent to michaelhorne@hotmail.com
+root - INFO - Alert sent to danielgrant@gmail.com
+root - INFO - Alert sent to davidthomas@hotmail.com
+root - INFO - Alert sent to jessicgilpin@hotmail.com
+root - INFO - Alert sent to sarahwhite@gmail.com
+root - INFO - Alert sent to robertjohnson@gmail.com
+root - INFO - Alert sent to grace.wilson@yahoo.com
+root - INFO - Alert sent to janeswhite@gmail.com
+root - INFO - Alert sent to emmathomas@gmail.com
+root - INFO - Alert sent to quincy.allen@hotmail.com
 root - WARNING - index idx_module_details_unique already exists
