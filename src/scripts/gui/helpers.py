@@ -150,14 +150,14 @@ class Helpers:
         scrollbar.grid_remove()  # Initially hide the scrollbar
 
         # Update the scrollbar every 100ms
-        self.update_scrollbar(tree, scrollbar)
+        self._update_scrollbar(tree, scrollbar)
 
         # Configure the Treeview
         tree.configure(yscrollcommand=scrollbar.set)
 
         return tree, scrollbar
 
-    def update_scrollbar(self, tree, scrollbar, height=23, grid=True):
+    def _update_scrollbar(self, tree, scrollbar, height=23, grid=True):
         # Check if the number of items in the tree is greater than the specified height
         if len(tree.get_children()) > height:
             # If grid is True, use the grid method to show the scrollbar
@@ -173,7 +173,7 @@ class Helpers:
             else:
                 scrollbar.pack_forget()
         # Call this function again after 100 milliseconds to keep the scrollbar updated
-        tree.after(100, lambda: self.update_scrollbar(tree, scrollbar, grid=grid))
+        tree.after(100, lambda: self._update_scrollbar(tree, scrollbar, grid=grid))
 
     def create_view_table(self, frame, columns, column_widths, column_alignments, remove_func, height=23, data=None,
                           pad_x=0):
@@ -242,6 +242,7 @@ class Helpers:
             for item in data:
                 gpa_tree.insert("", "end", values=item)
 
+        # Pack the Treeview into the new frame
         gpa_tree.pack(padx=pad)
 
         # Create another frame inside the canvas
@@ -262,7 +263,7 @@ class Helpers:
         scrollbar.pack_forget()  # Initially hide the scrollbar
 
         # Update the scrollbar every 100ms
-        self.update_scrollbar(file_tree, scrollbar, grid=False)
+        self._update_scrollbar(file_tree, scrollbar, grid=False)
 
         # Configure the Treeview
         file_tree.configure(yscrollcommand=scrollbar.set)
@@ -320,6 +321,7 @@ class Helpers:
         threading.Thread(target=self._update_pdf_list, args=(folder_path, pdf_files, file_tree),
                          daemon=True).start()
 
+        # Pack the Treeview into the new frame
         file_tree.pack(padx=(30, pad))
 
         # Create a delete button
@@ -354,6 +356,7 @@ class Helpers:
         # Set the command of the delete button to the delete_file function
         delete_button.config(command=lambda: delete_file(None))
 
+        # Pack the delete button into the pdf_frame
         delete_button.pack(padx=(30, pad), pady=(10, 0))
 
         return gpa_tree
@@ -514,11 +517,16 @@ class Helpers:
                         raise ValueError("is not a valid email.")
                 elif validation_type == "password":
                     if validated_fields["Position"] == "Administrator":
-                        # Validate as a password
-                        if len(input_value) >= 8:
-                            validated_fields[field_name] = input_value
-                        else:
+                        if len(input_value) < 8:
                             raise ValueError("must be at least 8 characters long.")
+                        if not re.search(r"[0-9]", input_value):
+                            raise ValueError("must contain at least one number.")
+                        if not re.search(r"[A-Z]", input_value):
+                            raise ValueError("must contain at least one uppercase letter.")
+                        if not re.search(r"[a-z]", input_value):
+                            raise ValueError("must contain at least one lowercase letter.")
+                        else:
+                            validated_fields[field_name] = input_value
                     else:
                         validated_fields[field_name] = input_value
                 elif validation_type == "username":

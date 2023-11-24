@@ -35,5 +35,6 @@
 - sqlite3 `pip install sqlite3`
 - easygui `pip install easygui`
 - reportlab `pip install reportlab`
+- python-dotenv `pip install python-dotenv`
 
 > Tested in IntelliJ IDEA (Ultimate Edition) with Python and Prolog plugin.

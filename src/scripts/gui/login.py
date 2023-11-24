@@ -87,7 +87,7 @@ class Login(tk.Frame):
             # Raise the dashboard frame
             self.master.raise_frame('dashboard', first_name)
         else:
-            messagebox.showerror('Login error', 'Incorrect username or password')
+            messagebox.showerror('Login Error', 'Incorrect username or password.')
 
     @staticmethod
     def __forgot_password(event=None):

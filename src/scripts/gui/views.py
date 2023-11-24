@@ -744,7 +744,7 @@ class Views(ttk.Frame):
                                   "Failed to update programme record.")
 
     # Delete functions
-    def _delete_item(self, delete_func, parent_frame, option=1, dialog_prompt=None):
+    def _delete_item(self, delete_func, parent_frame, option=1, get_func=None, get_id=True, dialog_prompt=None):
         # Get the selected item from the tree
         selected_items = self._tree.selection()
 
@@ -755,6 +755,8 @@ class Views(ttk.Frame):
                     # If fields is None, get the first value
                     if option == 1:
                         values = str(self._tree.item(selected_item)["values"][0]).strip()
+                        # Call the delete function with the appropriate arguments
+                        deleted = delete_func(values)
                     else:
                         # Otherwise, get all the values
                         student_id = str(self._tree.item(selected_item)["values"][0]).strip()
@@ -762,11 +764,7 @@ class Views(ttk.Frame):
                         semester = str(self._tree.item(selected_item)["values"][3]).strip()
                         year = str(self._tree.item(selected_item)["values"][4]).strip()
                         values = [student_id, module_code, semester, year]
-
-                    # Call the delete function with the appropriate arguments
-                    if option == 1:
-                        deleted = delete_func(values)
-                    else:
+                        # Call the delete function with the appropriate arguments
                         deleted = delete_func(*values)
 
                     # If the item was successfully deleted, delete it from the tree
@@ -782,13 +780,16 @@ class Views(ttk.Frame):
             if option == 1:
                 # Display a dialog box to request a single value
                 dialog = Dialog(parent_frame)
-                dialog.single_input_dialog(dialog_prompt)
+                dialog.single_input_dialog(dialog_prompt, get_func, get_id)
                 dialog.wait_window()  # This will wait until the dialog is destroyed
                 values = dialog.result
 
                 # If the user cancelled the dialog box, return
                 if values is None:
                     return
+
+                # Call the delete function with the appropriate arguments
+                deleted = delete_func(values)
             else:
                 # Display a dialog box to request multiple values
                 dialog = Dialog(parent_frame)
@@ -800,11 +801,7 @@ class Views(ttk.Frame):
                 if values is None:
                     return
 
-            # If options is 1, call the delete function with a single argument
-            # Otherwise, unpack the values and pass them as arguments
-            if option == 1:
-                deleted = delete_func(values)
-            else:
+                # Call the delete function with the appropriate arguments
                 deleted = delete_func(*values)
 
             # If the item was successfully deleted
@@ -860,25 +857,31 @@ class Views(ttk.Frame):
         self._tree.update_idletasks()
 
     def _delete_student(self):
-        self._delete_item(db_manager.delete_student, self._student_frame, dialog_prompt="Student ID")
+        self._delete_item(db_manager.delete_student, self._student_frame, dialog_prompt="Student ID",
+                          get_func=db_manager.get_students)
 
     def _delete_module(self):
-        self._delete_item(db_manager.delete_module, self._module_frame, dialog_prompt="Module")
+        self._delete_item(db_manager.delete_module, self._module_frame, dialog_prompt="Module",
+                          get_func=db_manager.get_modules, get_id=False)
 
     def _delete_details(self):
         self._delete_item(db_manager.delete_details, self._details_frame, 2)
 
     def _delete_staff(self):
-        self._delete_item(db_manager.delete_staff, self._staff_frame, dialog_prompt="Staff ID")
+        self._delete_item(db_manager.delete_staff, self._staff_frame, dialog_prompt="Staff ID",
+                          get_func=db_manager.get_staff)
 
     def _delete_faculty(self):
-        self._delete_item(db_manager.delete_faculty, self._faculty_frame, dialog_prompt="Faculty")
+        self._delete_item(db_manager.delete_faculty, self._faculty_frame, dialog_prompt="Faculty",
+                          get_func=db_manager.get_faculties, get_id=False)
 
     def _delete_school(self):
-        self._delete_item(db_manager.delete_school, self._school_frame, dialog_prompt="School")
+        self._delete_item(db_manager.delete_school, self._school_frame, dialog_prompt="School",
+                          get_func=db_manager.get_schools, get_id=False)
 
     def _delete_programme(self):
-        self._delete_item(db_manager.delete_programme, self._programme_frame, dialog_prompt="Programme")
+        self._delete_item(db_manager.delete_programme, self._programme_frame, dialog_prompt="Programme",
+                          get_func=db_manager.get_programmes, get_id=False)
 
     def _update_search(self):
         # Update search function whenever search text is changed
