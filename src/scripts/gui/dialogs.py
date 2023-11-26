@@ -1,6 +1,8 @@
 import tkinter as tk
 from datetime import datetime
-from tkinter import ttk
+from tkinter import messagebox, ttk
+
+import sv_ttk
 
 from scripts.database.queries import DatabaseManager
 from scripts.gui.helpers import Helpers
@@ -11,6 +13,8 @@ db_manager = DatabaseManager()  # create an instance of DatabaseManager
 class Dialog(tk.Toplevel):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
+        self._theme_field = None
+        self._theme = None
         self._first_focus = None
         self._year_field = None
         self._max_year = None
@@ -395,6 +399,51 @@ class Dialog(tk.Toplevel):
 
         return self.frame, code_field, name_field, school_field, director_field
 
+    def settings_dialog(self, config):
+        # Initialize window properties
+        self.initialize_properties("Settings", 500, 250)
+
+        # Create the input frame
+        frame = ttk.Frame(self)
+        frame.grid(row=0, column=1, sticky="nsew")
+
+        # Check if the theme is set in the config file
+        if config.has_section('Theme') and config.has_option('Theme', 'theme'):
+            theme = config.get('Theme', 'theme')
+            # Check if the theme is set to auto
+            if theme == 'auto':
+                theme = "Use system settings"
+            else:
+                theme = "Manual"
+
+            ttk.Label(frame, text="App Theme", width=self._l_width + 2, anchor="w").grid(row=0, column=0,
+                                                                                         padx=self._x_padding,
+                                                                                         pady=self._y_padding)
+            theme_var = tk.StringVar()
+            # Set the default value
+            theme_var.set(theme)
+            self._theme_field = ttk.Combobox(frame, state="readonly", values=["Manual", "Use system settings"],
+                                             textvariable=theme_var,
+                                             width=self._f_width - 5,
+                                             font=('Helvetica', 11, 'normal'))
+            self._theme_field.grid(row=0, column=1)
+
+            # Monitor changes to the theme field and update the config file accordingly
+            def update_config(*args):
+                if theme_var.get() != "Manual":
+                    self._theme = "auto"
+                else:
+                    current_theme = sv_ttk.get_theme()
+                    self._theme = current_theme
+
+            theme_var.trace('w', update_config)  # Call update_config when the theme value changes
+            # Give focus to the theme field
+            self._theme_field.focus_set()
+        else:
+            # Show error message and close the window
+            tk.messagebox.showerror("Error", "Config file not found.")
+            self.destroy()
+
     def single_input_dialog(self, text, get_func, get_id):
         # Initialize window properties
         self.initialize_properties("Input Required", 500, 150)
@@ -524,3 +573,7 @@ class Dialog(tk.Toplevel):
     @property
     def result(self):
         return self._result
+
+    @property
+    def theme(self):
+        return self._theme

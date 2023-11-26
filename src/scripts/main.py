@@ -85,30 +85,6 @@ class AcademicProbationSystem(tk.Tk):
         self._frames[name] = self.frame
         self.frame.grid(row=0, column=0, sticky="nsew")
 
-    @staticmethod
-    def configure_styles():
-        # Create a style
-        style = ttk.Style()
-
-        # Configure the font style for Button
-        style.configure('TButton', font=('Helvetica', 10, 'normal'))
-
-        # Configure the font style for TCheckbutton
-        style = ttk.Style()
-        style.configure('TCheckbutton', font=('Helvetica', 10, 'normal'))
-
-        # Configure the font style for Label
-        style.configure('TLabel', font=('Helvetica', 11, 'normal'))
-
-        # Configure the font style for Treeview (table)
-        style.configure('Treeview', font=('Helvetica', 10, 'normal'))
-
-        # Configure the font style for Treeview (table) headings
-        style.configure('Treeview.Heading', font=("Helvetica", 10, "bold"))
-
-        # Configure the font style for Notebook (tabs)
-        style.configure('TNotebook.Tab', focuscolor='', font=('Helvetica', 10, 'normal'))
-
     def run(self):
         self.mainloop()
 

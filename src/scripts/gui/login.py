@@ -12,7 +12,7 @@ class Login(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         # Set styles
-        self.master.configure_styles()
+        self.configure_styles()
 
         # Set theme
         sv_ttk.use_dark_theme()
@@ -92,3 +92,14 @@ class Login(tk.Frame):
     @staticmethod
     def __forgot_password(event=None):
         messagebox.showinfo('Forgot Password', 'Please contact the system administrator.')
+
+    @staticmethod
+    def configure_styles():
+        # Create a style
+        style = ttk.Style()
+
+        # Configure the font style for Button
+        style.configure('TButton', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for Label
+        style.configure('TLabel', font=('Helvetica', 11, 'normal'))

@@ -5,8 +5,10 @@ from datetime import datetime
 from tkinter import messagebox
 from tkinter import ttk
 
+import darkdetect
 import sv_ttk
 
+from scripts.gui.dialogs import Dialog
 from scripts.gui.report import Report
 from scripts.gui.views import Views
 
@@ -14,11 +16,6 @@ from scripts.gui.views import Views
 class Dashboard(tk.Frame):
     def __init__(self, user=None, master=None):
         super().__init__(master)
-        # Set styles
-        self.master.configure_styles()
-
-        # darkdetect.isDark()
-
         # Load the configuration
         self._config = configparser.ConfigParser()
         self._config.read('../../config/config.ini')
@@ -47,7 +44,7 @@ class Dashboard(tk.Frame):
         # Create a theme switch button with an icon
         self._settings_button = ttk.Button(ribbon_frame, text="Settings", image=self._light_settings_icon,
                                            compound=tk.LEFT,
-                                           command=None, takefocus=False, cursor="hand2")
+                                           command=self._open_settings, takefocus=False, cursor="hand2")
         self._settings_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
@@ -56,7 +53,7 @@ class Dashboard(tk.Frame):
         self._theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Check the theme
-        self.check_theme()
+        self.set_theme()
 
         # Load the icons and keep them in memory
         self._emoji_icons = {
@@ -108,6 +105,17 @@ class Dashboard(tk.Frame):
         # Place the frames in the window
         frame.pack(fill=tk.BOTH, expand=True)
 
+    def _open_settings(self):
+        _dialog = Dialog(self)
+        _dialog.settings_dialog(self._config)
+        _dialog.wait_window()
+        if _dialog.theme is not None:
+            # Save the theme to the config file
+            self.set_theme_config(_dialog.theme)
+
+            if _dialog.theme == 'auto':
+                self.update_theme(darkdetect.isDark())
+
     def _logout(self):
         if messagebox.askokcancel("Confirm Logout", "Do you want to logout?"):
             # Switch back to the login frame
@@ -141,44 +149,89 @@ class Dashboard(tk.Frame):
         # Schedule the next update
         self.after(100, self._update_time)
 
-    def check_theme(self):
+    def set_theme(self):
         # Check if the theme is set in the config file
-        if 'Theme' in self._config and 'theme' in self._config['Theme']:
-            theme = self._config['Theme']['theme']
-            if theme == 'dark':
-                self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
-                self._logout_button.config(image=self._dark_logout_icon)
-                self._settings_button.config(image=self._dark_settings_icon)
-                sv_ttk.use_dark_theme()
+        if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
+            theme = self._config.get('Theme', 'theme')
+            if theme == 'auto':
+                if darkdetect.isDark():
+                    self.set_dark_theme()
+                else:
+                    self.set_light_theme()
+                self.update_theme(darkdetect.isDark())
+            elif theme == 'dark':
+                self.set_dark_theme()
             else:
-                self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
-                self._logout_button.config(image=self._light_logout_icon)
-                self._settings_button.config(image=self._light_settings_icon)
-                sv_ttk.use_light_theme()
+                self.set_light_theme()
         else:
             # Create a style
             sv_ttk.use_light_theme()
+
+    def update_theme(self, is_dark):
+        # Check if the theme is set in the config file
+        if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
+            theme = self._config.get('Theme', 'theme')
+            if theme == 'auto':
+                current_theme = sv_ttk.get_theme()
+                if is_dark and current_theme != 'dark':
+                    self.set_dark_theme()
+                elif not is_dark and current_theme != 'light':
+                    self.set_light_theme()
+            # Schedule the next update
+            self.after(1000, self.update_theme, darkdetect.isDark())
+
+    def set_dark_theme(self):
+        # Set styles
+        self.configure_styles()
+        self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
+        self._logout_button.config(image=self._dark_logout_icon)
+        self._settings_button.config(image=self._dark_settings_icon)
+        sv_ttk.use_dark_theme()
+
+    def set_light_theme(self):
+        # Set styles
+        self.configure_styles()
+        self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
+        self._logout_button.config(image=self._light_logout_icon)
+        self._settings_button.config(image=self._light_settings_icon)
+        sv_ttk.use_light_theme()
 
     def switch_theme(self):
         # Get the current theme
         current_theme = sv_ttk.get_theme()
         if current_theme == "light":
-            sv_ttk.set_theme("dark")
-            # Set styles
-            self.master.configure_styles()
-            self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
-            self._logout_button.config(image=self._dark_logout_icon)
-            self._settings_button.config(image=self._dark_settings_icon)
-            self._config['Theme'] = {'theme': 'dark'}
+            self.set_theme_config("dark")
+            self.set_dark_theme()
         else:
-            sv_ttk.set_theme("light")
-            # Set styles
-            self.master.configure_styles()
-            self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
-            self._logout_button.config(image=self._light_logout_icon)
-            self._settings_button.config(image=self._light_settings_icon)
-            self._config['Theme'] = {'theme': 'light'}
+            self.set_theme_config("light")
+            self.set_light_theme()
 
+    def set_theme_config(self, theme):
         # Save the theme to the config file
+        self._config['Theme'] = {'theme': theme}
         with open('../../config/config.ini', 'w') as configfile:
             self._config.write(configfile)
+
+    @staticmethod
+    def configure_styles():
+        # Create a style
+        style = ttk.Style()
+
+        # Configure the font style for Button
+        style.configure('TButton', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for TCheckbutton
+        style = ttk.Style()
+        style.configure('TCheckbutton', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for Label
+        style.configure('TLabel', font=('Helvetica', 11, 'normal'))
+
+        # Configure the font style for Treeview (table)
+        style.configure('Treeview', font=('Helvetica', 10, 'normal'))
+
+        # Configure the font style for Treeview (table) headings
+        style.configure('Treeview.Heading', font=("Helvetica", 10, "bold"))
+
+        # Configure the font style for Notebook (tabs)
+        style.configure('TNotebook.Tab', focuscolor='', font=('Helvetica', 10, 'normal'))
