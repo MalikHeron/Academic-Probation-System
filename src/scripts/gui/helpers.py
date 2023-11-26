@@ -512,7 +512,7 @@ class Helpers:
         # Style field
         ttk.Label(frame, text="Style", width=l_width, anchor="w", font=font).grid(row=row + 2, column=0, pady=pady,
                                                                                   padx=padx)
-        style_field = ttk.Combobox(frame, state="readonly", values=["Bold", "Italics", "Normal"],
+        style_field = ttk.Combobox(frame, state="readonly", values=["bold", "italic", "normal"],
                                    textvariable=style_variable,
                                    width=f_width - 5, font=font)
         style_field.grid(row=row + 2, column=1)

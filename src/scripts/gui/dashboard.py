@@ -16,12 +16,12 @@ from scripts.gui.views import Views
 class Dashboard(tk.Frame):
     def __init__(self, user=None, master=None):
         super().__init__(master)
-        # Set styles
-        self.configure_styles()
-
         # Load the configuration
         self._config = configparser.ConfigParser()
         self._config.read('../../config/config.ini')
+
+        # Set styles
+        self.configure_styles()
 
         # Create a ribbon frame below the tabs
         ribbon_frame = ttk.Frame(self)
@@ -118,6 +118,8 @@ class Dashboard(tk.Frame):
 
             if _dialog.theme == 'auto':
                 self.update_theme(darkdetect.isDark())
+        # Set styles
+        self.configure_styles()
 
     def _logout(self):
         if messagebox.askokcancel("Confirm Logout", "Do you want to logout?"):
@@ -216,25 +218,52 @@ class Dashboard(tk.Frame):
         with open('../../config/config.ini', 'w') as configfile:
             self._config.write(configfile)
 
-    @staticmethod
-    def configure_styles():
+    def configure_styles(self):
         # Create a style
         style = ttk.Style()
 
-        # Configure the font style for Button
-        style.configure('TButton', font=('Helvetica', 10, 'normal'))
+        # Define default font settings
+        default_font_settings = {
+            'button_family': 'Helvetica',
+            'button_size': '10',
+            'button_style': 'normal',
+            'label_family': 'Helvetica',
+            'label_size': '11',
+            'label_style': 'normal',
+            'tree_family': 'Helvetica',
+            'tree_size': '10',
+            'tree_style': 'normal',
+            'heading_family': 'Helvetica',
+            'heading_size': '10',
+            'heading_style': 'bold',
+            'tab_family': 'Helvetica',
+            'tab_size': '10',
+            'tab_style': 'normal'
+        }
 
-        # Configure the font style for TCheckbutton
+        # Get the font settings from the config file or use default values
+        # We use a dictionary comprehension to iterate over each setting in default_font_settings
+        # For each setting, we check if it exists in the config file
+        # If it does, we get its value from the config file
+        # If it doesn't, we use the default value from default_font_settings
+        font_settings = {
+            setting: self._config.get('Font', setting) if self._config.has_option('Font', setting) else
+            default_font_settings[
+                setting]
+            for setting in default_font_settings
+        }
+
+        # Configure the font styles
+        # For each widget type, we get the font family, size, and style from font_settings
+        # We then use these values to configure the style for that widget type
+        style.configure('TButton', font=(
+            font_settings['button_family'], font_settings['button_size'], font_settings['button_style']))
         style.configure('TCheckbutton', font=('Helvetica', 10, 'normal'))
-
-        # Configure the font style for Label
-        style.configure('TLabel', font=('Helvetica', 11, 'normal'))
-
-        # Configure the font style for Treeview (table)
-        style.configure('Treeview', font=('Helvetica', 10, 'normal'))
-
-        # Configure the font style for Treeview (table) headings
-        style.configure('Treeview.Heading', font=("Helvetica", 10, "bold"))
-
-        # Configure the font style for Notebook (tabs)
-        style.configure('TNotebook.Tab', focuscolor='', font=('Helvetica', 10, 'normal'))
+        style.configure('TLabel',
+                        font=(font_settings['label_family'], font_settings['label_size'], font_settings['label_style']))
+        style.configure('Treeview', font=(
+            font_settings['tree_family'], font_settings['tree_size'], font_settings['tree_style']))
+        style.configure('Treeview.Heading', font=(
+            font_settings['heading_family'], font_settings['heading_size'], font_settings['heading_style']))
+        style.configure('TNotebook.Tab', focuscolor='',
+                        font=(font_settings['tab_family'], font_settings['tab_size'], font_settings['tab_style']))

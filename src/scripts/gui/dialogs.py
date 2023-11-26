@@ -13,6 +13,23 @@ db_manager = DatabaseManager()  # create an instance of DatabaseManager
 class Dialog(tk.Toplevel):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
+        self.original_values = None
+        self._theme_var = None
+        self._button_family_var = None
+        self._button_size_var = None
+        self._button_style_var = None
+        self._label_family_var = None
+        self._label_size_var = None
+        self._label_style_var = None
+        self._tree_family_var = None
+        self._tree_size_var = None
+        self._tree_style_var = None
+        self._heading_family_var = None
+        self._heading_size_var = None
+        self._heading_style_var = None
+        self._tab_family_var = None
+        self._tab_size_var = None
+        self._tab_style_var = None
         self._size_field = None
         self._family_field = None
         self._theme_field = None
@@ -429,31 +446,33 @@ class Dialog(tk.Toplevel):
         # Add the frame to the canvas
         canvas.create_window((0, 0), window=frame, anchor="nw")
 
-        def create_string_vars(*args):
-            return {arg: tk.StringVar() for arg in args}
+        # Theme
+        self._theme_var = tk.StringVar()
 
-        variables = create_string_vars('theme_var', 'button_family_var', 'button_size_var', 'button_style_var',
-                                       'label_family_var', 'label_size_var', 'label_style_var', 'tree_family_var',
-                                       'tree_size_var', 'tree_style_var', 'heading_family_var', 'heading_size_var',
-                                       'heading_style_var', 'tab_family_var', 'tab_size_var', 'tab_style_var')
+        # Variables for Buttons
+        self._button_family_var = tk.StringVar()
+        self._button_size_var = tk.StringVar()
+        self._button_style_var = tk.StringVar()
 
-        # Now you can access your variables like this:
-        theme_var = variables['theme_var']
-        button_family_var = variables['button_family_var']
-        button_size_var = variables['button_size_var']
-        button_style_var = variables['button_style_var']
-        label_family_var = variables['label_family_var']
-        label_size_var = variables['label_size_var']
-        label_style_var = variables['label_style_var']
-        tree_family_var = variables['tree_family_var']
-        tree_size_var = variables['tree_size_var']
-        tree_style_var = variables['tree_style_var']
-        heading_family_var = variables['heading_family_var']
-        heading_size_var = variables['heading_size_var']
-        heading_style_var = variables['heading_style_var']
-        tab_family_var = variables['tab_family_var']
-        tab_size_var = variables['tab_size_var']
-        tab_style_var = variables['tab_style_var']
+        # Variables for Labels
+        self._label_family_var = tk.StringVar()
+        self._label_size_var = tk.StringVar()
+        self._label_style_var = tk.StringVar()
+
+        # Variables for Treeview
+        self._tree_family_var = tk.StringVar()
+        self._tree_size_var = tk.StringVar()
+        self._tree_style_var = tk.StringVar()
+
+        # Variables for Treeview Headings
+        self._heading_family_var = tk.StringVar()
+        self._heading_size_var = tk.StringVar()
+        self._heading_style_var = tk.StringVar()
+
+        # Variables for Notebook Tabs
+        self._tab_family_var = tk.StringVar()
+        self._tab_size_var = tk.StringVar()
+        self._tab_style_var = tk.StringVar()
 
         # Check if the theme is set in the config file
         if config.has_section('Theme') and config.has_option('Theme', 'theme'):
@@ -464,98 +483,150 @@ class Dialog(tk.Toplevel):
             else:
                 theme = "Manual"
             # Set the default value
-            theme_var.set(theme)
+            self._theme_var.set(theme)
         else:
-            theme_var.set("Manual")
+            self._theme_var.set("Manual")
 
         ttk.Label(frame, text="App Theme", width=self._l_width + 3, anchor="w").grid(row=0, column=0,
                                                                                      pady=self._y_padding)
         self._theme_field = ttk.Combobox(frame, state="readonly", values=["Manual", "Use system settings"],
-                                         textvariable=theme_var,
-                                         width=self._f_width - 1,
+                                         textvariable=self._theme_var,
+                                         width=self._f_width + 2,
                                          font=('Helvetica', 10, 'normal'))
         self._theme_field.grid(row=0, column=1, pady=self._y_padding)
 
-        # Monitor changes to the theme field and update the config file accordingly
-        def update_theme_config(*args):
-            if theme_var.get() != "Manual":
-                self._theme = "auto"
-            else:
-                current_theme = sv_ttk.get_theme()
-                self._theme = current_theme
-
-        def get_font_config(_config, section, option, default):
-            if _config.has_section(section) and _config.has_option(section, option):
-                return _config.get(section, option)
+        def get_font_config(section, option, default):
+            if config.has_section(section) and config.has_option(section, option):
+                return config.get(section, option)
             else:
                 return default
 
         # Set the default values
-        button_family_var.set(get_font_config(config, 'Font', 'button_family', 'Helvetica'))
-        button_size_var.set(get_font_config(config, 'Font', 'button_size', 10))
-        button_style_var.set(get_font_config(config, 'Font', 'button_style', 'Normal'))
-        label_family_var.set(get_font_config(config, 'Font', 'label_family', 'Helvetica'))
-        label_size_var.set(get_font_config(config, 'Font', 'label_size', 11))
-        label_style_var.set(get_font_config(config, 'Font', 'label_style', 'Normal'))
-        tree_family_var.set(get_font_config(config, 'Font', 'tree_family', 'Helvetica'))
-        tree_size_var.set(get_font_config(config, 'Font', 'tree_size', 10))
-        tree_style_var.set(get_font_config(config, 'Font', 'tree_style', 'Normal'))
-        heading_family_var.set(get_font_config(config, 'Font', 'heading_family', 'Helvetica'))
-        heading_size_var.set(get_font_config(config, 'Font', 'heading_size', 10))
-        heading_style_var.set(get_font_config(config, 'Font', 'heading_style', 'Normal'))
-        tab_family_var.set(get_font_config(config, 'Font', 'tab_family', 'Helvetica'))
-        tab_size_var.set(get_font_config(config, 'Font', 'tab_size', 10))
-        tab_style_var.set(get_font_config(config, 'Font', 'tab_style', 'Normal'))
+        self._button_family_var.set(get_font_config('Font', 'button_family', "Helvetica"))
+        self._button_size_var.set(get_font_config('Font', 'button_size', "10"))
+        self._button_style_var.set(get_font_config('Font', 'button_style', "normal"))
+        self._label_family_var.set(get_font_config('Font', 'label_family', "Helvetica"))
+        self._label_size_var.set(get_font_config('Font', 'label_size', "11"))
+        self._label_style_var.set(get_font_config('Font', 'label_style', "normal"))
+        self._tree_family_var.set(get_font_config('Font', 'tree_family', "Helvetica"))
+        self._tree_size_var.set(get_font_config('Font', 'tree_size', "10"))
+        self._tree_style_var.set(get_font_config('Font', 'tree_style', "normal"))
+        self._heading_family_var.set(get_font_config('Font', 'heading_family', "Helvetica"))
+        self._heading_size_var.set(get_font_config('Font', 'heading_size', "10"))
+        self._heading_style_var.set(get_font_config('Font', 'heading_style', "normal"))
+        self._tab_family_var.set(get_font_config('Font', 'tab_family', "Helvetica"))
+        self._tab_size_var.set(get_font_config('Font', 'tab_size', "10"))
+        self._tab_style_var.set(get_font_config('Font', 'tab_style', "normal"))
+
+        self.original_values = {
+            'theme': self._theme_var.get(),
+            'button_family': self._button_family_var.get(),
+            'button_size': self._button_size_var.get(),
+            'button_style': self._button_style_var.get(),
+            'label_family': self._label_family_var.get(),
+            'label_size': self._label_size_var.get(),
+            'label_style': self._label_style_var.get(),
+            'tree_family': self._tree_family_var.get(),
+            'tree_size': self._tree_size_var.get(),
+            'tree_style': self._tree_style_var.get(),
+            'heading_family': self._heading_family_var.get(),
+            'heading_size': self._heading_size_var.get(),
+            'heading_style': self._heading_style_var.get(),
+            'tab_family': self._tab_family_var.get(),
+            'tab_size': self._tab_size_var.get(),
+            'tab_style': self._tab_style_var.get(),
+        }
 
         ttk.Separator(frame, orient="horizontal").grid(row=1, column=0, columnspan=3, sticky="ew")
         ttk.Label(frame, text=" Customize Fonts", width=self._l_width + 5, anchor="w",
                   font=('Helvetica', 11, 'bold')).grid(row=1, column=0, columnspan=3)
 
         self._helpers.create_label_and_field_setting(frame, "Buttons", 2,
-                                                     button_family_var, button_style_var, button_size_var)
+                                                     self._button_family_var, self._button_style_var,
+                                                     self._button_size_var)
 
         self._helpers.create_label_and_field_setting(frame, "Labels", 6,
-                                                     label_family_var, label_style_var, label_size_var)
+                                                     self._label_family_var, self._label_style_var,
+                                                     self._label_size_var)
 
         self._helpers.create_label_and_field_setting(frame, "Table rows", 10,
-                                                     tree_family_var, tree_style_var, tree_size_var)
+                                                     self._tree_family_var, self._tree_style_var, self._tree_size_var)
 
         self._helpers.create_label_and_field_setting(frame, "Table Headings", 14,
-                                                     heading_family_var, heading_style_var, heading_size_var)
+                                                     self._heading_family_var, self._heading_style_var,
+                                                     self._heading_size_var)
 
         self._helpers.create_label_and_field_setting(frame, "Tabs", 18,
-                                                     tab_family_var, tab_style_var, tab_size_var)
+                                                     self._tab_family_var, self._tab_style_var, self._tab_size_var)
 
-        # Monitor changes to the theme field and update the config file accordingly
         def update_config(*args):
-            print("Value changed")
+            if self._theme_var.get() != "Manual":
+                self._theme = "auto"
+            else:
+                current_theme = sv_ttk.get_theme()
+                self._theme = current_theme
 
-        # Call update_config when the theme value changes
-        theme_var.trace('w', update_theme_config)
-        button_family_var.trace('w', update_config)
-        button_size_var.trace('w', update_config)
-        button_style_var.trace('w', update_config)
-        label_family_var.trace('w', update_config)
-        label_size_var.trace('w', update_config)
-        label_style_var.trace('w', update_config)
-        tree_family_var.trace('w', update_config)
-        tree_size_var.trace('w', update_config)
-        tree_style_var.trace('w', update_config)
-        heading_family_var.trace('w', update_config)
-        heading_size_var.trace('w', update_config)
-        heading_style_var.trace('w', update_config)
-        tab_family_var.trace('w', update_config)
-        tab_size_var.trace('w', update_config)
-        tab_style_var.trace('w', update_config)
+            # Check if the 'Theme' section exists, if not create it
+            if not config.has_section('Theme'):
+                config.add_section('Theme')
+
+            # Update the config file
+            config.set('Theme', 'theme', self._theme)
+
+            # List of all font settings
+            font_settings = ['button_family', 'button_size', 'button_style', 'label_family', 'label_size',
+                             'label_style', 'tree_family', 'tree_size', 'tree_style', 'heading_family', 'heading_size',
+                             'heading_style', 'tab_family', 'tab_size', 'tab_style']
+
+            # Check if the 'Font' section exists, if not create it
+            if not config.has_section('Font'):
+                config.add_section('Font')
+
+            # Loop through all font settings and update the config file
+            for setting in font_settings:
+                config.set('Font', setting, getattr(self, f'_{setting}_var').get())
+
+            self.destroy()
 
         # Submit and Cancel buttons
         button_frame = ttk.Frame(frame, padding=[0, 20])
         button_frame.grid(row=23, column=0, columnspan=3)
 
         # Create the buttons
-        button = ttk.Button(button_frame, text="Apply Changes", command=None, style='TButton', cursor="hand2",
-                            takefocus=False)
+        button = ttk.Button(button_frame, text="Apply Changes", command=update_config, style='TButton', cursor="hand2",
+                            takefocus=False, state='disabled')
         button.pack(side="left", anchor='center')
+
+        # Monitor changes to the theme field and update the button state
+        def check_config(*args):
+            # Check if any values have changed
+            for key, original_value in self.original_values.items():
+                current_value = getattr(self, f'_{key}_var').get()
+                if original_value != current_value:
+                    # Enable the "Apply Changes" button
+                    button['state'] = 'normal'
+                    return
+
+            # If no values have changed, disable the "Apply Changes" button
+            button['state'] = 'disabled'
+
+        # Call update_config when the theme value changes
+        self._theme_var.trace('w', check_config)
+        self._button_family_var.trace('w', check_config)
+        self._button_size_var.trace('w', check_config)
+        self._button_style_var.trace('w', check_config)
+        self._label_family_var.trace('w', check_config)
+        self._label_size_var.trace('w', check_config)
+        self._label_style_var.trace('w', check_config)
+        self._tree_family_var.trace('w', check_config)
+        self._tree_size_var.trace('w', check_config)
+        self._tree_style_var.trace('w', check_config)
+        self._heading_family_var.trace('w', check_config)
+        self._heading_size_var.trace('w', check_config)
+        self._heading_style_var.trace('w', check_config)
+        self._tab_family_var.trace('w', check_config)
+        self._tab_size_var.trace('w', check_config)
+        self._tab_style_var.trace('w', check_config)
 
         self._theme_field.focus_set()  # Make the entry field focused
 
