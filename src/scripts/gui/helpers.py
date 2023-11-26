@@ -544,7 +544,7 @@ class Helpers:
                     raise ValueError(f"Unknown validation type for {field_name}.")
             except ValueError as e:
                 # If validation fails, show an error message and return
-                tk.messagebox.showerror("Error", f"{field_name}: {e}")
+                tk.messagebox.showerror("Error", f"{field_name} {e}")
                 return
             except Exception as e:
                 # Handle any unexpected errors

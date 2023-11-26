@@ -159,7 +159,7 @@ class DatabaseManager:
         self.cursor.execute(f"""SELECT * FROM staff WHERE position = 'Director' ORDER BY name""")
         return self.cursor.fetchall()
 
-    def get_administrator(self):
+    def get_administrators(self):
         self.cursor.execute(f"""SELECT * FROM staff WHERE position = 'Administrator' ORDER BY name""")
         return self.cursor.fetchall()
 
@@ -594,7 +594,7 @@ class DatabaseManager:
 
             # Delete record
             self.cursor.execute(f"""DELETE FROM module_details WHERE student_id = {student_id} 
-                            AND module_code = '{module_code}' AND semester = {semester}""")
+                            AND module_code = '{module_code}' AND semester = {semester} AND year = '{year}'""")
 
             # Commit changes
             self.conn.commit()

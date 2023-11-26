@@ -351,7 +351,7 @@ class Views(ttk.Frame):
 
         if dialog_type == "student":
             def submit_action():
-                self._helpers.validate({"ID": (id_field, "int"),
+                self._helpers.validate({"ID Number": (id_field, "int"),
                                         "Full Name": (name_field, "str"),
                                         "Email": (email_field, "email"),
                                         "School": (school_field, "str"),
@@ -382,7 +382,7 @@ class Views(ttk.Frame):
         elif dialog_type == "details":
             def submit_action():
                 self._helpers.validate({
-                    "ID": (id_field, "int"),
+                    "ID Number": (id_field, "int"),
                     "Module": (module_field, "str"),
                     "GPA": (gpa_field, "float"),
                     "Semester": (semester_field, "int"),
@@ -399,7 +399,7 @@ class Views(ttk.Frame):
         elif dialog_type == "staff":
             def submit_action():
                 self._helpers.validate({
-                    "ID": (id_field, "int"),
+                    "ID Number": (id_field, "int"),
                     "Name": (name_field, "str"),
                     "Email": (email_field, "email"),
                     "Position": (position_field, "str"),
@@ -645,7 +645,7 @@ class Views(ttk.Frame):
 
     # Add functions
     def _add_student_to_db(self, validated_fields):
-        return self._add_to_db(db_manager.insert_student, (validated_fields["ID"], validated_fields["Full Name"],
+        return self._add_to_db(db_manager.insert_student, (validated_fields["ID Number"], validated_fields["Full Name"],
                                                            validated_fields["Email"], validated_fields["School"],
                                                            validated_fields["Programme"], validated_fields["Advisor"]),
                                "Student record added successfully.",
@@ -659,14 +659,14 @@ class Views(ttk.Frame):
                                "Failed to add module record.")
 
     def _add_detail_to_db(self, validated_fields):
-        return self._add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module"],
+        return self._add_to_db(db_manager.insert_detail, (validated_fields["ID Number"], validated_fields["Module"],
                                                           validated_fields["GPA"], validated_fields["Semester"],
                                                           validated_fields["Year"]),
                                "Detail record added successfully.",
                                "Failed to add detail record.")
 
     def _add_staff_to_db(self, validated_fields):
-        return self._add_to_db(db_manager.insert_staff, (validated_fields["ID"], validated_fields["Name"],
+        return self._add_to_db(db_manager.insert_staff, (validated_fields["ID Number"], validated_fields["Name"],
                                                          validated_fields["Email"], validated_fields["Position"],
                                                          validated_fields["Username"], validated_fields["Password"]),
                                "Staff record added successfully.",
@@ -693,7 +693,7 @@ class Views(ttk.Frame):
 
     # Update functions
     def _update_student_in_db(self, validated_fields):
-        return self._update_in_db((validated_fields["ID"], validated_fields["Full Name"],
+        return self._update_in_db((validated_fields["ID Number"], validated_fields["Full Name"],
                                    validated_fields["Email"], validated_fields["School"],
                                    validated_fields["Programme"], validated_fields["Advisor"]),
                                   "student",
@@ -701,7 +701,7 @@ class Views(ttk.Frame):
                                   "Failed to update student record.")
 
     def _update_detail_in_db(self, validated_fields):
-        return self._update_in_db((validated_fields["ID"], validated_fields["Module"],
+        return self._update_in_db((validated_fields["ID Number"], validated_fields["Module"],
                                    validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
                                   "details",
                                   "Module detail record updated successfully.",
@@ -715,7 +715,7 @@ class Views(ttk.Frame):
                                   "Failed to update module record.")
 
     def _update_staff_in_db(self, validated_fields):
-        return self._update_in_db((validated_fields["ID"], validated_fields["Name"],
+        return self._update_in_db((validated_fields["ID Number"], validated_fields["Name"],
                                    validated_fields["Email"], validated_fields["Position"],
                                    validated_fields["Username"], validated_fields["Password"]),
                                   "staff",

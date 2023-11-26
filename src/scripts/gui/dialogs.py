@@ -300,7 +300,7 @@ class Dialog(tk.Toplevel):
         ttk.Label(self.frame, text="Administrator", width=self._l_width, anchor="w").grid(row=4, column=0,
                                                                                           padx=self._x_padding,
                                                                                           pady=self._y_padding)
-        admin_list = db_manager.get_administrator()
+        admin_list = db_manager.get_administrators()
         admin_names = [admin[1] for admin in admin_list]
         admin_names.append('None')  # Append 'None' to the list
         admin_field = ttk.Combobox(self.frame, state="readonly", values=admin_names,
@@ -434,7 +434,7 @@ class Dialog(tk.Toplevel):
 
     def multi_input_dialog(self):
         # Initialize window properties
-        self.initialize_properties("Input Required", 500, 350)
+        self.initialize_properties("Input Required", 500, 340)
 
         # Create the input frame
         frame = ttk.Frame(self)
