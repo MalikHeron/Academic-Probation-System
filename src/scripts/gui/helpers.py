@@ -491,6 +491,39 @@ class Helpers:
 
         return field
 
+    @staticmethod
+    def create_label_and_field_setting(frame, label_text, row,
+                                       family_variable=None, style_variable=None, size_variable=None, padx=(20, 0),
+                                       pady=10,
+                                       l_width=15, f_width=35, font=('Helvetica', 10, 'normal')):
+        ttk.Label(frame, text=label_text, width=l_width, anchor="w", font=('Helvetica', 11, 'normal')).grid(row=row,
+                                                                                                            column=0,
+                                                                                                            pady=pady)
+
+        # Family field
+        ttk.Label(frame, text="Family", width=l_width, anchor="w", font=font).grid(row=row + 1, column=0, pady=pady,
+                                                                                   padx=padx)
+        family_field = ttk.Combobox(frame, state="readonly",
+                                    values=["Arial", "Consolas", "Helvetica", "Times New Romans"],
+                                    textvariable=family_variable,
+                                    width=f_width - 5, font=font)
+        family_field.grid(row=row + 1, column=1)
+
+        # Style field
+        ttk.Label(frame, text="Style", width=l_width, anchor="w", font=font).grid(row=row + 2, column=0, pady=pady,
+                                                                                  padx=padx)
+        style_field = ttk.Combobox(frame, state="readonly", values=["Bold", "Italics", "Normal"],
+                                   textvariable=style_variable,
+                                   width=f_width - 5, font=font)
+        style_field.grid(row=row + 2, column=1)
+
+        # Size field
+        ttk.Label(frame, text="Size", width=l_width, anchor="w", font=font).grid(row=row + 3, column=0, pady=pady,
+                                                                                 padx=padx)
+        size_field = ttk.Spinbox(frame, state="readonly", from_=8, to=11,
+                                 textvariable=size_variable, width=f_width - 9, font=font)
+        size_field.grid(row=row + 3, column=1, pady=(pady, 10))
+
     # Helper functions
     @staticmethod
     def clear_fields(*fields):

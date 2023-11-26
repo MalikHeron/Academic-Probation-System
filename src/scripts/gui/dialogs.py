@@ -1,6 +1,6 @@
 import tkinter as tk
 from datetime import datetime
-from tkinter import messagebox, ttk
+from tkinter import ttk
 
 import sv_ttk
 
@@ -13,6 +13,8 @@ db_manager = DatabaseManager()  # create an instance of DatabaseManager
 class Dialog(tk.Toplevel):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
+        self._size_field = None
+        self._family_field = None
         self._theme_field = None
         self._theme = None
         self._first_focus = None
@@ -401,11 +403,57 @@ class Dialog(tk.Toplevel):
 
     def settings_dialog(self, config):
         # Initialize window properties
-        self.initialize_properties("Settings", 500, 250)
+        self.initialize_properties("Settings", 550, 600)
+
+        # Create the canvas
+        canvas = tk.Canvas(self, highlightthickness=0)
+        canvas.pack(side="left", fill="both", expand=True)
+
+        # Add a scrollbar
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scrollbar.pack(side="right", fill="y")
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        # Make the canvas scrollable
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
 
         # Create the input frame
-        frame = ttk.Frame(self)
-        frame.grid(row=0, column=1, sticky="nsew")
+        frame = ttk.Frame(canvas, padding=[30, 0])
+
+        # Add the frame to the canvas
+        canvas.create_window((0, 0), window=frame, anchor="nw")
+
+        def create_string_vars(*args):
+            return {arg: tk.StringVar() for arg in args}
+
+        variables = create_string_vars('theme_var', 'button_family_var', 'button_size_var', 'button_style_var',
+                                       'label_family_var', 'label_size_var', 'label_style_var', 'tree_family_var',
+                                       'tree_size_var', 'tree_style_var', 'heading_family_var', 'heading_size_var',
+                                       'heading_style_var', 'tab_family_var', 'tab_size_var', 'tab_style_var')
+
+        # Now you can access your variables like this:
+        theme_var = variables['theme_var']
+        button_family_var = variables['button_family_var']
+        button_size_var = variables['button_size_var']
+        button_style_var = variables['button_style_var']
+        label_family_var = variables['label_family_var']
+        label_size_var = variables['label_size_var']
+        label_style_var = variables['label_style_var']
+        tree_family_var = variables['tree_family_var']
+        tree_size_var = variables['tree_size_var']
+        tree_style_var = variables['tree_style_var']
+        heading_family_var = variables['heading_family_var']
+        heading_size_var = variables['heading_size_var']
+        heading_style_var = variables['heading_style_var']
+        tab_family_var = variables['tab_family_var']
+        tab_size_var = variables['tab_size_var']
+        tab_style_var = variables['tab_style_var']
 
         # Check if the theme is set in the config file
         if config.has_section('Theme') and config.has_option('Theme', 'theme'):
@@ -415,34 +463,101 @@ class Dialog(tk.Toplevel):
                 theme = "Use system settings"
             else:
                 theme = "Manual"
-
-            ttk.Label(frame, text="App Theme", width=self._l_width + 2, anchor="w").grid(row=0, column=0,
-                                                                                         padx=self._x_padding,
-                                                                                         pady=self._y_padding)
-            theme_var = tk.StringVar()
             # Set the default value
             theme_var.set(theme)
-            self._theme_field = ttk.Combobox(frame, state="readonly", values=["Manual", "Use system settings"],
-                                             textvariable=theme_var,
-                                             width=self._f_width - 5,
-                                             font=('Helvetica', 11, 'normal'))
-            self._theme_field.grid(row=0, column=1)
-
-            # Monitor changes to the theme field and update the config file accordingly
-            def update_config(*args):
-                if theme_var.get() != "Manual":
-                    self._theme = "auto"
-                else:
-                    current_theme = sv_ttk.get_theme()
-                    self._theme = current_theme
-
-            theme_var.trace('w', update_config)  # Call update_config when the theme value changes
-            # Give focus to the theme field
-            self._theme_field.focus_set()
         else:
-            # Show error message and close the window
-            tk.messagebox.showerror("Error", "Config file not found.")
-            self.destroy()
+            theme_var.set("Manual")
+
+        ttk.Label(frame, text="App Theme", width=self._l_width + 3, anchor="w").grid(row=0, column=0,
+                                                                                     pady=self._y_padding)
+        self._theme_field = ttk.Combobox(frame, state="readonly", values=["Manual", "Use system settings"],
+                                         textvariable=theme_var,
+                                         width=self._f_width - 1,
+                                         font=('Helvetica', 10, 'normal'))
+        self._theme_field.grid(row=0, column=1, pady=self._y_padding)
+
+        # Monitor changes to the theme field and update the config file accordingly
+        def update_theme_config(*args):
+            if theme_var.get() != "Manual":
+                self._theme = "auto"
+            else:
+                current_theme = sv_ttk.get_theme()
+                self._theme = current_theme
+
+        def get_font_config(_config, section, option, default):
+            if _config.has_section(section) and _config.has_option(section, option):
+                return _config.get(section, option)
+            else:
+                return default
+
+        # Set the default values
+        button_family_var.set(get_font_config(config, 'Font', 'button_family', 'Helvetica'))
+        button_size_var.set(get_font_config(config, 'Font', 'button_size', 10))
+        button_style_var.set(get_font_config(config, 'Font', 'button_style', 'Normal'))
+        label_family_var.set(get_font_config(config, 'Font', 'label_family', 'Helvetica'))
+        label_size_var.set(get_font_config(config, 'Font', 'label_size', 11))
+        label_style_var.set(get_font_config(config, 'Font', 'label_style', 'Normal'))
+        tree_family_var.set(get_font_config(config, 'Font', 'tree_family', 'Helvetica'))
+        tree_size_var.set(get_font_config(config, 'Font', 'tree_size', 10))
+        tree_style_var.set(get_font_config(config, 'Font', 'tree_style', 'Normal'))
+        heading_family_var.set(get_font_config(config, 'Font', 'heading_family', 'Helvetica'))
+        heading_size_var.set(get_font_config(config, 'Font', 'heading_size', 10))
+        heading_style_var.set(get_font_config(config, 'Font', 'heading_style', 'Normal'))
+        tab_family_var.set(get_font_config(config, 'Font', 'tab_family', 'Helvetica'))
+        tab_size_var.set(get_font_config(config, 'Font', 'tab_size', 10))
+        tab_style_var.set(get_font_config(config, 'Font', 'tab_style', 'Normal'))
+
+        ttk.Separator(frame, orient="horizontal").grid(row=1, column=0, columnspan=3, sticky="ew")
+        ttk.Label(frame, text=" Customize Fonts", width=self._l_width + 5, anchor="w",
+                  font=('Helvetica', 11, 'bold')).grid(row=1, column=0, columnspan=3)
+
+        self._helpers.create_label_and_field_setting(frame, "Buttons", 2,
+                                                     button_family_var, button_style_var, button_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Labels", 6,
+                                                     label_family_var, label_style_var, label_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Table rows", 10,
+                                                     tree_family_var, tree_style_var, tree_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Table Headings", 14,
+                                                     heading_family_var, heading_style_var, heading_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Tabs", 18,
+                                                     tab_family_var, tab_style_var, tab_size_var)
+
+        # Monitor changes to the theme field and update the config file accordingly
+        def update_config(*args):
+            print("Value changed")
+
+        # Call update_config when the theme value changes
+        theme_var.trace('w', update_theme_config)
+        button_family_var.trace('w', update_config)
+        button_size_var.trace('w', update_config)
+        button_style_var.trace('w', update_config)
+        label_family_var.trace('w', update_config)
+        label_size_var.trace('w', update_config)
+        label_style_var.trace('w', update_config)
+        tree_family_var.trace('w', update_config)
+        tree_size_var.trace('w', update_config)
+        tree_style_var.trace('w', update_config)
+        heading_family_var.trace('w', update_config)
+        heading_size_var.trace('w', update_config)
+        heading_style_var.trace('w', update_config)
+        tab_family_var.trace('w', update_config)
+        tab_size_var.trace('w', update_config)
+        tab_style_var.trace('w', update_config)
+
+        # Submit and Cancel buttons
+        button_frame = ttk.Frame(frame, padding=[0, 20])
+        button_frame.grid(row=23, column=0, columnspan=3)
+
+        # Create the buttons
+        button = ttk.Button(button_frame, text="Apply Changes", command=None, style='TButton', cursor="hand2",
+                            takefocus=False)
+        button.pack(side="left", anchor='center')
+
+        self._theme_field.focus_set()  # Make the entry field focused
 
     def single_input_dialog(self, text, get_func, get_id):
         # Initialize window properties

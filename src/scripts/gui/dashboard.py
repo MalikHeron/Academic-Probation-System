@@ -16,6 +16,9 @@ from scripts.gui.views import Views
 class Dashboard(tk.Frame):
     def __init__(self, user=None, master=None):
         super().__init__(master)
+        # Set styles
+        self.configure_styles()
+
         # Load the configuration
         self._config = configparser.ConfigParser()
         self._config.read('../../config/config.ini')
@@ -150,6 +153,8 @@ class Dashboard(tk.Frame):
         self.after(100, self._update_time)
 
     def set_theme(self):
+        # Set styles
+        self.configure_styles()
         # Check if the theme is set in the config file
         if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
             theme = self._config.get('Theme', 'theme')
@@ -166,6 +171,7 @@ class Dashboard(tk.Frame):
         else:
             # Create a style
             sv_ttk.use_light_theme()
+            self.configure_styles()
 
     def update_theme(self, is_dark):
         # Check if the theme is set in the config file
@@ -181,20 +187,18 @@ class Dashboard(tk.Frame):
             self.after(1000, self.update_theme, darkdetect.isDark())
 
     def set_dark_theme(self):
-        # Set styles
-        self.configure_styles()
         self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
         self._logout_button.config(image=self._dark_logout_icon)
         self._settings_button.config(image=self._dark_settings_icon)
         sv_ttk.use_dark_theme()
+        self.configure_styles()
 
     def set_light_theme(self):
-        # Set styles
-        self.configure_styles()
         self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
         self._logout_button.config(image=self._light_logout_icon)
         self._settings_button.config(image=self._light_settings_icon)
         sv_ttk.use_light_theme()
+        self.configure_styles()
 
     def switch_theme(self):
         # Get the current theme
@@ -221,7 +225,6 @@ class Dashboard(tk.Frame):
         style.configure('TButton', font=('Helvetica', 10, 'normal'))
 
         # Configure the font style for TCheckbutton
-        style = ttk.Style()
         style.configure('TCheckbutton', font=('Helvetica', 10, 'normal'))
 
         # Configure the font style for Label
