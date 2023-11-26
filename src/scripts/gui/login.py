@@ -37,6 +37,7 @@ class Login(tk.Frame):
         self._username_entry.bind('<FocusIn>', self._clear_username)
         self._username_entry.bind('<FocusOut>', self._fill_username)
         self._username_entry.place(relx=0.51, rely=0.55, anchor='center')
+        self._username_entry.focus()
 
         # Create password label and entry
         self._password_entry = ttk.Entry(self.form_frame, width=35, font=('Helvetica', 11, 'normal'))
