@@ -1,5 +1,6 @@
 import sys
 import tkinter as tk
+import math
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -23,13 +24,14 @@ class AcademicProbationSystem(tk.Tk):
         self.title('Academic Probation System')
         self.iconbitmap('../../res/icon.ico')
 
-        # Set window size
-        self._window_width = 1330
-        self._window_height = 820
-
         # Get screen width and height
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
+
+        # # Set window size
+        self._window_height = math.floor(screen_height*0.8)
+        self._window_width = math.floor(screen_width*0.8)
+
 
         # Calculate position
         position_top = int(screen_height / 2 - self._window_height / 2)
@@ -37,7 +39,7 @@ class AcademicProbationSystem(tk.Tk):
 
         # Set window size and position
         self.geometry(f"{self._window_width}x{self._window_height}+{position_right}+{position_top}")
-        self.resizable(False, False)
+        # self.resizable(False, False)
 
         # window close event
         self.protocol("WM_DELETE_WINDOW", self._on_closing)

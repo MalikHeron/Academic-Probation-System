@@ -18,26 +18,32 @@ class Login(tk.Frame):
         sv_ttk.use_dark_theme()
 
         # background image
-        img = Image.open("../../res/login-background.png").resize((1350, 893))
-        self._background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
+        self.img = Image.open("../../res/login-background.png").resize((1350, 893))
+        self._background_image = ImageTk.PhotoImage(self.img)  # Keep a reference to the image object
+
+        # Create a copy of img to later be resized
+        self.img_copy = self.img.copy()
 
         # Create form frame
-        form_frame = ttk.Label(self, image=self._background_image)
-        form_frame.pack(side="bottom", fill="both", expand=True)
+        self.form_frame = ttk.Label(self, image=self._background_image)
+        self.form_frame.pack(side="bottom", fill="both", expand=True)
+
+        # Bind the frame and the function to resize background
+        self.form_frame.bind('<Configure>',self._resize_background)
 
         # Create username label and entry
-        self._username_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self._username_entry = ttk.Entry(self.form_frame, width=35, font=('Helvetica', 11, 'normal'))
         self._username_entry.insert(0, 'Username')
         self._username_entry.bind('<FocusIn>', self._clear_username)
         self._username_entry.bind('<FocusOut>', self._fill_username)
-        self._username_entry.place(relx=0.51, rely=0.58, anchor='center')
+        self._username_entry.place(relx=0.51, rely=0.55, anchor='center')
 
         # Create password label and entry
-        self._password_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self._password_entry = ttk.Entry(self.form_frame, width=35, font=('Helvetica', 11, 'normal'))
         self._password_entry.insert(0, 'Password')
         self._password_entry.bind('<FocusIn>', self._clear_password)
         self._password_entry.bind('<FocusOut>', self._fill_password)
-        self._password_entry.place(relx=0.51, rely=0.66, anchor='center')
+        self._password_entry.place(relx=0.51, rely=0.63, anchor='center')
 
         # remember_me = tk.IntVar()
         # remember_me_check = ttk.Checkbutton(form_frame, text='Remember me', variable=remember_me)
@@ -47,15 +53,30 @@ class Login(tk.Frame):
         style.configure('Custom.TButton', font=('Helvetica', 11, 'normal'))
 
         # Create login button
-        login_button = ttk.Button(form_frame, text='Login', width=15, command=self._check_credentials,
+        login_button = ttk.Button(self.form_frame, text='Login', width=15, command=self._check_credentials,
                                   style='Custom.TButton', cursor='hand2')
-        login_button.place(relx=0.51, rely=0.74, anchor='center')
+        login_button.place(relx=0.51, rely=0.70, anchor='center')
 
         # Create forgot password link
-        forgot_password_link = ttk.Label(form_frame, text='Forgot password?', cursor='hand2',
+        forgot_password_link = ttk.Label(self.form_frame, text='Forgot password?', cursor='hand2',
                                          font=('Helvetica', 10, 'normal', 'underline'))
-        forgot_password_link.place(relx=0.51, rely=0.80, anchor='center')
+        forgot_password_link.place(relx=0.51, rely=0.76, anchor='center')
         forgot_password_link.bind("<Button-1>", self.__forgot_password)
+
+    def _resize_background(self, event):
+
+        # Get new height and width from the resize event
+        new_height = event.height
+        new_width = event.width
+
+        # Resize image based on new dimensions
+        self.img = self.img_copy.resize((new_width, new_height))
+
+        # Define new image
+        self._background_image = ImageTk.PhotoImage(self.img)
+
+        # Change image in the frame
+        self.form_frame.configure(image=self._background_image)
 
     def _clear_username(self, event):
         if self._username_entry.get() == 'Username':
