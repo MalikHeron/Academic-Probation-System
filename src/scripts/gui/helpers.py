@@ -245,6 +245,34 @@ class Helpers:
         # Pack the Treeview into the new frame
         gpa_tree.pack(padx=pad)
 
+        # Create a clear button
+        clear_button = ttk.Button(report_frame, text="Clear", state="disabled", cursor="hand2", takefocus=False)
+
+        # Function to clear the table
+        def clear_table():
+            if messagebox.askokcancel("Confirm", "Are you sure you want to clear the table?"):
+                # Clear the tree
+                gpa_tree.delete(*gpa_tree.get_children())
+
+        # Update clear button state based on treeview selection
+        def update_clear_button():
+            if len(gpa_tree.get_children()) > 0:
+                clear_button.config(state="normal")
+            else:
+                clear_button.config(state="disabled")
+
+            # Call this function again after 100 milliseconds to keep the clear button updated
+            gpa_tree.after(100, update_clear_button)
+
+        # Call the function once to start the loop
+        update_clear_button()
+
+        # Set the command of the delete button to the delete_file function
+        clear_button.config(command=clear_table)
+
+        # Pack the delete button into the pdf_frame
+        clear_button.pack(padx=pad, pady=(10, 0))
+
         # Create another frame inside the canvas
         pdf_frame = ttk.Frame(canvas, takefocus=False)
 

@@ -1,3 +1,4 @@
+import configparser
 import time
 import tkinter as tk
 from datetime import datetime
@@ -16,8 +17,11 @@ class Dashboard(tk.Frame):
         # Set styles
         self.master.configure_styles()
 
-        # Create a style
-        sv_ttk.use_light_theme()
+        # darkdetect.isDark()
+
+        # Load the configuration
+        self._config = configparser.ConfigParser()
+        self._config.read('../../config/config.ini')
 
         # Create a ribbon frame below the tabs
         ribbon_frame = ttk.Frame(self)
@@ -28,18 +32,31 @@ class Dashboard(tk.Frame):
         self._light_theme_icon = tk.PhotoImage(file="../../res/switch-dark.png")
 
         # Load the icon and keep it in memory
-        self._dark_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
-        self._light_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
+        self._dark_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
+        self._light_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
+
+        # Load the icon and keep it in memory
+        self._dark_settings_icon = tk.PhotoImage(file="../../res/settings-dark.png")
+        self._light_settings_icon = tk.PhotoImage(file="../../res/settings-light.png")
 
         # Create a logout button with an icon
-        self._logout_button = ttk.Button(ribbon_frame, text="Logout", image=self._dark_logout_icon, compound=tk.LEFT,
+        self._logout_button = ttk.Button(ribbon_frame, text="Logout", image=self._light_logout_icon, compound=tk.LEFT,
                                          takefocus=False, cursor="hand2", command=self._logout)
         self._logout_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
+
+        # Create a theme switch button with an icon
+        self._settings_button = ttk.Button(ribbon_frame, text="Settings", image=self._light_settings_icon,
+                                           compound=tk.LEFT,
+                                           command=None, takefocus=False, cursor="hand2")
+        self._settings_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
         self._theme_button = ttk.Button(ribbon_frame, text="Dark Mode", image=self._dark_theme_icon, compound=tk.LEFT,
                                         command=self.switch_theme, takefocus=False, cursor="hand2")
         self._theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
+
+        # Check the theme
+        self.check_theme()
 
         # Load the icons and keep them in memory
         self._emoji_icons = {
@@ -124,13 +141,44 @@ class Dashboard(tk.Frame):
         # Schedule the next update
         self.after(100, self._update_time)
 
+    def check_theme(self):
+        # Check if the theme is set in the config file
+        if 'Theme' in self._config and 'theme' in self._config['Theme']:
+            theme = self._config['Theme']['theme']
+            if theme == 'dark':
+                self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
+                self._logout_button.config(image=self._dark_logout_icon)
+                self._settings_button.config(image=self._dark_settings_icon)
+                sv_ttk.use_dark_theme()
+            else:
+                self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
+                self._logout_button.config(image=self._light_logout_icon)
+                self._settings_button.config(image=self._light_settings_icon)
+                sv_ttk.use_light_theme()
+        else:
+            # Create a style
+            sv_ttk.use_light_theme()
+
     def switch_theme(self):
+        # Get the current theme
         current_theme = sv_ttk.get_theme()
         if current_theme == "light":
             sv_ttk.set_theme("dark")
+            # Set styles
+            self.master.configure_styles()
             self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
-            self._logout_button.config(image=self._light_logout_icon)
+            self._logout_button.config(image=self._dark_logout_icon)
+            self._settings_button.config(image=self._dark_settings_icon)
+            self._config['Theme'] = {'theme': 'dark'}
         else:
             sv_ttk.set_theme("light")
+            # Set styles
+            self.master.configure_styles()
             self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
-            self._logout_button.config(image=self._dark_logout_icon)
+            self._logout_button.config(image=self._light_logout_icon)
+            self._settings_button.config(image=self._light_settings_icon)
+            self._config['Theme'] = {'theme': 'light'}
+
+        # Save the theme to the config file
+        with open('../../config/config.ini', 'w') as configfile:
+            self._config.write(configfile)

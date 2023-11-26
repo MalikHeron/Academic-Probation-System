@@ -18,7 +18,7 @@ class Login(tk.Frame):
         sv_ttk.use_dark_theme()
 
         # background image
-        img = Image.open("../../res/login-background.png").resize((1350, 893))
+        img = Image.open("../../res/login-background.png")
         self._background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
         # Create form frame
