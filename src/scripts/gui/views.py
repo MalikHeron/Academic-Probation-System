@@ -351,7 +351,7 @@ class Views(ttk.Frame):
 
         if dialog_type == "student":
             def submit_action():
-                self._helpers.validate({"ID": (id_field, "int"),
+                self._helpers.validate({"ID Number": (id_field, "int"),
                                         "Full Name": (name_field, "str"),
                                         "Email": (email_field, "email"),
                                         "School": (school_field, "str"),
@@ -382,7 +382,7 @@ class Views(ttk.Frame):
         elif dialog_type == "details":
             def submit_action():
                 self._helpers.validate({
-                    "ID": (id_field, "int"),
+                    "ID Number": (id_field, "int"),
                     "Module": (module_field, "str"),
                     "GPA": (gpa_field, "float"),
                     "Semester": (semester_field, "int"),
@@ -399,7 +399,7 @@ class Views(ttk.Frame):
         elif dialog_type == "staff":
             def submit_action():
                 self._helpers.validate({
-                    "ID": (id_field, "int"),
+                    "ID Number": (id_field, "int"),
                     "Name": (name_field, "str"),
                     "Email": (email_field, "email"),
                     "Position": (position_field, "str"),
@@ -645,7 +645,7 @@ class Views(ttk.Frame):
 
     # Add functions
     def _add_student_to_db(self, validated_fields):
-        return self._add_to_db(db_manager.insert_student, (validated_fields["ID"], validated_fields["Full Name"],
+        return self._add_to_db(db_manager.insert_student, (validated_fields["ID Number"], validated_fields["Full Name"],
                                                            validated_fields["Email"], validated_fields["School"],
                                                            validated_fields["Programme"], validated_fields["Advisor"]),
                                "Student record added successfully.",
@@ -659,14 +659,14 @@ class Views(ttk.Frame):
                                "Failed to add module record.")
 
     def _add_detail_to_db(self, validated_fields):
-        return self._add_to_db(db_manager.insert_detail, (validated_fields["ID"], validated_fields["Module"],
+        return self._add_to_db(db_manager.insert_detail, (validated_fields["ID Number"], validated_fields["Module"],
                                                           validated_fields["GPA"], validated_fields["Semester"],
                                                           validated_fields["Year"]),
                                "Detail record added successfully.",
                                "Failed to add detail record.")
 
     def _add_staff_to_db(self, validated_fields):
-        return self._add_to_db(db_manager.insert_staff, (validated_fields["ID"], validated_fields["Name"],
+        return self._add_to_db(db_manager.insert_staff, (validated_fields["ID Number"], validated_fields["Name"],
                                                          validated_fields["Email"], validated_fields["Position"],
                                                          validated_fields["Username"], validated_fields["Password"]),
                                "Staff record added successfully.",
@@ -693,7 +693,7 @@ class Views(ttk.Frame):
 
     # Update functions
     def _update_student_in_db(self, validated_fields):
-        return self._update_in_db((validated_fields["ID"], validated_fields["Full Name"],
+        return self._update_in_db((validated_fields["ID Number"], validated_fields["Full Name"],
                                    validated_fields["Email"], validated_fields["School"],
                                    validated_fields["Programme"], validated_fields["Advisor"]),
                                   "student",
@@ -701,7 +701,7 @@ class Views(ttk.Frame):
                                   "Failed to update student record.")
 
     def _update_detail_in_db(self, validated_fields):
-        return self._update_in_db((validated_fields["ID"], validated_fields["Module"],
+        return self._update_in_db((validated_fields["ID Number"], validated_fields["Module"],
                                    validated_fields["GPA"], validated_fields["Semester"], validated_fields["Year"]),
                                   "details",
                                   "Module detail record updated successfully.",
@@ -715,7 +715,7 @@ class Views(ttk.Frame):
                                   "Failed to update module record.")
 
     def _update_staff_in_db(self, validated_fields):
-        return self._update_in_db((validated_fields["ID"], validated_fields["Name"],
+        return self._update_in_db((validated_fields["ID Number"], validated_fields["Name"],
                                    validated_fields["Email"], validated_fields["Position"],
                                    validated_fields["Username"], validated_fields["Password"]),
                                   "staff",
@@ -744,7 +744,7 @@ class Views(ttk.Frame):
                                   "Failed to update programme record.")
 
     # Delete functions
-    def _delete_item(self, delete_func, parent_frame, option=1, dialog_prompt=None):
+    def _delete_item(self, delete_func, parent_frame, option=1, get_func=None, get_id=True, dialog_prompt=None):
         # Get the selected item from the tree
         selected_items = self._tree.selection()
 
@@ -755,6 +755,8 @@ class Views(ttk.Frame):
                     # If fields is None, get the first value
                     if option == 1:
                         values = str(self._tree.item(selected_item)["values"][0]).strip()
+                        # Call the delete function with the appropriate arguments
+                        deleted = delete_func(values)
                     else:
                         # Otherwise, get all the values
                         student_id = str(self._tree.item(selected_item)["values"][0]).strip()
@@ -762,11 +764,7 @@ class Views(ttk.Frame):
                         semester = str(self._tree.item(selected_item)["values"][3]).strip()
                         year = str(self._tree.item(selected_item)["values"][4]).strip()
                         values = [student_id, module_code, semester, year]
-
-                    # Call the delete function with the appropriate arguments
-                    if option == 1:
-                        deleted = delete_func(values)
-                    else:
+                        # Call the delete function with the appropriate arguments
                         deleted = delete_func(*values)
 
                     # If the item was successfully deleted, delete it from the tree
@@ -782,29 +780,28 @@ class Views(ttk.Frame):
             if option == 1:
                 # Display a dialog box to request a single value
                 dialog = Dialog(parent_frame)
-                dialog.single_input_dialog(dialog_prompt)
+                dialog.single_input_dialog(dialog_prompt, get_func, get_id)
                 dialog.wait_window()  # This will wait until the dialog is destroyed
-                values = dialog._result
+                values = dialog.result
 
                 # If the user cancelled the dialog box, return
                 if values is None:
                     return
+
+                # Call the delete function with the appropriate arguments
+                deleted = delete_func(values)
             else:
                 # Display a dialog box to request multiple values
                 dialog = Dialog(parent_frame)
                 dialog.multi_input_dialog()
                 dialog.wait_window()  # This will wait until the dialog is destroyed
-                values = dialog._result
+                values = dialog.result
 
                 # If the user cancelled the dialog box, return
                 if values is None:
                     return
 
-            # If options is 1, call the delete function with a single argument
-            # Otherwise, unpack the values and pass them as arguments
-            if option == 1:
-                deleted = delete_func(values)
-            else:
+                # Call the delete function with the appropriate arguments
                 deleted = delete_func(*values)
 
             # If the item was successfully deleted
@@ -860,25 +857,31 @@ class Views(ttk.Frame):
         self._tree.update_idletasks()
 
     def _delete_student(self):
-        self._delete_item(db_manager.delete_student, self._student_frame, dialog_prompt="Student ID")
+        self._delete_item(db_manager.delete_student, self._student_frame, dialog_prompt="Student ID",
+                          get_func=db_manager.get_students)
 
     def _delete_module(self):
-        self._delete_item(db_manager.delete_module, self._module_frame, dialog_prompt="Module")
+        self._delete_item(db_manager.delete_module, self._module_frame, dialog_prompt="Module",
+                          get_func=db_manager.get_modules, get_id=False)
 
     def _delete_details(self):
         self._delete_item(db_manager.delete_details, self._details_frame, 2)
 
     def _delete_staff(self):
-        self._delete_item(db_manager.delete_staff, self._staff_frame, dialog_prompt="Staff ID")
+        self._delete_item(db_manager.delete_staff, self._staff_frame, dialog_prompt="Staff ID",
+                          get_func=db_manager.get_staff)
 
     def _delete_faculty(self):
-        self._delete_item(db_manager.delete_faculty, self._faculty_frame, dialog_prompt="Faculty")
+        self._delete_item(db_manager.delete_faculty, self._faculty_frame, dialog_prompt="Faculty",
+                          get_func=db_manager.get_faculties, get_id=False)
 
     def _delete_school(self):
-        self._delete_item(db_manager.delete_school, self._school_frame, dialog_prompt="School")
+        self._delete_item(db_manager.delete_school, self._school_frame, dialog_prompt="School",
+                          get_func=db_manager.get_schools, get_id=False)
 
     def _delete_programme(self):
-        self._delete_item(db_manager.delete_programme, self._programme_frame, dialog_prompt="Programme")
+        self._delete_item(db_manager.delete_programme, self._programme_frame, dialog_prompt="Programme",
+                          get_func=db_manager.get_programmes, get_id=False)
 
     def _update_search(self):
         # Update search function whenever search text is changed

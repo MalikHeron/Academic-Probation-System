@@ -2,6 +2,8 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
+import sv_ttk
+
 from scripts.database.queries import DatabaseManager
 from scripts.gui.helpers import Helpers
 
@@ -11,6 +13,27 @@ db_manager = DatabaseManager()  # create an instance of DatabaseManager
 class Dialog(tk.Toplevel):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
+        self.original_values = None
+        self._theme_var = None
+        self._button_family_var = None
+        self._button_size_var = None
+        self._button_style_var = None
+        self._label_family_var = None
+        self._label_size_var = None
+        self._label_style_var = None
+        self._tree_family_var = None
+        self._tree_size_var = None
+        self._tree_style_var = None
+        self._heading_family_var = None
+        self._heading_size_var = None
+        self._heading_style_var = None
+        self._tab_family_var = None
+        self._tab_size_var = None
+        self._tab_style_var = None
+        self._size_field = None
+        self._family_field = None
+        self._theme_field = None
+        self._theme = None
         self._first_focus = None
         self._year_field = None
         self._max_year = None
@@ -54,7 +77,7 @@ class Dialog(tk.Toplevel):
 
     def student_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 660, 500)
+        self.initialize_properties(title, 660, 480)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[50, 0])
@@ -162,7 +185,7 @@ class Dialog(tk.Toplevel):
 
     def details_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 570, 450)
+        self.initialize_properties(title, 570, 430)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[20, 0])
@@ -225,7 +248,7 @@ class Dialog(tk.Toplevel):
 
     def staff_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 550, 450)
+        self.initialize_properties(title, 550, 480)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[50, 0])
@@ -300,7 +323,7 @@ class Dialog(tk.Toplevel):
         ttk.Label(self.frame, text="Administrator", width=self._l_width, anchor="w").grid(row=4, column=0,
                                                                                           padx=self._x_padding,
                                                                                           pady=self._y_padding)
-        admin_list = db_manager.get_administrator()
+        admin_list = db_manager.get_administrators()
         admin_names = [admin[1] for admin in admin_list]
         admin_names.append('None')  # Append 'None' to the list
         admin_field = ttk.Combobox(self.frame, state="readonly", values=admin_names,
@@ -352,7 +375,7 @@ class Dialog(tk.Toplevel):
 
     def programme_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 660, 350)
+        self.initialize_properties(title, 660, 360)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[15, 0])
@@ -395,7 +418,222 @@ class Dialog(tk.Toplevel):
 
         return self.frame, code_field, name_field, school_field, director_field
 
-    def single_input_dialog(self, text):
+    def settings_dialog(self, config):
+        # Initialize window properties
+        self.initialize_properties("Settings", 550, 600)
+
+        # Create the canvas
+        canvas = tk.Canvas(self, highlightthickness=0)
+        canvas.pack(side="left", fill="both", expand=True)
+
+        # Add a scrollbar
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scrollbar.pack(side="right", fill="y")
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        # Make the canvas scrollable
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+        # Create the input frame
+        frame = ttk.Frame(canvas, padding=[30, 0])
+
+        # Add the frame to the canvas
+        canvas.create_window((0, 0), window=frame, anchor="nw")
+
+        # Theme
+        self._theme_var = tk.StringVar()
+
+        # Variables for Buttons
+        self._button_family_var = tk.StringVar()
+        self._button_size_var = tk.StringVar()
+        self._button_style_var = tk.StringVar()
+
+        # Variables for Labels
+        self._label_family_var = tk.StringVar()
+        self._label_size_var = tk.StringVar()
+        self._label_style_var = tk.StringVar()
+
+        # Variables for Treeview
+        self._tree_family_var = tk.StringVar()
+        self._tree_size_var = tk.StringVar()
+        self._tree_style_var = tk.StringVar()
+
+        # Variables for Treeview Headings
+        self._heading_family_var = tk.StringVar()
+        self._heading_size_var = tk.StringVar()
+        self._heading_style_var = tk.StringVar()
+
+        # Variables for Notebook Tabs
+        self._tab_family_var = tk.StringVar()
+        self._tab_size_var = tk.StringVar()
+        self._tab_style_var = tk.StringVar()
+
+        # Check if the theme is set in the config file
+        if config.has_section('Theme') and config.has_option('Theme', 'theme'):
+            theme = config.get('Theme', 'theme')
+            # Check if the theme is set to auto
+            if theme == 'auto':
+                theme = "Use system settings"
+            else:
+                theme = "Manual"
+            # Set the default value
+            self._theme_var.set(theme)
+        else:
+            self._theme_var.set("Manual")
+
+        ttk.Label(frame, text="App Theme", width=self._l_width + 3, anchor="w").grid(row=0, column=0,
+                                                                                     pady=self._y_padding)
+        self._theme_field = ttk.Combobox(frame, state="readonly", values=["Manual", "Use system settings"],
+                                         textvariable=self._theme_var,
+                                         width=self._f_width + 2,
+                                         font=('Helvetica', 10, 'normal'))
+        self._theme_field.grid(row=0, column=1, pady=self._y_padding)
+
+        def get_font_config(section, option, default):
+            if config.has_section(section) and config.has_option(section, option):
+                return config.get(section, option)
+            else:
+                return default
+
+        # Set the default values
+        self._button_family_var.set(get_font_config('Font', 'button_family', "Helvetica"))
+        self._button_size_var.set(get_font_config('Font', 'button_size', "10"))
+        self._button_style_var.set(get_font_config('Font', 'button_style', "normal"))
+        self._label_family_var.set(get_font_config('Font', 'label_family', "Helvetica"))
+        self._label_size_var.set(get_font_config('Font', 'label_size', "11"))
+        self._label_style_var.set(get_font_config('Font', 'label_style', "normal"))
+        self._tree_family_var.set(get_font_config('Font', 'tree_family', "Helvetica"))
+        self._tree_size_var.set(get_font_config('Font', 'tree_size', "10"))
+        self._tree_style_var.set(get_font_config('Font', 'tree_style', "normal"))
+        self._heading_family_var.set(get_font_config('Font', 'heading_family', "Helvetica"))
+        self._heading_size_var.set(get_font_config('Font', 'heading_size', "10"))
+        self._heading_style_var.set(get_font_config('Font', 'heading_style', "normal"))
+        self._tab_family_var.set(get_font_config('Font', 'tab_family', "Helvetica"))
+        self._tab_size_var.set(get_font_config('Font', 'tab_size', "10"))
+        self._tab_style_var.set(get_font_config('Font', 'tab_style', "normal"))
+
+        self.original_values = {
+            'theme': self._theme_var.get(),
+            'button_family': self._button_family_var.get(),
+            'button_size': self._button_size_var.get(),
+            'button_style': self._button_style_var.get(),
+            'label_family': self._label_family_var.get(),
+            'label_size': self._label_size_var.get(),
+            'label_style': self._label_style_var.get(),
+            'tree_family': self._tree_family_var.get(),
+            'tree_size': self._tree_size_var.get(),
+            'tree_style': self._tree_style_var.get(),
+            'heading_family': self._heading_family_var.get(),
+            'heading_size': self._heading_size_var.get(),
+            'heading_style': self._heading_style_var.get(),
+            'tab_family': self._tab_family_var.get(),
+            'tab_size': self._tab_size_var.get(),
+            'tab_style': self._tab_style_var.get(),
+        }
+
+        ttk.Separator(frame, orient="horizontal").grid(row=1, column=0, columnspan=3, sticky="ew")
+        ttk.Label(frame, text=" Customize Fonts", width=self._l_width + 5, anchor="w",
+                  font=('Helvetica', 11, 'bold')).grid(row=1, column=0, columnspan=3)
+
+        self._helpers.create_label_and_field_setting(frame, "Buttons", 2,
+                                                     self._button_family_var, self._button_style_var,
+                                                     self._button_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Labels", 6,
+                                                     self._label_family_var, self._label_style_var,
+                                                     self._label_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Table rows", 10,
+                                                     self._tree_family_var, self._tree_style_var, self._tree_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Table Headings", 14,
+                                                     self._heading_family_var, self._heading_style_var,
+                                                     self._heading_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Tabs", 18,
+                                                     self._tab_family_var, self._tab_style_var, self._tab_size_var)
+
+        def update_config(*args):
+            if self._theme_var.get() != "Manual":
+                self._theme = "auto"
+            else:
+                current_theme = sv_ttk.get_theme()
+                self._theme = current_theme
+
+            # Check if the 'Theme' section exists, if not create it
+            if not config.has_section('Theme'):
+                config.add_section('Theme')
+
+            # Update the config file
+            config.set('Theme', 'theme', self._theme)
+
+            # List of all font settings
+            font_settings = ['button_family', 'button_size', 'button_style', 'label_family', 'label_size',
+                             'label_style', 'tree_family', 'tree_size', 'tree_style', 'heading_family', 'heading_size',
+                             'heading_style', 'tab_family', 'tab_size', 'tab_style']
+
+            # Check if the 'Font' section exists, if not create it
+            if not config.has_section('Font'):
+                config.add_section('Font')
+
+            # Loop through all font settings and update the config file
+            for setting in font_settings:
+                config.set('Font', setting, getattr(self, f'_{setting}_var').get())
+
+            # Unbind the mouse scroll event
+            canvas.unbind_all("<MouseWheel>")
+
+            self.destroy()
+
+        # Submit and Cancel buttons
+        button_frame = ttk.Frame(frame, padding=[0, 20])
+        button_frame.grid(row=23, column=0, columnspan=3)
+
+        # Create the buttons
+        button = ttk.Button(button_frame, text="Apply Changes", command=update_config, style='TButton', cursor="hand2",
+                            takefocus=False, state='disabled')
+        button.pack(side="left", anchor='center')
+
+        # Monitor changes to the theme field and update the button state
+        def check_config(*args):
+            # Check if any values have changed
+            for key, original_value in self.original_values.items():
+                current_value = getattr(self, f'_{key}_var').get()
+                if original_value != current_value:
+                    # Enable the "Apply Changes" button
+                    button['state'] = 'normal'
+                    return
+
+            # If no values have changed, disable the "Apply Changes" button
+            button['state'] = 'disabled'
+
+        # Call update_config when the theme value changes
+        self._theme_var.trace('w', check_config)
+        self._button_family_var.trace('w', check_config)
+        self._button_size_var.trace('w', check_config)
+        self._button_style_var.trace('w', check_config)
+        self._label_family_var.trace('w', check_config)
+        self._label_size_var.trace('w', check_config)
+        self._label_style_var.trace('w', check_config)
+        self._tree_family_var.trace('w', check_config)
+        self._tree_size_var.trace('w', check_config)
+        self._tree_style_var.trace('w', check_config)
+        self._heading_family_var.trace('w', check_config)
+        self._heading_size_var.trace('w', check_config)
+        self._heading_style_var.trace('w', check_config)
+        self._tab_family_var.trace('w', check_config)
+        self._tab_size_var.trace('w', check_config)
+        self._tab_style_var.trace('w', check_config)
+
+        self._theme_field.focus_set()  # Make the entry field focused
+
+    def single_input_dialog(self, text, get_func, get_id):
         # Initialize window properties
         self.initialize_properties("Input Required", 500, 150)
 
@@ -403,72 +641,20 @@ class Dialog(tk.Toplevel):
         frame = ttk.Frame(self)
         frame.grid(row=0, column=1, sticky="nsew")
 
-        if text == "Student ID":
-            ttk.Label(frame, text=text, width=self._l_width, anchor="w").grid(row=0, column=0, padx=self._x_padding,
-                                                                              pady=self._y_padding)
-            # Get student ids
-            student_list = db_manager.get_students()
-            student_ids = [student[0] for student in student_list]
-            self._input_field = ttk.Combobox(frame, state="readonly", values=student_ids, width=self._f_width,
-                                             font=('Helvetica', 11, 'normal'))
-            self._input_field.grid(row=0, column=1)
+        ttk.Label(frame, text=text, width=self._l_width, anchor="w").grid(row=0, column=0, padx=self._x_padding,
+                                                                          pady=self._y_padding)
+        # Get data
+        data_list = get_func()
+        # Extract data values
+        if get_id:
+            data_values = [data[0] for data in data_list]
+        else:
+            data_values = [data[1] for data in data_list]
+        self._input_field = ttk.Combobox(frame, state="readonly", values=data_values, width=self._f_width,
+                                         font=('Helvetica', 11, 'normal'))
+        self._input_field.grid(row=0, column=1)
 
-            self._field_name = "Student ID"
-        elif text == "Module":
-            ttk.Label(frame, text=text, width=self._l_width, anchor="w").grid(row=0, column=0, padx=self._x_padding,
-                                                                              pady=self._y_padding)
-            # Get module names
-            module_list = db_manager.get_modules()
-            module_names = [module[1] for module in module_list]
-            self._input_field = ttk.Combobox(frame, state="readonly", values=module_names, width=self._f_width,
-                                             font=('Helvetica', 11, 'normal'))
-            self._input_field.grid(row=0, column=1)
-
-            self._field_name = "Module"
-        elif text == "Staff ID":
-            ttk.Label(frame, text=text, width=self._l_width, anchor="w").grid(row=0, column=0, padx=self._x_padding,
-                                                                              pady=self._y_padding)
-            # Get staff id
-            staff_list = db_manager.get_staff()
-            staff_ids = [staff[0] for staff in staff_list]
-            self._input_field = ttk.Combobox(frame, state="readonly", values=staff_ids, width=self._f_width,
-                                             font=('Helvetica', 11, 'normal'))
-            self._input_field.grid(row=0, column=1)
-
-            self._field_name = "Staff ID"
-        elif text == "Faculty":
-            ttk.Label(frame, text=text, width=self._l_width, anchor="w").grid(row=0, column=0, padx=self._x_padding,
-                                                                              pady=self._y_padding)
-            # Get faculty names
-            faculty_list = db_manager.get_faculties()
-            faculty_names = [faculty[1] for faculty in faculty_list]
-            self._input_field = ttk.Combobox(frame, state="readonly", values=faculty_names, width=self._f_width,
-                                             font=('Helvetica', 11, 'normal'))
-            self._input_field.grid(row=0, column=1)
-
-            self._field_name = "Faculty"
-        elif text == "School":
-            ttk.Label(frame, text=text, width=self._l_width, anchor="w").grid(row=0, column=0, padx=self._x_padding,
-                                                                              pady=self._y_padding)
-            # Get school names
-            school_list = db_manager.get_schools()
-            school_names = [school[1] for school in school_list]
-            self._input_field = ttk.Combobox(frame, state="readonly", values=school_names, width=self._f_width,
-                                             font=('Helvetica', 11, 'normal'))
-            self._input_field.grid(row=0, column=1)
-
-            self._field_name = "School"
-        elif text == "Programme":
-            ttk.Label(frame, text=text, width=self._l_width, anchor="w").grid(row=0, column=0, padx=self._x_padding,
-                                                                              pady=self._y_padding)
-            # Get programme names
-            programme_list = db_manager.get_programmes()
-            programme_names = [programme[1] for programme in programme_list]
-            self._input_field = ttk.Combobox(frame, state="readonly", values=programme_names, width=self._f_width,
-                                             font=('Helvetica', 11, 'normal'))
-            self._input_field.grid(row=0, column=1)
-
-            self._field_name = "Programme"
+        self._field_name = text
 
         def submit_action():
             self._helpers.validate({self._field_name: (self._input_field, "str")}, self.submit_single, args=False)
@@ -486,7 +672,7 @@ class Dialog(tk.Toplevel):
 
     def multi_input_dialog(self):
         # Initialize window properties
-        self.initialize_properties("Input Required", 500, 350)
+        self.initialize_properties("Input Required", 500, 340)
 
         # Create the input frame
         frame = ttk.Frame(self)
@@ -572,3 +758,18 @@ class Dialog(tk.Toplevel):
         self._result = [str(self._id_field.get()).strip(), str(self._module_field.get()).strip(),
                         str(self._semester_field.get()).strip(), str(self._year_field.get()).strip()]
         self.destroy()
+
+    def destroy(self):
+        # Unbind the mouse scroll event from all widgets
+        self.unbind_all("<MouseWheel>")
+
+        # Call the original destroy method
+        super().destroy()
+
+    @property
+    def result(self):
+        return self._result
+
+    @property
+    def theme(self):
+        return self._theme

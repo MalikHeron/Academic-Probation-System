@@ -3,7 +3,6 @@
 ## Project Structure
 ```bash
 ├── data/                       # Database file
-├── logs/                       # system logs
 ├── res/                        # PNGs, JPEGs, GIFs etc
 ├── src/                        
     ├── prolog/                 # prolog files
@@ -33,7 +32,8 @@
 - tkinter `pip install tkinter`
 - PIL `pip install pillow`
 - sqlite3 `pip install sqlite3`
-- easygui `pip install easygui`
 - reportlab `pip install reportlab`
+- python-dotenv `pip install python-dotenv`
+- darkdetect `pip install darkdetect`
 
 > Tested in IntelliJ IDEA (Ultimate Edition) with Python and Prolog plugin.

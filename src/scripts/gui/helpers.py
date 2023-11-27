@@ -12,7 +12,8 @@ import sv_ttk
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 
 
 class Helpers:
@@ -49,11 +50,18 @@ class Helpers:
         pdf = SimpleDocTemplate(path, pagesize=letter)
         styles = getSampleStyleSheet()
 
+        # Add image at the top center
+        logo = "../../res/icon.ico"  # replace with your image file path
+        im = Image(logo, 0.8 * inch, 0.8 * inch)  # specify image width and height
+        elems = [im]
+
         # Add headers
-        elems = [Paragraph("University of Technology", styles['Title']),
-                 Paragraph("<para align=center>Academic Probation Alert GPA Report</para>", styles['Normal']),
-                 Paragraph(f"<para align=center>Year: {year}</para>", styles['Normal']),
-                 Paragraph(f"<para align=center>GPA: {gpa}</para>", styles['Normal']), Spacer(1, 20)]
+        elems.extend([
+            Paragraph("University of Technology", styles['Title']),
+            Paragraph("<para align=center>Academic Probation Alert GPA Report</para>", styles['Normal']),
+            Paragraph(f"<para align=center>Year: {year}</para>", styles['Normal']),
+            Paragraph(f"<para align=center>GPA: {gpa}</para>", styles['Normal']), Spacer(1, 20)
+        ])
 
         # Create table
         table = Table(data)
@@ -130,8 +138,7 @@ class Helpers:
 
         return search_entry
 
-    @staticmethod
-    def _configure_scrollbar(canvas, frame, height, pad_x=0):
+    def _configure_scrollbar(self, canvas, frame, height, pad_x=0):
         def on_configure(event):
             # Update scroll region after starting 'mainloop'
             # When all widgets are in canvas
@@ -150,15 +157,36 @@ class Helpers:
         scrollbar.grid(row=0, column=1, sticky='ns', padx=pad_x, pady=10)
         scrollbar.grid_remove()  # Initially hide the scrollbar
 
+        # Update the scrollbar every 100ms
+        self._update_scrollbar(tree, scrollbar)
+
         # Configure the Treeview
         tree.configure(yscrollcommand=scrollbar.set)
 
         return tree, scrollbar
 
+    def _update_scrollbar(self, tree, scrollbar, height=23, grid=True):
+        # Check if the number of items in the tree is greater than the specified height
+        if len(tree.get_children()) > height:
+            # If grid is True, use the grid method to show the scrollbar
+            if grid:
+                scrollbar.grid()
+            # If grid is False, use the pack method to show the scrollbar
+            else:
+                scrollbar.pack(side=tk.RIGHT, fill='y')
+        else:
+            # If the number of items in the tree is not greater than the height, hide the scrollbar
+            if grid:
+                scrollbar.grid_remove()
+            else:
+                scrollbar.pack_forget()
+        # Call this function again after 100 milliseconds to keep the scrollbar updated
+        tree.after(100, lambda: self._update_scrollbar(tree, scrollbar, grid=grid))
+
     def create_view_table(self, frame, columns, column_widths, column_alignments, remove_func, height=23, data=None,
                           pad_x=0):
         # Create Canvas in new window
-        canvas = tk.Canvas(frame)
+        canvas = tk.Canvas(frame, highlightthickness=0)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
 
         # Create another frame inside the canvas
@@ -186,10 +214,6 @@ class Helpers:
             for item in data:
                 tree.insert("", "end", values=item)
 
-            # Show the scrollbar if there's enough data to make the table scrollable
-            if len(data) > height:
-                scrollbar.grid()
-
         def delete_record(event):
             logging.info(event)
             remove_func()
@@ -201,11 +225,11 @@ class Helpers:
 
     def create_report_tables(self, frame, columns, column_widths, column_alignments, pad, height=23, data=None):
         # Create Canvas in new window
-        canvas = tk.Canvas(frame, takefocus=False)
+        canvas = tk.Canvas(frame, highlightthickness=0)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
 
         # Create another frame inside the canvas
-        report_frame = ttk.Frame(canvas, takefocus=False)
+        report_frame = ttk.Frame(canvas)
 
         # Add that new frame to a new window on the canvas
         canvas.create_window((0, 0), window=report_frame, anchor="ne")
@@ -226,17 +250,42 @@ class Helpers:
             for item in data:
                 gpa_tree.insert("", "end", values=item)
 
-            # Show the scrollbar if there's enough data to make the table scrollable
-            if len(data) > height:
-                gpa_scrollbar.pack(side=tk.RIGHT, fill='y')
-
+        # Pack the Treeview into the new frame
         gpa_tree.pack(padx=pad)
 
+        # Create a clear button
+        clear_button = ttk.Button(report_frame, text="Clear", state="disabled", cursor="hand2", takefocus=False)
+
+        # Function to clear the table
+        def clear_table():
+            if messagebox.askokcancel("Confirm", "Are you sure you want to clear the table?"):
+                # Clear the tree
+                gpa_tree.delete(*gpa_tree.get_children())
+
+        # Update clear button state based on treeview selection
+        def update_clear_button():
+            if len(gpa_tree.get_children()) > 0:
+                clear_button.config(state="normal")
+            else:
+                clear_button.config(state="disabled")
+
+            # Call this function again after 100 milliseconds to keep the clear button updated
+            gpa_tree.after(100, update_clear_button)
+
+        # Call the function once to start the loop
+        update_clear_button()
+
+        # Set the command of the delete button to the delete_file function
+        clear_button.config(command=clear_table)
+
+        # Pack the delete button into the pdf_frame
+        clear_button.pack(padx=pad, pady=(10, 0))
+
         # Create another frame inside the canvas
-        pdf_frame = ttk.Frame(canvas, takefocus=False)
+        pdf_frame = ttk.Frame(canvas)
 
         # Create a frame for the Treeview and the Scrollbar
-        tree_frame = ttk.Frame(pdf_frame, takefocus=False)
+        tree_frame = ttk.Frame(pdf_frame)
 
         # Create Treeview in the new frame
         file_tree = ttk.Treeview(tree_frame, show='headings', style="Treeview", height=height)
@@ -248,6 +297,9 @@ class Helpers:
         file_tree.pack(side=tk.LEFT, fill='both', expand=True)
         scrollbar.pack(side=tk.RIGHT, fill='y')
         scrollbar.pack_forget()  # Initially hide the scrollbar
+
+        # Update the scrollbar every 100ms
+        self._update_scrollbar(file_tree, scrollbar, grid=False)
 
         # Configure the Treeview
         file_tree.configure(yscrollcommand=scrollbar.set)
@@ -269,7 +321,7 @@ class Helpers:
         canvas.bind('<Configure>', on_configure)
 
         pdf_columns = ("Generated Reports", "Size")
-        pdf_widths = [280, 70]
+        pdf_widths = [280, 100]
         pdf_alignments = ['w', 'center']
 
         # Define columns
@@ -289,10 +341,6 @@ class Helpers:
             file_size = self.convert_bytes(os.path.getsize(os.path.join(folder_path, pdf_file)))
             file_tree.insert("", "end", values=(pdf_file, file_size))
 
-        # Show the scrollbar if there's enough data to make the table scrollable
-        if len(pdf_files) > height:
-            scrollbar.pack(side=tk.RIGHT, fill='y')
-
         # Open the selected PDF file when clicked
         def open_selected_files(event):
             logging.info(event)
@@ -309,6 +357,7 @@ class Helpers:
         threading.Thread(target=self._update_pdf_list, args=(folder_path, pdf_files, file_tree),
                          daemon=True).start()
 
+        # Pack the Treeview into the new frame
         file_tree.pack(padx=(30, pad))
 
         # Create a delete button
@@ -343,6 +392,7 @@ class Helpers:
         # Set the command of the delete button to the delete_file function
         delete_button.config(command=lambda: delete_file(None))
 
+        # Pack the delete button into the pdf_frame
         delete_button.pack(padx=(30, pad), pady=(10, 0))
 
         return gpa_tree
@@ -449,6 +499,42 @@ class Helpers:
 
         return field
 
+    @staticmethod
+    def create_label_and_field_setting(frame, label_text, row,
+                                       family_variable=None, style_variable=None, size_variable=None, padx=(20, 0),
+                                       pady=10,
+                                       l_width=15, f_width=35, _font=('Helvetica', 10, 'normal')):
+        ttk.Label(frame, text=label_text, width=l_width, anchor="w", font=('Helvetica', 11, 'normal')).grid(row=row,
+                                                                                                            column=0,
+                                                                                                            pady=pady)
+
+        system_fonts = ["Arial", "Avant Garde", "Bookman", "Courier New", "Garamond", "Georgia", "Helvetica",
+                        "Palatino", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"]
+
+        # Family field
+        ttk.Label(frame, text="Family", width=l_width, anchor="w", font=_font).grid(row=row + 1, column=0, pady=pady,
+                                                                                    padx=padx)
+        family_field = ttk.Combobox(frame, state="readonly",
+                                    values=system_fonts,
+                                    textvariable=family_variable,
+                                    width=f_width - 5, font=_font)
+        family_field.grid(row=row + 1, column=1)
+
+        # Style field
+        ttk.Label(frame, text="Style", width=l_width, anchor="w", font=_font).grid(row=row + 2, column=0, pady=pady,
+                                                                                   padx=padx)
+        style_field = ttk.Combobox(frame, state="readonly", values=["bold", "italic", "normal"],
+                                   textvariable=style_variable,
+                                   width=f_width - 5, font=_font)
+        style_field.grid(row=row + 2, column=1)
+
+        # Size field
+        ttk.Label(frame, text="Size", width=l_width, anchor="w", font=_font).grid(row=row + 3, column=0, pady=pady,
+                                                                                  padx=padx)
+        size_field = ttk.Spinbox(frame, state="readonly", from_=8, to=11,
+                                 textvariable=size_variable, width=f_width - 9, font=_font)
+        size_field.grid(row=row + 3, column=1, pady=(pady, 10))
+
     # Helper functions
     @staticmethod
     def clear_fields(*fields):
@@ -503,11 +589,16 @@ class Helpers:
                         raise ValueError("is not a valid email.")
                 elif validation_type == "password":
                     if validated_fields["Position"] == "Administrator":
-                        # Validate as a password
-                        if len(input_value) >= 8:
-                            validated_fields[field_name] = input_value
-                        else:
+                        if len(input_value) < 8:
                             raise ValueError("must be at least 8 characters long.")
+                        if not re.search(r"[0-9]", input_value):
+                            raise ValueError("must contain at least one number.")
+                        if not re.search(r"[A-Z]", input_value):
+                            raise ValueError("must contain at least one uppercase letter.")
+                        if not re.search(r"[a-z]", input_value):
+                            raise ValueError("must contain at least one lowercase letter.")
+                        else:
+                            validated_fields[field_name] = input_value
                     else:
                         validated_fields[field_name] = input_value
                 elif validation_type == "username":
@@ -525,7 +616,7 @@ class Helpers:
                     raise ValueError(f"Unknown validation type for {field_name}.")
             except ValueError as e:
                 # If validation fails, show an error message and return
-                tk.messagebox.showerror("Error", f"{field_name}: {e}")
+                tk.messagebox.showerror("Error", f"{field_name} {e}")
                 return
             except Exception as e:
                 # Handle any unexpected errors

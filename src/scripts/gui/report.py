@@ -94,7 +94,19 @@ class Report(ttk.Frame):
         self._gpa_field.pack(side=tk.LEFT, fill='x', expand=False)
 
         def submit_action():
-            self._helpers.validate({"Year": (self._year_field, "int")}, lambda: self._submit(tree), args=False)
+            year = self._year_field.get()
+            gpa = self._gpa_field.get()
+
+            # Validate the input
+            if gpa != "":
+                self._helpers.validate({"Year": (self._year_field, "int"), "GPA": (self._gpa_field, "float")},
+                                       lambda: self._view_report(year, float(gpa), tree),
+                                       args=False)
+            else:
+                gpa = Prolog.get_default_gpa()
+                self._helpers.validate({"Year": (self._year_field, "int")},
+                                       lambda: self._view_report(year, float(gpa), tree),
+                                       args=False)
 
         # Create generate button
         self._generate_button = ttk.Button(button_frame, text="Generate", command=submit_action, style='Accent.TButton',
@@ -111,32 +123,10 @@ class Report(ttk.Frame):
 
         return self._generate_frame
 
-    def _submit(self, tree):
-        # Get data
-        year = self._year_field.get()
-        gpa = self._gpa_field.get()
-
-        if gpa != "":
-            # Validate GPA
-            try:
-                gpa = float(gpa)
-                if not 0.0 <= gpa <= 4.0:
-                    raise ValueError("GPA must be between 0.0 and 4.0")
-                else:
-                    Prolog.update_gpa(gpa)  # update default GPA
-            except ValueError as e:
-                messagebox.showerror("Invalid Input", str(e))
-                return
-        else:
-            gpa = Prolog.get_default_gpa()  # get default gpa
-
+    def _view_report(self, year, gpa, tree):
         # Show submitted message
         messagebox.showinfo("Summary", f"Requesting students from {year}\nwith a maximum GPA of {gpa}")
 
-        # show the report
-        self._view_report(year, gpa, tree)
-
-    def _view_report(self, year, gpa, tree):
         # Update the knowledge base with the given year
         db_manager.update_knowledge_base(year)
 

@@ -10,6 +10,8 @@ if not os.path.exists("../../data"):
     os.makedirs("../../data")  # Create a data directory
 if not os.path.exists("../../reports"):
     os.makedirs("../../reports")  # Create a reports directory
+if not os.path.exists("../../config"):
+    os.makedirs("../../config")  # Create a config directory
 
 # Configure the logging module
 logging.basicConfig(filename='../../logs/app.log', filemode='w',
