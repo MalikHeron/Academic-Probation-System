@@ -3,7 +3,6 @@
 ## Project Structure
 ```bash
 ├── data/                       # Database file
-├── logs/                       # system logs
 ├── res/                        # PNGs, JPEGs, GIFs etc
 ├── src/                        
     ├── prolog/                 # prolog files
