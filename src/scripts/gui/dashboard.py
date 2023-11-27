@@ -259,7 +259,6 @@ class Dashboard(tk.Frame):
         # We then use these values to configure the style for that widget type
         style.configure('TButton', font=(
             font_settings['button_family'], font_settings['button_size'], font_settings['button_style']))
-        style.configure('TCheckbutton', font=('Helvetica', 10, 'normal'))
         style.configure('TLabel',
                         font=(font_settings['label_family'], font_settings['label_size'], font_settings['label_style']))
         style.configure('Treeview', font=(

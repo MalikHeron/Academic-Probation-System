@@ -13,11 +13,11 @@ from scripts.database.queries import DatabaseManager
 class Login(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
-        # Set styles
-        self.configure_styles()
-
         # Set theme
         sv_ttk.use_dark_theme()
+
+        # Set styles
+        self.configure_styles()
 
         # background image
         img = Image.open("../../res/login-background.png")
@@ -45,13 +45,10 @@ class Login(tk.Frame):
         self.remember_me_field = ttk.Checkbutton(form_frame, text='Remember me', variable=self.remember_me)
         self.remember_me_field.place(relx=0.51, rely=0.7, anchor='center')
 
-        style = ttk.Style()
-        style.configure('Custom.TButton', font=('Helvetica', 11, 'normal'))
-
         # Create login button
         login_button = ttk.Button(form_frame, text='Login', width=15, command=self._check_credentials,
-                                  style='Custom.TButton', cursor='hand2')
-        login_button.place(relx=0.51, rely=0.75, anchor='center')
+                                  style='TButton', cursor='hand2')
+        login_button.place(relx=0.51, rely=0.755, anchor='center')
 
         # Create forgot password link
         forgot_password_link = ttk.Label(form_frame, text='Forgot password?', cursor='hand2',
@@ -125,7 +122,10 @@ class Login(tk.Frame):
         style = ttk.Style()
 
         # Configure the font style for Button
-        style.configure('TButton', font=('Helvetica', 10, 'normal'))
+        style.configure('TButton', font=('Helvetica', 11, 'normal'))
 
         # Configure the font style for Label
         style.configure('TLabel', font=('Helvetica', 11, 'normal'))
+
+        # Configure the font style for Checkbutton
+        style.configure('TCheckbutton', font=('Helvetica', 10, 'normal'))
