@@ -1,4 +1,5 @@
 import configparser
+import os
 import time
 import tkinter as tk
 from datetime import datetime
@@ -120,6 +121,12 @@ class Dashboard(tk.Frame):
 
     def _logout(self):
         if messagebox.askokcancel("Confirm Logout", "Do you want to logout?"):
+            # Delete the remember_me.txt file
+            if os.path.exists('../../config/remember_me.txt'):
+                try:
+                    os.remove('../../config/remember_me.txt')
+                except OSError:
+                    print("Error: File is in use and cannot be deleted.")
             # Switch back to the login frame
             self.master.raise_frame('login')
 

@@ -2,7 +2,6 @@
 
 ## Project Structure
 ```bash
-├── data/                       # Database file
 ├── res/                        # PNGs, JPEGs, GIFs etc
 ├── src/                        
     ├── prolog/                 # prolog files
@@ -35,5 +34,6 @@
 - reportlab `pip install reportlab`
 - python-dotenv `pip install python-dotenv`
 - darkdetect `pip install darkdetect`
+- cryptography `pip install cryptography==41.0.5`
 
 > Tested in IntelliJ IDEA (Ultimate Edition) with Python and Prolog plugin.

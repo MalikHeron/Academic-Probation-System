@@ -210,7 +210,7 @@ class Report(ttk.Frame):
 
         # Add the student's data to the dictionaries
         student_data = {"student_id": student_id, "name": name, "cumulative_gpa": cumulative_gpa,
-                        "programme": programme}
+                        "programme": programme, "school": school}
         advisor_students[advisor_id].append(student_data)
         director_students[director_id].append(student_data.copy())
         administrator_students[administrator_id].append({**student_data, "school": school})
@@ -357,6 +357,7 @@ class Report(ttk.Frame):
                     Name: {student['name']} 
                     Cumulative GPA: {student['cumulative_gpa']} 
                     Programme: {student['programme']}
+                    School: {student['school']}
                 """
 
         body = f"""
@@ -392,6 +393,8 @@ class Report(ttk.Frame):
                     Student ID: {student['student_id']} 
                     Name: {student['name']} 
                     Cumulative GPA: {student['cumulative_gpa']}
+                    Programme: {student['programme']}
+                    School: {student['school']}
                 """
 
         body = f"""
@@ -428,6 +431,7 @@ class Report(ttk.Frame):
                     Name: {student['name']} 
                     Cumulative GPA: {student['cumulative_gpa']} 
                     Programme: {student['programme']}
+                    School: {student['school']}
                 """
 
         body = f"""
