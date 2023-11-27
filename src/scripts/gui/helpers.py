@@ -12,7 +12,8 @@ import sv_ttk
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 
 
 class Helpers:
@@ -49,11 +50,18 @@ class Helpers:
         pdf = SimpleDocTemplate(path, pagesize=letter)
         styles = getSampleStyleSheet()
 
+        # Add image at the top center
+        logo = "../../res/icon.ico"  # replace with your image file path
+        im = Image(logo, 0.8 * inch, 0.8 * inch)  # specify image width and height
+        elems = [im]
+
         # Add headers
-        elems = [Paragraph("University of Technology", styles['Title']),
-                 Paragraph("<para align=center>Academic Probation Alert GPA Report</para>", styles['Normal']),
-                 Paragraph(f"<para align=center>Year: {year}</para>", styles['Normal']),
-                 Paragraph(f"<para align=center>GPA: {gpa}</para>", styles['Normal']), Spacer(1, 20)]
+        elems.extend([
+            Paragraph("University of Technology", styles['Title']),
+            Paragraph("<para align=center>Academic Probation Alert GPA Report</para>", styles['Normal']),
+            Paragraph(f"<para align=center>Year: {year}</para>", styles['Normal']),
+            Paragraph(f"<para align=center>GPA: {gpa}</para>", styles['Normal']), Spacer(1, 20)
+        ])
 
         # Create table
         table = Table(data)
@@ -313,7 +321,7 @@ class Helpers:
         canvas.bind('<Configure>', on_configure)
 
         pdf_columns = ("Generated Reports", "Size")
-        pdf_widths = [280, 70]
+        pdf_widths = [280, 100]
         pdf_alignments = ['w', 'center']
 
         # Define columns
