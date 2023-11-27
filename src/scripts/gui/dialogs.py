@@ -586,6 +586,9 @@ class Dialog(tk.Toplevel):
             for setting in font_settings:
                 config.set('Font', setting, getattr(self, f'_{setting}_var').get())
 
+            # Unbind the mouse scroll event
+            canvas.unbind_all("<MouseWheel>")
+
             self.destroy()
 
         # Submit and Cancel buttons
@@ -755,6 +758,13 @@ class Dialog(tk.Toplevel):
         self._result = [str(self._id_field.get()).strip(), str(self._module_field.get()).strip(),
                         str(self._semester_field.get()).strip(), str(self._year_field.get()).strip()]
         self.destroy()
+
+    def destroy(self):
+        # Unbind the mouse scroll event from all widgets
+        self.unbind_all("<MouseWheel>")
+
+        # Call the original destroy method
+        super().destroy()
 
     @property
     def result(self):

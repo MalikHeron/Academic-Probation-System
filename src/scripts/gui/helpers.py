@@ -178,7 +178,7 @@ class Helpers:
     def create_view_table(self, frame, columns, column_widths, column_alignments, remove_func, height=23, data=None,
                           pad_x=0):
         # Create Canvas in new window
-        canvas = tk.Canvas(frame)
+        canvas = tk.Canvas(frame, highlightthickness=0)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
 
         # Create another frame inside the canvas
@@ -217,11 +217,11 @@ class Helpers:
 
     def create_report_tables(self, frame, columns, column_widths, column_alignments, pad, height=23, data=None):
         # Create Canvas in new window
-        canvas = tk.Canvas(frame, takefocus=False)
+        canvas = tk.Canvas(frame, highlightthickness=0)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
 
         # Create another frame inside the canvas
-        report_frame = ttk.Frame(canvas, takefocus=False)
+        report_frame = ttk.Frame(canvas)
 
         # Add that new frame to a new window on the canvas
         canvas.create_window((0, 0), window=report_frame, anchor="ne")
@@ -274,10 +274,10 @@ class Helpers:
         clear_button.pack(padx=pad, pady=(10, 0))
 
         # Create another frame inside the canvas
-        pdf_frame = ttk.Frame(canvas, takefocus=False)
+        pdf_frame = ttk.Frame(canvas)
 
         # Create a frame for the Treeview and the Scrollbar
-        tree_frame = ttk.Frame(pdf_frame, takefocus=False)
+        tree_frame = ttk.Frame(pdf_frame)
 
         # Create Treeview in the new frame
         file_tree = ttk.Treeview(tree_frame, show='headings', style="Treeview", height=height)
@@ -495,33 +495,36 @@ class Helpers:
     def create_label_and_field_setting(frame, label_text, row,
                                        family_variable=None, style_variable=None, size_variable=None, padx=(20, 0),
                                        pady=10,
-                                       l_width=15, f_width=35, font=('Helvetica', 10, 'normal')):
+                                       l_width=15, f_width=35, _font=('Helvetica', 10, 'normal')):
         ttk.Label(frame, text=label_text, width=l_width, anchor="w", font=('Helvetica', 11, 'normal')).grid(row=row,
                                                                                                             column=0,
                                                                                                             pady=pady)
 
+        system_fonts = ["Arial", "Avant Garde", "Bookman", "Courier New", "Garamond", "Georgia", "Helvetica",
+                        "Palatino", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"]
+
         # Family field
-        ttk.Label(frame, text="Family", width=l_width, anchor="w", font=font).grid(row=row + 1, column=0, pady=pady,
-                                                                                   padx=padx)
+        ttk.Label(frame, text="Family", width=l_width, anchor="w", font=_font).grid(row=row + 1, column=0, pady=pady,
+                                                                                    padx=padx)
         family_field = ttk.Combobox(frame, state="readonly",
-                                    values=["Arial", "Consolas", "Helvetica", "Times New Romans"],
+                                    values=system_fonts,
                                     textvariable=family_variable,
-                                    width=f_width - 5, font=font)
+                                    width=f_width - 5, font=_font)
         family_field.grid(row=row + 1, column=1)
 
         # Style field
-        ttk.Label(frame, text="Style", width=l_width, anchor="w", font=font).grid(row=row + 2, column=0, pady=pady,
-                                                                                  padx=padx)
+        ttk.Label(frame, text="Style", width=l_width, anchor="w", font=_font).grid(row=row + 2, column=0, pady=pady,
+                                                                                   padx=padx)
         style_field = ttk.Combobox(frame, state="readonly", values=["bold", "italic", "normal"],
                                    textvariable=style_variable,
-                                   width=f_width - 5, font=font)
+                                   width=f_width - 5, font=_font)
         style_field.grid(row=row + 2, column=1)
 
         # Size field
-        ttk.Label(frame, text="Size", width=l_width, anchor="w", font=font).grid(row=row + 3, column=0, pady=pady,
-                                                                                 padx=padx)
+        ttk.Label(frame, text="Size", width=l_width, anchor="w", font=_font).grid(row=row + 3, column=0, pady=pady,
+                                                                                  padx=padx)
         size_field = ttk.Spinbox(frame, state="readonly", from_=8, to=11,
-                                 textvariable=size_variable, width=f_width - 9, font=font)
+                                 textvariable=size_variable, width=f_width - 9, font=_font)
         size_field.grid(row=row + 3, column=1, pady=(pady, 10))
 
     # Helper functions

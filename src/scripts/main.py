@@ -1,7 +1,6 @@
 import sys
 import tkinter as tk
 from tkinter import messagebox
-from tkinter import ttk
 
 from database.queries import DatabaseManager
 from scripts.gui.dashboard import Dashboard

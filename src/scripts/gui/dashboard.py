@@ -20,9 +20,6 @@ class Dashboard(tk.Frame):
         self._config = configparser.ConfigParser()
         self._config.read('../../config/config.ini')
 
-        # Set styles
-        self.configure_styles()
-
         # Create a ribbon frame below the tabs
         ribbon_frame = ttk.Frame(self)
         ribbon_frame.pack(fill=tk.X)
@@ -155,8 +152,6 @@ class Dashboard(tk.Frame):
         self.after(100, self._update_time)
 
     def set_theme(self):
-        # Set styles
-        self.configure_styles()
         # Check if the theme is set in the config file
         if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
             theme = self._config.get('Theme', 'theme')
@@ -248,8 +243,7 @@ class Dashboard(tk.Frame):
         # If it doesn't, we use the default value from default_font_settings
         font_settings = {
             setting: self._config.get('Font', setting) if self._config.has_option('Font', setting) else
-            default_font_settings[
-                setting]
+            default_font_settings[setting]
             for setting in default_font_settings
         }
 
