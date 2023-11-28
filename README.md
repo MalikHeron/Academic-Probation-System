@@ -34,6 +34,6 @@
 - reportlab `pip install reportlab`
 - python-dotenv `pip install python-dotenv`
 - darkdetect `pip install darkdetect`
-- cryptography `pip install cryptography==41.0.5`
+- cryptography `pip install cryptograph`
 
 > Tested in IntelliJ IDEA (Ultimate Edition) with Python and Prolog plugin.

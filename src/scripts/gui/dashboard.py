@@ -22,8 +22,8 @@ class Dashboard(tk.Frame):
         self._config.read('../../config/config.ini')
 
         # Create a ribbon frame below the tabs
-        ribbon_frame = ttk.Frame(self)
-        ribbon_frame.pack(fill=tk.X)
+        self.ribbon_frame = ttk.Frame(self)
+        self.ribbon_frame.pack(fill=tk.X)
 
         # Load the icon and keep it in memory
         self._dark_theme_icon = tk.PhotoImage(file="../../res/switch-light.png")
@@ -38,18 +38,18 @@ class Dashboard(tk.Frame):
         self._light_settings_icon = tk.PhotoImage(file="../../res/settings-light.png")
 
         # Create a logout button with an icon
-        self._logout_button = ttk.Button(ribbon_frame, text="Logout", image=self._light_logout_icon, compound=tk.LEFT,
+        self._logout_button = ttk.Button(self.ribbon_frame, text="Logout", image=self._light_logout_icon, compound=tk.LEFT,
                                          takefocus=False, cursor="hand2", command=self._logout)
         self._logout_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
-        self._settings_button = ttk.Button(ribbon_frame, text="Settings", image=self._light_settings_icon,
+        self._settings_button = ttk.Button(self.ribbon_frame, text="Settings", image=self._light_settings_icon,
                                            compound=tk.LEFT,
                                            command=self._open_settings, takefocus=False, cursor="hand2")
         self._settings_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
-        self._theme_button = ttk.Button(ribbon_frame, text="Dark Mode", image=self._dark_theme_icon, compound=tk.LEFT,
+        self._theme_button = ttk.Button(self.ribbon_frame, text="Dark Mode", image=self._dark_theme_icon, compound=tk.LEFT,
                                         command=self.switch_theme, takefocus=False, cursor="hand2")
         self._theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
@@ -66,12 +66,12 @@ class Dashboard(tk.Frame):
         }
 
         # Create a label to display the time active
-        self._greeting_label = ttk.Label(ribbon_frame, text=f'Welcome back, {user}', image=self._emoji_icons["morning"],
+        self._greeting_label = ttk.Label(self.ribbon_frame, text=f'Welcome back, {user}', image=self._emoji_icons["morning"],
                                          compound=tk.RIGHT)
         self._greeting_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
 
         # Create a label to display the time active
-        self._time_label = ttk.Label(ribbon_frame, text="")
+        self._time_label = ttk.Label(self.ribbon_frame, text="")
         self._time_label.pack(side=tk.RIGHT, padx=(0, 20), pady=(5, 5))
 
         # Record the start time
@@ -81,30 +81,30 @@ class Dashboard(tk.Frame):
         self._update_time()
 
         # Create frames
-        frame = ttk.Notebook(self)
+        self.frame = ttk.Notebook(self)
 
         # Create tabs
-        tab1 = Views(frame).student_view()
-        tab2 = Views(frame).details_view()
-        tab3 = Views(frame).staff_view()
-        tab4 = Views(frame).module_view()
-        tab5 = Views(frame).faculty_view()
-        tab6 = Views(frame).school_view()
-        tab7 = Views(frame).programme_view()
-        tab8 = Report(frame).generate_view()
+        tab1 = Views(self.frame).student_view()
+        tab2 = Views(self.frame).details_view()
+        tab3 = Views(self.frame).staff_view()
+        tab4 = Views(self.frame).module_view()
+        tab5 = Views(self.frame).faculty_view()
+        tab6 = Views(self.frame).school_view()
+        tab7 = Views(self.frame).programme_view()
+        tab8 = Report(self.frame).generate_view()
 
         # Add tabs to notebook
-        frame.add(tab1, text='Students')
-        frame.add(tab2, text='Student Details')
-        frame.add(tab3, text='Staff')
-        frame.add(tab4, text='Modules')
-        frame.add(tab5, text='Faculties')
-        frame.add(tab6, text='Schools')
-        frame.add(tab7, text='Programmes')
-        frame.add(tab8, text='Reports')
+        self.frame.add(tab1, text='Students')
+        self.frame.add(tab2, text='Student Details')
+        self.frame.add(tab3, text='Staff')
+        self.frame.add(tab4, text='Modules')
+        self.frame.add(tab5, text='Faculties')
+        self.frame.add(tab6, text='Schools')
+        self.frame.add(tab7, text='Programmes')
+        self.frame.add(tab8, text='Reports')
 
         # Place the frames in the window
-        frame.pack(fill=tk.BOTH, expand=True)
+        self.frame.pack(fill=tk.BOTH, expand=True)
 
     def _open_settings(self):
         _dialog = Dialog(self)
@@ -267,3 +267,5 @@ class Dashboard(tk.Frame):
             font_settings['heading_family'], font_settings['heading_size'], font_settings['heading_style']))
         style.configure('TNotebook.Tab', focuscolor='',
                         font=(font_settings['tab_family'], font_settings['tab_size'], font_settings['tab_style']))
+        style.configure('TCombobox', selectbackground=None, selectforeground=None)
+        style.configure('TSpinner', selectbackground=None, selectforeground=None)

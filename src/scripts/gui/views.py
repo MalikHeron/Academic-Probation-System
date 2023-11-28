@@ -62,6 +62,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self._tree = self._helpers.create_view_table(self._student_frame, columns, column_widths, column_alignments,
+                                                     self._update_student,
                                                      self._delete_student,
                                                      data=self._data)
 
@@ -106,6 +107,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self._tree = self._helpers.create_view_table(self._module_frame, columns, column_widths, column_alignments,
+                                                     self._update_module,
                                                      self._delete_module,
                                                      data=self._data,
                                                      pad_x=530)
@@ -150,6 +152,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self._tree = self._helpers.create_view_table(self._details_frame, columns, column_widths, column_alignments,
+                                                     self._update_details,
                                                      self._delete_details,
                                                      data=self._data,
                                                      pad_x=430)
@@ -194,6 +197,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self._tree = self._helpers.create_view_table(self._staff_frame, columns, column_widths, column_alignments,
+                                                     self._update_staff,
                                                      self._delete_staff,
                                                      data=self._data,
                                                      pad_x=480)
@@ -238,6 +242,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self._tree = self._helpers.create_view_table(self._faculty_frame, columns, column_widths, column_alignments,
+                                                     self._update_faculty,
                                                      self._delete_faculty,
                                                      data=self._data,
                                                      pad_x=380)
@@ -282,6 +287,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self._tree = self._helpers.create_view_table(self._school_frame, columns, column_widths, column_alignments,
+                                                     self._update_school,
                                                      self._delete_school,
                                                      data=self._data,
                                                      pad_x=0)
@@ -326,6 +332,7 @@ class Views(ttk.Frame):
 
         # Create Treeview
         self._tree = self._helpers.create_view_table(self._programme_frame, columns, column_widths, column_alignments,
+                                                     self._update_programme,
                                                      self._delete_programme,
                                                      data=self._data,
                                                      pad_x=80)

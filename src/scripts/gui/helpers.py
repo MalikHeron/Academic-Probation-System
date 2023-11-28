@@ -183,7 +183,7 @@ class Helpers:
         # Call this function again after 100 milliseconds to keep the scrollbar updated
         tree.after(100, lambda: self._update_scrollbar(tree, scrollbar, grid=grid))
 
-    def create_view_table(self, frame, columns, column_widths, column_alignments, remove_func, height=23, data=None,
+    def create_view_table(self, frame, columns, column_widths, column_alignments, update_func, remove_func, height=23, data=None,
                           pad_x=0):
         # Create Canvas in new window
         canvas = tk.Canvas(frame, highlightthickness=0)
@@ -218,8 +218,15 @@ class Helpers:
             logging.info(event)
             remove_func()
 
+        def update_record(event):
+            logging.info(event)
+            update_func()
+
         # Bind the function to the Delete key press event
         tree.bind('<Delete>', delete_record)
+
+        # Bind the update function to the treeview double-click event
+        tree.bind('<Double-1>', update_record)
 
         return tree
 
