@@ -175,6 +175,7 @@ class Report(ttk.Frame):
         pdf_data.append([student_id, name, gpa1, gpa2, cumulative_gpa])
 
         # Increment the counter for student alerts
+        # Increment the counter for student alerts
         self._student_alerts += 1
 
         # Disable the generate button to prevent further requests while processing
@@ -284,7 +285,7 @@ class Report(ttk.Frame):
         message.set_content(body)
 
         done = [False]
-        t = threading.Thread(target=self._helpers.animate, args=(done,))
+        t = threading.Thread(target=self._helpers.animate, args=(done, recipient))
         t.start()
 
         try:
@@ -419,7 +420,7 @@ class Report(ttk.Frame):
 
         subject = 'Concern Regarding Student Academic Performance'
         if self.send_email(director['email'], subject, body):
-            self._advisor_alerts -= 1
+            self._director_alerts -= 1
             self._check_alerts_sent()
 
     def send_administrator_alerts(self, administrator, administrator_students, gpa):
@@ -456,7 +457,7 @@ class Report(ttk.Frame):
 
         subject = 'Notification of Student Academic Performance'
         if self.send_email(administrator['email'], subject, body):
-            self._advisor_alerts -= 1
+            self._administrator_alerts -= 1
             self._check_alerts_sent()
 
     def _check_alerts_sent(self, message="Email alerts sent!", color='green'):
