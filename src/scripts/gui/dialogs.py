@@ -549,12 +549,12 @@ class Dialog(tk.Toplevel):
                                                      self._label_family_var, self._label_style_var,
                                                      self._label_size_var)
 
-        self._helpers.create_label_and_field_setting(frame, "Table rows", 10,
-                                                     self._tree_family_var, self._tree_style_var, self._tree_size_var)
-
-        self._helpers.create_label_and_field_setting(frame, "Table Headings", 14,
+        self._helpers.create_label_and_field_setting(frame, "Table headings", 10,
                                                      self._heading_family_var, self._heading_style_var,
                                                      self._heading_size_var)
+
+        self._helpers.create_label_and_field_setting(frame, "Table rows", 14,
+                                                     self._tree_family_var, self._tree_style_var, self._tree_size_var)
 
         self._helpers.create_label_and_field_setting(frame, "Tabs", 18,
                                                      self._tab_family_var, self._tab_style_var, self._tab_size_var)

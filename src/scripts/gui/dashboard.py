@@ -38,7 +38,8 @@ class Dashboard(tk.Frame):
         self._light_settings_icon = tk.PhotoImage(file="../../res/settings-light.png")
 
         # Create a logout button with an icon
-        self._logout_button = ttk.Button(self.ribbon_frame, text="Logout", image=self._light_logout_icon, compound=tk.LEFT,
+        self._logout_button = ttk.Button(self.ribbon_frame, text="Logout", image=self._light_logout_icon,
+                                         compound=tk.LEFT,
                                          takefocus=False, cursor="hand2", command=self._logout)
         self._logout_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
@@ -49,7 +50,8 @@ class Dashboard(tk.Frame):
         self._settings_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
         # Create a theme switch button with an icon
-        self._theme_button = ttk.Button(self.ribbon_frame, text="Dark Mode", image=self._dark_theme_icon, compound=tk.LEFT,
+        self._theme_button = ttk.Button(self.ribbon_frame, text="Dark Mode", image=self._dark_theme_icon,
+                                        compound=tk.LEFT,
                                         command=self.switch_theme, takefocus=False, cursor="hand2")
         self._theme_button.pack(side=tk.RIGHT, padx=(0, 10), pady=(5, 5))
 
@@ -66,7 +68,8 @@ class Dashboard(tk.Frame):
         }
 
         # Create a label to display the time active
-        self._greeting_label = ttk.Label(self.ribbon_frame, text=f'Welcome back, {user}', image=self._emoji_icons["morning"],
+        self._greeting_label = ttk.Label(self.ribbon_frame, text=f'Welcome back, {user}',
+                                         image=self._emoji_icons["morning"],
                                          compound=tk.RIGHT)
         self._greeting_label.pack(side=tk.LEFT, padx=(10, 0), pady=(5, 5))
 
@@ -267,5 +270,3 @@ class Dashboard(tk.Frame):
             font_settings['heading_family'], font_settings['heading_size'], font_settings['heading_style']))
         style.configure('TNotebook.Tab', focuscolor='',
                         font=(font_settings['tab_family'], font_settings['tab_size'], font_settings['tab_style']))
-        style.configure('TCombobox', selectbackground=None, selectforeground=None)
-        style.configure('TSpinner', selectbackground=None, selectforeground=None)

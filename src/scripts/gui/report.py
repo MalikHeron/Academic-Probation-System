@@ -99,10 +99,13 @@ class Report(ttk.Frame):
 
             # Validate the input
             if gpa != "":
+                # Update the default GPA
+                Prolog.update_gpa(gpa)
                 self._helpers.validate({"Year": (self._year_field, "int"), "GPA": (self._gpa_field, "float")},
                                        lambda: self._view_report(year, float(gpa), tree),
                                        args=False)
             else:
+                # Get the default GPA
                 gpa = Prolog.get_default_gpa()
                 self._helpers.validate({"Year": (self._year_field, "int")},
                                        lambda: self._view_report(year, float(gpa), tree),
@@ -285,7 +288,7 @@ class Report(ttk.Frame):
         message.set_content(body)
 
         done = [False]
-        t = threading.Thread(target=self._helpers.animate, args=(done, recipient))
+        t = threading.Thread(target=self._helpers.animate, args=(done,))
         t.start()
 
         try:
@@ -461,7 +464,8 @@ class Report(ttk.Frame):
             self._check_alerts_sent()
 
     def _check_alerts_sent(self, message="Email alerts sent!", color='green'):
-        if self._student_alerts == 0:
+        if self._student_alerts == 0 and self._advisor_alerts == 0 and self._director_alerts == 0 and \
+                self._administrator_alerts == 0:
             self._progressbar.destroy()
             self._alert_var.set(message)
             self._alert_label.config(foreground=color)
