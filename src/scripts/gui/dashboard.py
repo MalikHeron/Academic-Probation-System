@@ -118,7 +118,10 @@ class Dashboard(tk.Frame):
             self.set_theme_config(_dialog.theme)
 
             if _dialog.theme == 'auto':
+                self._theme_button.config(state='disabled')
                 self.update_theme(darkdetect.isDark())
+            else:
+                self._theme_button.config(state='normal')
         # Set styles
         self.configure_styles()
 
@@ -166,6 +169,7 @@ class Dashboard(tk.Frame):
         if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
             theme = self._config.get('Theme', 'theme')
             if theme == 'auto':
+                self._theme_button.config(state='disabled')
                 if darkdetect.isDark():
                     self.set_dark_theme()
                 else:
@@ -184,14 +188,14 @@ class Dashboard(tk.Frame):
         # Check if the theme is set in the config file
         if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
             theme = self._config.get('Theme', 'theme')
+            current_theme = sv_ttk.get_theme()
             if theme == 'auto':
-                current_theme = sv_ttk.get_theme()
                 if is_dark and current_theme != 'dark':
                     self.set_dark_theme()
                 elif not is_dark and current_theme != 'light':
                     self.set_light_theme()
-            # Schedule the next update
-            self.after(1000, self.update_theme, darkdetect.isDark())
+                # Schedule the next update
+                self.after(1000, self.update_theme, darkdetect.isDark())
 
     def set_dark_theme(self):
         self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
@@ -220,6 +224,7 @@ class Dashboard(tk.Frame):
     def set_theme_config(self, theme):
         # Save the theme to the config file
         self._config['Theme'] = {'theme': theme}
+        print(f"Set config - {theme}")
         with open('../../config/config.ini', 'w') as configfile:
             self._config.write(configfile)
 

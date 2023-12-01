@@ -178,7 +178,6 @@ class Report(ttk.Frame):
         pdf_data.append([student_id, name, gpa1, gpa2, cumulative_gpa])
 
         # Increment the counter for student alerts
-        # Increment the counter for student alerts
         self._student_alerts += 1
 
         # Disable the generate button to prevent further requests while processing
@@ -306,8 +305,11 @@ class Report(ttk.Frame):
 
             return True
         except Exception as e:
-            logging.error(f'Error sending alert: {e}')
-            self._check_alerts_sent("Error sending alerts!", 'red')
+            done[0] = True
+            t.join()  # Wait for the animation thread to finish
+            print(f'\rFailed to send alert to {recipient}', flush=True)
+            logging.error(f'Failed to send alert to {recipient}: {e}')
+            self._check_alerts_sent("One or more alerts failed to send", 'red')
             return False
 
     def send_student_alert(self, name, email, school, programme, cumulative_gpa, gpa):
@@ -464,13 +466,13 @@ class Report(ttk.Frame):
             self._check_alerts_sent()
 
     def _check_alerts_sent(self, message="Email alerts sent!", color='green'):
-        if self._student_alerts == 0 and self._advisor_alerts == 0 and self._director_alerts == 0 and \
-                self._administrator_alerts == 0:
+        if ((self._student_alerts and self._advisor_alerts and self._director_alerts and self._administrator_alerts)
+                == 0 or (color == 'red' and message == 'One or more alerts failed to send')):
             self._progressbar.destroy()
             self._alert_var.set(message)
             self._alert_label.config(foreground=color)
             self._generate_button.config(state="normal")
-            self._generate_frame.after(2000, self._remove_alerts)
+            self._generate_frame.after(5000, self._remove_alerts)
 
     def _remove_alerts(self):
         # Remove the label
