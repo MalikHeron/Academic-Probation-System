@@ -2,7 +2,6 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 
-from database.queries import DatabaseManager
 from scripts.gui.dashboard import Dashboard
 from scripts.gui.helpers import Helpers
 from scripts.gui.login import Login
@@ -71,7 +70,6 @@ class AcademicProbationSystem(tk.Tk):
     def _on_closing(self):
         # Ask the user if they want to quit
         if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
-            DatabaseManager().close_connection()  # close database connection
             self.destroy()
 
     def raise_frame(self, name, user=None):

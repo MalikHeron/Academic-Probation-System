@@ -560,7 +560,7 @@ class Helpers:
         # Size field
         ttk.Label(frame, text="Size", width=l_width, anchor="w", font=_font).grid(row=row + 3, column=0, pady=pady,
                                                                                   padx=padx)
-        size_field = ttk.Spinbox(frame, state="readonly", from_=8, to=11,
+        size_field = ttk.Spinbox(frame, state="readonly", from_=8, to=12,
                                  textvariable=size_variable, width=f_width - 9, font=_font)
         size_field.grid(row=row + 3, column=1, pady=(pady, 10))
 

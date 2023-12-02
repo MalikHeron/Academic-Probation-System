@@ -16,6 +16,9 @@ class Login(tk.Frame):
         # Set theme
         sv_ttk.use_dark_theme()
 
+        # Set dark title bar
+        self.master.dark_title_bar()
+
         # Set styles
         self.configure_styles()
 

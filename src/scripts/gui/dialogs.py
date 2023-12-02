@@ -52,6 +52,9 @@ class Dialog(tk.Toplevel):
         self._x_padding, self._y_padding, self._f_width, self._l_width = 20, 20, 28, 11
 
     def initialize_properties(self, title, window_width, window_height):
+        # Hide the window
+        self.withdraw()
+
         # Remove the resize and minimize buttons
         self.resizable(False, False)
         self.attributes('-toolwindow', True)
@@ -74,10 +77,14 @@ class Dialog(tk.Toplevel):
         # Set window size and position
         self.geometry(f"{self._window_width}x{self._window_height}+{position_right}+{position_top}")
 
+        # Get the current theme
         current_theme = sv_ttk.get_theme()
 
         # Set titlebar color
         self._helpers.set_title_bar_mode(self, 0 if current_theme == "light" else 2)
+
+        # Show the window
+        self.deiconify()
 
     def student_dialog(self, title, submit_action):
         # Initialize window properties
@@ -551,6 +558,9 @@ class Dialog(tk.Toplevel):
             # Loop through all font settings and update the config file
             for setting in font_settings:
                 config.set('Font', setting, getattr(self, f'_{setting}_var').get())
+
+            with open('../../config/config.ini', 'w') as configfile:
+                config.write(configfile)
 
             # Unbind the mouse scroll event
             canvas.unbind_all("<MouseWheel>")

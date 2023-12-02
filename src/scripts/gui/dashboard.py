@@ -171,16 +171,16 @@ class Dashboard(tk.Frame):
         self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
         self._logout_button.config(image=self._dark_logout_icon)
         self._settings_button.config(image=self._dark_settings_icon)
-        sv_ttk.use_dark_theme()
         self.master.dark_title_bar()
+        sv_ttk.use_dark_theme()
         self.configure_styles()
 
     def set_light_theme(self):
         self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
         self._logout_button.config(image=self._light_logout_icon)
         self._settings_button.config(image=self._light_settings_icon)
-        sv_ttk.use_light_theme()
         self.master.light_title_bar()
+        sv_ttk.use_light_theme()
         self.configure_styles()
 
     def switch_theme(self):
