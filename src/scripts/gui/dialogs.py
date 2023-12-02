@@ -2,6 +2,8 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
+import sv_ttk
+
 from scripts.database.queries import DatabaseManager
 from scripts.gui.helpers import Helpers
 
@@ -71,6 +73,11 @@ class Dialog(tk.Toplevel):
 
         # Set window size and position
         self.geometry(f"{self._window_width}x{self._window_height}+{position_right}+{position_top}")
+
+        current_theme = sv_ttk.get_theme()
+
+        # Set titlebar color
+        self._helpers.set_title_bar_mode(self, 0 if current_theme == "light" else 2)
 
     def student_dialog(self, title, submit_action):
         # Initialize window properties
@@ -438,7 +445,7 @@ class Dialog(tk.Toplevel):
         canvas.bind_all("<MouseWheel>", _on_mousewheel)
 
         # Create the input frame
-        frame = ttk.Frame(canvas, padding=[30, 0])
+        frame = ttk.Frame(canvas, padding=[30, 0, 0, 80])
 
         # Add the frame to the canvas
         canvas.create_window((0, 0), window=frame, anchor="nw")
@@ -559,7 +566,7 @@ class Dialog(tk.Toplevel):
                             takefocus=False, state='disabled')
         button.pack(side="left", anchor='center')
 
-        # Monitor changes to the theme field and update the button state
+        # Monitor changes to the fields and update the button state
         def check_config(*args):
             # Check if any values have changed
             for key, original_value in self.original_values.items():

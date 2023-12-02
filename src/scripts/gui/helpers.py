@@ -1,3 +1,4 @@
+import ctypes as ct
 import itertools
 import logging
 import os
@@ -89,6 +90,26 @@ class Helpers:
 
         # Return the report name
         return path
+
+    @staticmethod
+    def set_title_bar_mode(window, mode):
+        # Update the current state of the window
+        window.update()
+
+        # Access the DwmSetWindowAttribute function from the dwmapi DLL
+        set_window_attribute = ct.windll.dwmapi.DwmSetWindowAttribute
+
+        # Access the GetParent function from the user32 DLL
+        get_parent = ct.windll.user32.GetParent
+
+        # Get the handle to the parent window
+        hwnd = get_parent(window.winfo_id())
+
+        # Set the attribute value based on the mode
+        value = ct.c_int(mode)
+
+        # Set the window attribute
+        set_window_attribute(hwnd, 20, ct.byref(value), ct.sizeof(value))
 
     @staticmethod
     def animate(done):
@@ -183,7 +204,8 @@ class Helpers:
         # Call this function again after 100 milliseconds to keep the scrollbar updated
         tree.after(100, lambda: self._update_scrollbar(tree, scrollbar, grid=grid))
 
-    def create_view_table(self, frame, columns, column_widths, column_alignments, update_func, remove_func, height=23, data=None,
+    def create_view_table(self, frame, columns, column_widths, column_alignments, update_func, remove_func, height=23,
+                          data=None,
                           pad_x=0):
         # Create Canvas in new window
         canvas = tk.Canvas(frame, highlightthickness=0)

@@ -4,6 +4,7 @@ from tkinter import messagebox
 
 from database.queries import DatabaseManager
 from scripts.gui.dashboard import Dashboard
+from scripts.gui.helpers import Helpers
 from scripts.gui.login import Login
 
 # setting path
@@ -17,6 +18,9 @@ class AcademicProbationSystem(tk.Tk):
 
         # Hide the window
         self.withdraw()
+
+        # Initialize helpers
+        self._helpers = Helpers()
 
         # Set window title and icon
         self.title('Academic Probation System')
@@ -83,6 +87,14 @@ class AcademicProbationSystem(tk.Tk):
 
         self._frames[name] = self.frame
         self.frame.grid(row=0, column=0, sticky="nsew")
+
+    def dark_title_bar(self):
+        # Set the title bar to dark mode
+        self._helpers.set_title_bar_mode(self, 2)
+
+    def light_title_bar(self):
+        # Set the title bar to light mode
+        self._helpers.set_title_bar_mode(self, 0)
 
     def run(self):
         self.mainloop()
