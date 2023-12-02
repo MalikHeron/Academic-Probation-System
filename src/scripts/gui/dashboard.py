@@ -6,7 +6,6 @@ from datetime import datetime
 from tkinter import messagebox
 from tkinter import ttk
 
-import darkdetect
 import sv_ttk
 
 from scripts.gui.dialogs import Dialog
@@ -113,15 +112,6 @@ class Dashboard(tk.Frame):
         _dialog = Dialog(self)
         _dialog.settings_dialog(self._config)
         _dialog.wait_window()
-        if _dialog.theme is not None:
-            # Save the theme to the config file
-            self.set_theme_config(_dialog.theme)
-
-            if _dialog.theme == 'auto':
-                self._theme_button.config(state='disabled')
-                self.update_theme(darkdetect.isDark())
-            else:
-                self._theme_button.config(state='normal')
         # Set styles
         self.configure_styles()
 
@@ -168,14 +158,7 @@ class Dashboard(tk.Frame):
         # Check if the theme is set in the config file
         if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
             theme = self._config.get('Theme', 'theme')
-            if theme == 'auto':
-                self._theme_button.config(state='disabled')
-                if darkdetect.isDark():
-                    self.set_dark_theme()
-                else:
-                    self.set_light_theme()
-                self.update_theme(darkdetect.isDark())
-            elif theme == 'dark':
+            if theme == 'dark':
                 self.set_dark_theme()
             else:
                 self.set_light_theme()
@@ -183,19 +166,6 @@ class Dashboard(tk.Frame):
             # Create a style
             sv_ttk.use_light_theme()
             self.configure_styles()
-
-    def update_theme(self, is_dark):
-        # Check if the theme is set in the config file
-        if self._config.has_section('Theme') and self._config.has_option('Theme', 'theme'):
-            theme = self._config.get('Theme', 'theme')
-            current_theme = sv_ttk.get_theme()
-            if theme == 'auto':
-                if is_dark and current_theme != 'dark':
-                    self.set_dark_theme()
-                elif not is_dark and current_theme != 'light':
-                    self.set_light_theme()
-                # Schedule the next update
-                self.after(1000, self.update_theme, darkdetect.isDark())
 
     def set_dark_theme(self):
         self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
@@ -224,7 +194,6 @@ class Dashboard(tk.Frame):
     def set_theme_config(self, theme):
         # Save the theme to the config file
         self._config['Theme'] = {'theme': theme}
-        print(f"Set config - {theme}")
         with open('../../config/config.ini', 'w') as configfile:
             self._config.write(configfile)
 

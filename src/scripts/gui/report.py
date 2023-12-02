@@ -477,3 +477,5 @@ class Report(ttk.Frame):
     def _remove_alerts(self):
         # Remove the label
         self._alert_var.set("")
+
+# Send emails in batch eg; to 5 students at a time

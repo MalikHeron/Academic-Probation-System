@@ -2,8 +2,6 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
-import sv_ttk
-
 from scripts.database.queries import DatabaseManager
 from scripts.gui.helpers import Helpers
 
@@ -14,7 +12,6 @@ class Dialog(tk.Toplevel):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
         self.original_values = None
-        self._theme_var = None
         self._button_family_var = None
         self._button_size_var = None
         self._button_style_var = None
@@ -446,9 +443,6 @@ class Dialog(tk.Toplevel):
         # Add the frame to the canvas
         canvas.create_window((0, 0), window=frame, anchor="nw")
 
-        # Theme
-        self._theme_var = tk.StringVar()
-
         # Variables for Buttons
         self._button_family_var = tk.StringVar()
         self._button_size_var = tk.StringVar()
@@ -474,27 +468,6 @@ class Dialog(tk.Toplevel):
         self._tab_size_var = tk.StringVar()
         self._tab_style_var = tk.StringVar()
 
-        # Check if the theme is set in the config file
-        if config.has_section('Theme') and config.has_option('Theme', 'theme'):
-            theme = config.get('Theme', 'theme')
-            # Check if the theme is set to auto
-            if theme == 'auto':
-                theme = "Use system settings"
-            else:
-                theme = "Manual"
-            # Set the default value
-            self._theme_var.set(theme)
-        else:
-            self._theme_var.set("Manual")
-
-        ttk.Label(frame, text="App Theme", width=self._l_width + 3, anchor="w").grid(row=0, column=0,
-                                                                                     pady=self._y_padding)
-        self._theme_field = ttk.Combobox(frame, state="readonly", values=["Manual", "Use system settings"],
-                                         textvariable=self._theme_var,
-                                         width=self._f_width + 2,
-                                         font=('Helvetica', 10, 'normal'))
-        self._theme_field.grid(row=0, column=1, pady=self._y_padding)
-
         def get_font_config(section, option, default):
             if config.has_section(section) and config.has_option(section, option):
                 return config.get(section, option)
@@ -519,7 +492,6 @@ class Dialog(tk.Toplevel):
         self._tab_style_var.set(get_font_config('Font', 'tab_style', "normal"))
 
         self.original_values = {
-            'theme': self._theme_var.get(),
             'button_family': self._button_family_var.get(),
             'button_size': self._button_size_var.get(),
             'button_style': self._button_style_var.get(),
@@ -537,9 +509,9 @@ class Dialog(tk.Toplevel):
             'tab_style': self._tab_style_var.get(),
         }
 
-        ttk.Separator(frame, orient="horizontal").grid(row=1, column=0, columnspan=3, sticky="ew")
+        ttk.Separator(frame, orient="horizontal").grid(row=1, column=0, columnspan=3, pady=(10, 10), sticky="ew")
         ttk.Label(frame, text=" Customize Fonts", width=self._l_width + 5, anchor="w",
-                  font=('Helvetica', 11, 'bold')).grid(row=1, column=0, columnspan=3)
+                  font=('Helvetica', 11, 'bold')).grid(row=1, column=0, columnspan=3, pady=(10, 10))
 
         self._helpers.create_label_and_field_setting(frame, "Buttons", 2,
                                                      self._button_family_var, self._button_style_var,
@@ -560,19 +532,6 @@ class Dialog(tk.Toplevel):
                                                      self._tab_family_var, self._tab_style_var, self._tab_size_var)
 
         def update_config(*args):
-            if self._theme_var.get() != "Manual":
-                self._theme = "auto"
-            else:
-                current_theme = sv_ttk.get_theme()
-                self._theme = current_theme
-
-            # Check if the 'Theme' section exists, if not create it
-            if not config.has_section('Theme'):
-                config.add_section('Theme')
-
-            # Update the config file
-            config.set('Theme', 'theme', self._theme)
-
             # List of all font settings
             font_settings = ['button_family', 'button_size', 'button_style', 'label_family', 'label_size',
                              'label_style', 'tree_family', 'tree_size', 'tree_style', 'heading_family', 'heading_size',
@@ -614,7 +573,6 @@ class Dialog(tk.Toplevel):
             button['state'] = 'disabled'
 
         # Call update_config when the theme value changes
-        self._theme_var.trace('w', check_config)
         self._button_family_var.trace('w', check_config)
         self._button_size_var.trace('w', check_config)
         self._button_style_var.trace('w', check_config)
@@ -631,7 +589,7 @@ class Dialog(tk.Toplevel):
         self._tab_size_var.trace('w', check_config)
         self._tab_style_var.trace('w', check_config)
 
-        self._theme_field.focus_set()  # Make the entry field focused
+        button.focus_set()  # Make the entry field focused
 
     def single_input_dialog(self, text, get_func, get_id):
         # Initialize window properties
