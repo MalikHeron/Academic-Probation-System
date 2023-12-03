@@ -35,10 +35,7 @@ class AcademicProbationSystem(tk.Tk):
 
         # Set window size and position
         self.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
-        self.resizable(False, False)
-
-        # Bind function to window resize event
-        self.bind('<Configure>', self._on_resize)
+        self.resizable(True, True)
 
         # window close event
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
@@ -60,11 +57,6 @@ class AcademicProbationSystem(tk.Tk):
         # Ask the user if they want to quit
         if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
             self.destroy()
-
-    def _on_resize(self, event):
-        # Update the current window size
-        self.window_width = event.width
-        self.window_height = event.height
 
     def raise_frame(self, name, user=None):
         # Destroy the current frame

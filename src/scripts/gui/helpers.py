@@ -252,7 +252,8 @@ class Helpers:
 
         return tree
 
-    def create_report_tables(self, frame, columns, column_widths, column_alignments, pad, height=23, data=None):
+    def create_report_tables(self, frame, columns, column_widths, column_alignments, pad, _width, _original_width,
+                             height=23, data=None):
         # Create Canvas in new window
         canvas = tk.Canvas(frame, highlightthickness=0)
         canvas.pack(side=tk.LEFT, fill='both', expand=True)
@@ -350,7 +351,8 @@ class Helpers:
         canvas.bind('<Configure>', on_configure)
 
         pdf_columns = ("Generated Reports", "Size")
-        pdf_widths = [280, 100]
+        pdf_widths = [int(_width * (280 / _original_width)),
+                      int(_width * (100 / _original_width))]
         pdf_alignments = ['w', 'center']
 
         # Define columns

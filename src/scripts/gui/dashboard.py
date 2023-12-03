@@ -94,6 +94,13 @@ class Dashboard(tk.Frame):
         self.frame = ttk.Notebook(self)
 
         # Create tabs
+        self.create_tabs()
+
+        # Bind the <Configure> event to the update_size method
+        self.frame.bind('<Configure>', self.update_size)
+
+    def create_tabs(self):
+        # Create tabs
         tab1 = Views(self.frame, self._master).student_view()
         tab2 = Views(self.frame, self._master).details_view()
         tab3 = Views(self.frame, self._master).staff_view()
@@ -101,7 +108,7 @@ class Dashboard(tk.Frame):
         tab5 = Views(self.frame, self._master).faculty_view()
         tab6 = Views(self.frame, self._master).school_view()
         tab7 = Views(self.frame, self._master).programme_view()
-        tab8 = Report(self.frame).generate_view()
+        tab8 = Report(self.frame, self._master).generate_view()
 
         # Add tabs to notebook
         self.frame.add(tab1, text='Students')
@@ -115,6 +122,14 @@ class Dashboard(tk.Frame):
 
         # Place the frames in the window
         self.frame.pack(fill=tk.BOTH, expand=True)
+
+    def update_size(self, event):
+        # Forget each tab in the notebook
+        for tab in self.frame.tabs():
+            self.frame.forget(tab)
+
+        # Update the size of the notebook
+        self.create_tabs()
 
     def _open_settings(self):
         _dialog = Dialog(self)

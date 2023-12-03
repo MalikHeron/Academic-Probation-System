@@ -38,6 +38,18 @@ class Login(tk.Frame):
 
         self.add_widgets()
 
+        # Bind the <Configure> event to the update_size method
+        self.form_frame.bind('<Configure>', self.update_size)
+
+    def update_size(self, event):
+        # Resize the image
+        img = Image.open("../../res/login-background.png")
+        img = img.resize((int(event.width + 2), int(event.height + 2)))
+        self._background_image = ImageTk.PhotoImage(img)
+
+        # Update the form_frame widget to use the resized image
+        self.form_frame.config(image=self._background_image)
+
     def add_widgets(self):
         # Create username label and entry
         self._username_entry = ttk.Entry(self.form_frame, width=35, font=('Helvetica', 11, 'normal'))

@@ -20,8 +20,13 @@ load_dotenv('../.env')
 
 class Report(ttk.Frame):
 
-    def __init__(self, parent):
+    def __init__(self, parent, master):
         super().__init__(parent)
+        self._master = master
+        self._width = self._master.winfo_width()
+        self._height = self._master.winfo_height()
+        self._original_width = 1330  # define the original screen width
+        self._table_height = int((self._height / 900) * 26)  # Calculate table height based on window size
         self._first_focus = None
         self._min_year = None
         self._max_year = None
@@ -118,11 +123,19 @@ class Report(ttk.Frame):
 
         # Define columns
         columns = ("Student ID", "Student Name", "GPA Semester 1", "GPA Semester 2", "Cumulative GPA")
-        column_widths = [100, 200, 200, 200, 150]
+        column_widths = [int(self._width * (100 / self._original_width)),
+                         int(self._width * (200 / self._original_width)),
+                         int(self._width * (200 / self._original_width)),
+                         int(self._width * (200 / self._original_width)),
+                         int(self._width * (150 / self._original_width))]
         column_alignments = ['center', 'w', 'center', 'center', 'center']
 
         # Create Treeview
-        tree = self._helpers.create_report_tables(self._generate_frame, columns, column_widths, column_alignments, 10)
+        tree = self._helpers.create_report_tables(self._generate_frame, columns, column_widths, column_alignments,
+                                                  10,
+                                                  self._width,
+                                                  self._original_width,
+                                                  height=self._table_height)
 
         return self._generate_frame
 
