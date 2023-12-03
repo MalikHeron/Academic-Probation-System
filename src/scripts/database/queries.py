@@ -37,8 +37,9 @@ class DatabaseManager:
                 if sql == sql_create_details_table:
                     try:
                         cursor.execute(sql_create_unique_index)
-                    except Error as e:
-                        logging.warning(e)
+                    except Error:
+                        # Ignore error if the index already exists
+                        pass
             conn.commit()
         except Error as e:
             logging.error(f"An error occurred: {e}")

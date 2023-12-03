@@ -1,11 +1,10 @@
-import os
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
+import keyring
 import sv_ttk
 from PIL import ImageTk, Image
-from cryptography.fernet import Fernet
 
 from scripts.database.queries import DatabaseManager
 from scripts.gui.helpers import Helpers
@@ -14,7 +13,13 @@ from scripts.gui.helpers import Helpers
 class Login(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
+        # Initialize variables
+        self.remember_me_field = None
+        self.remember_me = None
+        self._password_entry = None
+        self._username_entry = None
         self._master = master
+
         # Set theme
         sv_ttk.use_dark_theme()
 
@@ -81,19 +86,15 @@ class Login(tk.Frame):
         forgot_password_link.bind("<Button-1>", self.__forgot_password)
 
         # Load credentials if remember_me file exists
-        if os.path.exists('../../config/remember_me.txt'):
-            with open('../../config/remember_me.txt', 'r') as file:
-                key = file.readline()
-                cipher_suite = Fernet(key)
-                username = cipher_suite.decrypt(file.readline().encode()).decode()
-                password = cipher_suite.decrypt(file.readline().encode()).decode()
+        username = keyring.get_password("AcademicProbationSystem", "username")
+        password = keyring.get_password("AcademicProbationSystem", "password")
+        if username and password:
+            self._username_entry.delete(0, tk.END)
+            self._username_entry.insert(0, username)
+            self._password_entry.delete(0, tk.END)
+            self._password_entry.insert(0, password)
 
-                self._username_entry.delete(0, tk.END)
-                self._username_entry.insert(0, username)
-                self._password_entry.delete(0, tk.END)
-                self._password_entry.insert(0, password)
-
-                self._check_credentials()
+            self._check_credentials()
 
     def _clear_username(self, event):
         if self._username_entry.get() == 'Username':
@@ -127,12 +128,8 @@ class Login(tk.Frame):
 
             if self.remember_me.get() == 1:
                 # Save credentials if remember_me is checked
-                key = Fernet.generate_key()
-                cipher_suite = Fernet(key)
-                with open('../../config/remember_me.txt', 'w') as file:
-                    file.write(key.decode() + '\n')
-                    file.write(cipher_suite.encrypt(username.encode()).decode() + '\n')
-                    file.write(cipher_suite.encrypt(password.encode()).decode())
+                keyring.set_password("AcademicProbationSystem", "username", username)
+                keyring.set_password("AcademicProbationSystem", "password", password)
         else:
             messagebox.showerror('Login Error', 'Incorrect username or password.')
 

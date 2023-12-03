@@ -1,4 +1,4 @@
-import configparser
+import json
 import tkinter as tk
 from tkinter import messagebox
 
@@ -15,8 +15,7 @@ class AcademicProbationSystem(tk.Tk):
         self.withdraw()
 
         # Load the configuration
-        self._config = configparser.ConfigParser()
-        self._config.read('../../config/window_state.ini')
+        self._config = self.load_config()
 
         # Set window title and icon
         self.title('Academic Probation System')
@@ -55,16 +54,24 @@ class AcademicProbationSystem(tk.Tk):
         self.raise_frame('login')
 
         # Check if the window was maximized last time
-        if self._config.getboolean('DEFAULT', 'Maximized', fallback=False):
+        if self._config.get('DEFAULT', {}).get('Maximized', False):
             self.state('zoomed')
 
         # Show the window
         self.deiconify()
 
+    @staticmethod
+    def load_config():
+        try:
+            with open('../../config/window_state.json', 'r') as configfile:
+                return json.load(configfile)
+        except FileNotFoundError:
+            return {}
+
     def _on_closing(self):
-        self._config['DEFAULT'] = {'Maximized': str(self.state() == 'zoomed')}
-        with open('../../config/window_state.ini', 'w') as configfile:
-            self._config.write(configfile)
+        self._config['DEFAULT'] = {'Maximized': self.state() == 'zoomed'}
+        with open('../../config/window_state.json', 'w') as configfile:
+            json.dump(self._config, configfile)
 
         # Ask the user if they want to quit
         if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):

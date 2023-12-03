@@ -237,11 +237,9 @@ class Helpers:
                 tree.insert("", "end", values=item)
 
         def delete_record(event):
-            logging.info(event)
             remove_func()
 
         def update_record(event):
-            logging.info(event)
             update_func()
 
         # Bind the function to the Delete key press event
@@ -374,7 +372,6 @@ class Helpers:
 
         # Open the selected PDF file when clicked
         def open_selected_files(event):
-            logging.info(event)
             for selected_item in file_tree.selection():
                 self.open_pdf(os.path.join(folder_path, file_tree.item(selected_item)['values'][0]))
 
@@ -396,7 +393,6 @@ class Helpers:
 
         # Function to delete a file
         def delete_file(event):
-            logging.info(event)
             selected_items = file_tree.selection()  # get selected items
 
             if messagebox.askokcancel("Confirm", "Are you sure you want to delete the selected item(s)?"):
@@ -408,7 +404,6 @@ class Helpers:
 
         # Update delete button state based on treeview selection
         def update_delete_button(event):
-            logging.info(event)
             if file_tree.selection():
                 delete_button.config(state="normal")
             else:
@@ -499,7 +494,6 @@ class Helpers:
         self._update_button.config(state='disabled')
 
         def on_tree_select(event):
-            logging.info(event)
             # Enable the update button when only one item is selected
             selected = tree.selection()
             if len(selected) == 1:
@@ -510,7 +504,6 @@ class Helpers:
                 tree.bind('<Control-u>', lambda e: None)
 
         def on_command(event):
-            logging.info(event)
             if event.keysym == "Delete":
                 delete()
             elif event.keysym == "a":
