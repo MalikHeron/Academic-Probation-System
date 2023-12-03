@@ -8,3 +8,7 @@ __pycache__
 /src/reports/
 build.json
 /src/.env
+/output/config/
+/output/data/
+/output/logs/
+/output/reports/
