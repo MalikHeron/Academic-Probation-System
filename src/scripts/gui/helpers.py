@@ -179,7 +179,7 @@ class Helpers:
         scrollbar.grid_remove()  # Initially hide the scrollbar
 
         # Update the scrollbar every 100ms
-        self._update_scrollbar(tree, scrollbar)
+        self._update_scrollbar(tree, scrollbar, height=height)
 
         # Configure the Treeview
         tree.configure(yscrollcommand=scrollbar.set)
@@ -202,7 +202,7 @@ class Helpers:
             else:
                 scrollbar.pack_forget()
         # Call this function again after 100 milliseconds to keep the scrollbar updated
-        tree.after(100, lambda: self._update_scrollbar(tree, scrollbar, grid=grid))
+        tree.after(100, lambda: self._update_scrollbar(tree, scrollbar, height, grid=grid))
 
     def create_view_table(self, frame, columns, column_widths, column_alignments, update_func, remove_func, height=23,
                           data=None,
@@ -329,7 +329,7 @@ class Helpers:
         scrollbar.pack_forget()  # Initially hide the scrollbar
 
         # Update the scrollbar every 100ms
-        self._update_scrollbar(file_tree, scrollbar, grid=False)
+        self._update_scrollbar(file_tree, scrollbar, height=height, grid=False)
 
         # Configure the Treeview
         file_tree.configure(yscrollcommand=scrollbar.set)

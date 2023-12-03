@@ -33,7 +33,6 @@
 - sqlite3 `pip install sqlite3`
 - reportlab `pip install reportlab`
 - python-dotenv `pip install python-dotenv`
-- darkdetect `pip install darkdetect`
 - cryptography `pip install cryptograph`
 
 > Tested in IntelliJ IDEA (Ultimate Edition) with Python and Prolog plugin.
