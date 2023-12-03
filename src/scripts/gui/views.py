@@ -17,8 +17,13 @@ global school_count  # keep track of the number of school records
 
 class Views(ttk.Frame):
 
-    def __init__(self, parent):
+    def __init__(self, parent, master):
         super().__init__(parent)
+        self._master = master
+        self._width = self._master.winfo_width()
+        self._height = self._master.winfo_height()
+        self._original_width = 1330  # define the original screen width
+        self._table_height = int((self._height / 900) * 26)  # Calculate table height based on window size
         self._search_bar = None
         self._data = None
         self._tree = None
@@ -34,43 +39,65 @@ class Views(ttk.Frame):
         self._parent = parent
         self._record_count_var = tk.StringVar()
 
-    # View functions
-    def student_view(self):
-        # Create student frame
-        self._student_frame = ttk.Frame(self._parent)
-        self._student_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
-        # Get data
-        self._data = db_manager.get_students()
-
-        # Set global record count
-        global student_count
-        student_count = len(self._data)
+    def create_view_frame(self):
+        # Create frame
+        frame = ttk.Frame(self._parent)
+        frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
         # Labels
-        self._record_count_var.set(f"Number of Records: {student_count}")
-        self._record_count_label = ttk.Label(self._student_frame, textvariable=self._record_count_var)
+        self._record_count_var.set(f"Number of Records: {len(self._data)}")
+        self._record_count_label = ttk.Label(frame, textvariable=self._record_count_var)
         self._record_count_label.pack(side="top", pady=(10, 0))
 
-        # Define columns
-        columns = ("ID", "Student Name", "Student Email", "School", "Programme", "Advisor")
-        column_widths = [50, 150, 250, 380, 300, 150]
-        column_alignments = ["center", "w", "w", "w", "w", "w"]
-
         # Create search bar
-        self._search_bar = self._helpers.create_search_bar(self._student_frame)
+        self._search_bar = self._helpers.create_search_bar(frame)
+
+        return frame
+
+    def create_view_table(self, frame, columns, column_widths, column_alignments, update_func, delete_func, data):
+        # Calculate padding
+        padx = self._width - sum(column_widths) - 52
+        padx = 0 if padx < 0 else padx
 
         # Create Treeview
-        self._tree = self._helpers.create_view_table(self._student_frame, columns, column_widths, column_alignments,
-                                                     self._update_student,
-                                                     self._delete_student,
-                                                     data=self._data)
+        tree = self._helpers.create_view_table(frame, columns, column_widths, column_alignments,
+                                               update_func,
+                                               delete_func,
+                                               data=data,
+                                               height=self._table_height,
+                                               pad_x=padx)
 
         # Update search function whenever search text is changed
         self._update_search()
 
         # Pack the tree
-        self._tree.grid(padx=10)
+        tree.grid(padx=10)
+
+        return tree
+
+    # View functions
+    def student_view(self):
+        # Get data
+        self._data = db_manager.get_students()
+
+        # Create student frame
+        self._student_frame = self.create_view_frame()
+
+        # Define columns
+        columns = ("ID", "Student Name", "Student Email", "School", "Programme", "Advisor")
+        column_widths = [int(self._width * (50 / self._original_width)),
+                         int(self._width * (150 / self._original_width)),
+                         int(self._width * (250 / self._original_width)),
+                         int(self._width * (380 / self._original_width)),
+                         int(self._width * (300 / self._original_width)),
+                         int(self._width * (150 / self._original_width))]
+        column_alignments = ["center", "w", "w", "w", "w", "w"]
+
+        # Create Treeview
+        self._tree = self.create_view_table(self._student_frame, columns, column_widths, column_alignments,
+                                            self._update_student,
+                                            self._delete_student,
+                                            data=self._data)
 
         # Button configurations
         self._helpers.create_crud_buttons(self._student_frame, self._tree, db_manager.get_students, self._add_student,
@@ -81,42 +108,24 @@ class Views(ttk.Frame):
         return self._student_frame
 
     def module_view(self):
-        # Create module frame
-        self._module_frame = ttk.Frame(self._parent)
-        self._module_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
         # Get data
         self._data = db_manager.get_modules()
 
-        # Set global record count
-        global module_count
-        module_count = len(self._data)
-
-        # Labels
-        self._record_count_var.set(f"Number of Records: {module_count}")
-        self._record_count_label = ttk.Label(self._module_frame, textvariable=self._record_count_var)
-        self._record_count_label.pack(side="top", pady=(10, 0))
+        # Create module frame
+        self._module_frame = self.create_view_frame()
 
         # Define columns
         columns = ("Module Code", "Module Name", "Accreditation")
-        column_widths = [200, 400, 150]
+        column_widths = [int(self._width * (200 / self._original_width)),
+                         int(self._width * (400 / self._original_width)),
+                         int(self._width * (150 / self._original_width))]
         column_alignments = ["center", "w", "center"]
 
-        # Create search bar
-        self._search_bar = self._helpers.create_search_bar(self._module_frame)
-
         # Create Treeview
-        self._tree = self._helpers.create_view_table(self._module_frame, columns, column_widths, column_alignments,
-                                                     self._update_module,
-                                                     self._delete_module,
-                                                     data=self._data,
-                                                     pad_x=530)
-
-        # Update search function whenever search text is changed
-        self._update_search()
-
-        # Pack the tree
-        self._tree.grid(padx=10)
+        self._tree = self.create_view_table(self._module_frame, columns, column_widths, column_alignments,
+                                            self._update_module,
+                                            self._delete_module,
+                                            data=self._data)
 
         # Button configurations
         self._helpers.create_crud_buttons(self._module_frame, self._tree, db_manager.get_modules, self._add_module,
@@ -126,42 +135,26 @@ class Views(ttk.Frame):
         return self._module_frame
 
     def details_view(self):
-        # Create details frame
-        self._details_frame = ttk.Frame(self._parent)
-        self._details_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
         # Get data
         self._data = db_manager.get_details()
 
-        # Set global record count
-        global details_count
-        details_count = len(self._data)
-
-        # Labels
-        self._record_count_var.set(f"Number of Records: {details_count}")
-        self._record_count_label = ttk.Label(self._details_frame, textvariable=self._record_count_var)
-        self._record_count_label.pack(side="top", pady=(10, 0))
+        # Create details frame
+        self._details_frame = self.create_view_frame()
 
         # Define columns
         columns = ("Student ID", "Module", "Grade Point Average", "Semester", "Year")
-        column_widths = [100, 250, 200, 150, 150]
+        column_widths = [int(self._width * (100 / self._original_width)),
+                         int(self._width * (250 / self._original_width)),
+                         int(self._width * (200 / self._original_width)),
+                         int(self._width * (150 / self._original_width)),
+                         int(self._width * (150 / self._original_width))]
         column_alignments = ["center", "w", "center", "center", "center"]
 
-        # Create search bar
-        self._search_bar = self._helpers.create_search_bar(self._details_frame)
-
         # Create Treeview
-        self._tree = self._helpers.create_view_table(self._details_frame, columns, column_widths, column_alignments,
-                                                     self._update_details,
-                                                     self._delete_details,
-                                                     data=self._data,
-                                                     pad_x=430)
-
-        # Update search function whenever search text is changed
-        self._update_search()
-
-        # Pack the tree
-        self._tree.grid(padx=10)
+        self._tree = self.create_view_table(self._details_frame, columns, column_widths, column_alignments,
+                                            self._update_details,
+                                            self._delete_details,
+                                            data=self._data)
 
         # Button configurations
         self._helpers.create_crud_buttons(self._details_frame, self._tree, db_manager.get_details, self._add_details,
@@ -171,42 +164,25 @@ class Views(ttk.Frame):
         return self._details_frame
 
     def staff_view(self):
-        # Create staff frame
-        self._staff_frame = ttk.Frame(self._parent)
-        self._staff_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
         # Get data
         self._data = db_manager.get_staff()
 
-        # Set global record count
-        global staff_count
-        staff_count = len(self._data)
-
-        # Labels
-        self._record_count_var.set(f"Number of Records: {staff_count}")
-        self._record_count_label = ttk.Label(self._staff_frame, textvariable=self._record_count_var)
-        self._record_count_label.pack(side="top", pady=(10, 0))
+        # Create staff frame
+        self._staff_frame = self.create_view_frame()
 
         # Define columns
         columns = ("Staff ID", "Name", "Email", "Position")
-        column_widths = [100, 200, 300, 200]
+        column_widths = [int(self._width * (100 / self._original_width)),
+                         int(self._width * (200 / self._original_width)),
+                         int(self._width * (300 / self._original_width)),
+                         int(self._width * (200 / self._original_width))]
         column_alignments = ["center", "w", "w", "w"]
 
-        # Create search bar
-        self._search_bar = self._helpers.create_search_bar(self._staff_frame)
-
         # Create Treeview
-        self._tree = self._helpers.create_view_table(self._staff_frame, columns, column_widths, column_alignments,
-                                                     self._update_staff,
-                                                     self._delete_staff,
-                                                     data=self._data,
-                                                     pad_x=480)
-
-        # Update search function whenever search text is changed
-        self._update_search()
-
-        # Pack the tree
-        self._tree.grid(padx=10)
+        self._tree = self.create_view_table(self._staff_frame, columns, column_widths, column_alignments,
+                                            self._update_staff,
+                                            self._delete_staff,
+                                            data=self._data)
 
         # Button configurations
         self._helpers.create_crud_buttons(self._staff_frame, self._tree, db_manager.get_staff, self._add_staff,
@@ -216,42 +192,24 @@ class Views(ttk.Frame):
         return self._staff_frame
 
     def faculty_view(self):
-        # Create faculty frame
-        self._faculty_frame = ttk.Frame(self._parent)
-        self._faculty_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
         # Get data
         self._data = db_manager.get_faculties()
 
-        # Set global record count
-        global faculty_count
-        faculty_count = len(self._data)
-
-        # Labels
-        self._record_count_var.set(f"Number of Records: {faculty_count}")
-        self._record_count_label = ttk.Label(self._faculty_frame, textvariable=self._record_count_var)
-        self._record_count_label.pack(side="top", pady=(10, 0))
+        # Create faculty frame
+        self._faculty_frame = self.create_view_frame()
 
         # Define columns
-        columns = ("Faculty Code", "Faculty Name", "Administrator",)
-        column_widths = [200, 450, 250]
+        columns = ("Faculty Code", "Faculty Name", "Administrator")
+        column_widths = [int(self._width * (200 / self._original_width)),
+                         int(self._width * (450 / self._original_width)),
+                         int(self._width * (250 / self._original_width))]
         column_alignments = ["center", "w", "w"]
 
-        # Create search bar
-        self._search_bar = self._helpers.create_search_bar(self._faculty_frame)
-
         # Create Treeview
-        self._tree = self._helpers.create_view_table(self._faculty_frame, columns, column_widths, column_alignments,
-                                                     self._update_faculty,
-                                                     self._delete_faculty,
-                                                     data=self._data,
-                                                     pad_x=380)
-
-        # Update search function whenever search text is changed
-        self._update_search()
-
-        # Pack the tree
-        self._tree.grid(padx=10)
+        self._tree = self.create_view_table(self._faculty_frame, columns, column_widths, column_alignments,
+                                            self._update_faculty,
+                                            self._delete_faculty,
+                                            data=self._data)
 
         # Button configurations
         self._helpers.create_crud_buttons(self._faculty_frame, self._tree, db_manager.get_faculties, self._add_faculty,
@@ -261,42 +219,25 @@ class Views(ttk.Frame):
         return self._faculty_frame
 
     def school_view(self):
-        # Create school frame
-        self._school_frame = ttk.Frame(self._parent)
-        self._school_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
         # Get data
         self._data = db_manager.get_schools()
 
-        # Set global record count
-        global school_count
-        school_count = len(self._data)
-
-        # Labels
-        self._record_count_var.set(f"Number of Records: {school_count}")
-        self._record_count_label = ttk.Label(self._school_frame, textvariable=self._record_count_var)
-        self._record_count_label.pack(side="top", pady=(10, 0))
+        # Create school frame
+        self._school_frame = self.create_view_frame()
 
         # Define columns
         columns = ("School Code", "School Name", "Faculty", "Administrator")
-        column_widths = [200, 430, 450, 200]
+        column_widths = [int(self._width * (200 / self._original_width)),
+                         int(self._width * (430 / self._original_width)),
+                         int(self._width * (450 / self._original_width)),
+                         int(self._width * (200 / self._original_width))]
         column_alignments = ["center", "w", "w", "w"]
 
-        # Create search bar
-        self._search_bar = self._helpers.create_search_bar(self._school_frame)
-
         # Create Treeview
-        self._tree = self._helpers.create_view_table(self._school_frame, columns, column_widths, column_alignments,
-                                                     self._update_school,
-                                                     self._delete_school,
-                                                     data=self._data,
-                                                     pad_x=0)
-
-        # Update search function whenever search text is changed
-        self._update_search()
-
-        # Pack the tree
-        self._tree.grid(padx=10)
+        self._tree = self.create_view_table(self._school_frame, columns, column_widths, column_alignments,
+                                            self._update_school,
+                                            self._delete_school,
+                                            data=self._data)
 
         # Button configurations
         self._helpers.create_crud_buttons(self._school_frame, self._tree, db_manager.get_schools, self._add_school,
@@ -306,42 +247,25 @@ class Views(ttk.Frame):
         return self._school_frame
 
     def programme_view(self):
-        # Create programme frame
-        self._programme_frame = ttk.Frame(self._parent)
-        self._programme_frame.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
         # Get data
         self._data = db_manager.get_programmes()
 
-        # Set global record count
-        global programme_count
-        programme_count = len(self._data)
-
-        # Labels
-        self._record_count_var.set(f"Number of Records: {programme_count}")
-        self._record_count_label = ttk.Label(self._programme_frame, textvariable=self._record_count_var)
-        self._record_count_label.pack(side="top", pady=(10, 0))
+        # Create programme frame
+        self._programme_frame = self.create_view_frame()
 
         # Define columns
-        columns = ("Programme Code", "Programme Name", "School", "Director",)
-        column_widths = [200, 350, 450, 200]
+        columns = ("Programme Code", "Programme Name", "School", "Director")
+        column_widths = [int(self._width * (200 / self._original_width)),
+                         int(self._width * (350 / self._original_width)),
+                         int(self._width * (450 / self._original_width)),
+                         int(self._width * (200 / self._original_width))]
         column_alignments = ["center", "w", "w", "w"]
 
-        # Create search bar
-        self._search_bar = self._helpers.create_search_bar(self._programme_frame)
-
         # Create Treeview
-        self._tree = self._helpers.create_view_table(self._programme_frame, columns, column_widths, column_alignments,
-                                                     self._update_programme,
-                                                     self._delete_programme,
-                                                     data=self._data,
-                                                     pad_x=80)
-
-        # Update search function whenever search text is changed
-        self._update_search()
-
-        # Pack the tree
-        self._tree.grid(padx=10)
+        self._tree = self.create_view_table(self._programme_frame, columns, column_widths, column_alignments,
+                                            self._update_programme,
+                                            self._delete_programme,
+                                            data=self._data)
 
         # Button configurations
         self._helpers.create_crud_buttons(self._programme_frame, self._tree, db_manager.get_programmes,

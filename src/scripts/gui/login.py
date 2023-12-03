@@ -8,55 +8,64 @@ from PIL import ImageTk, Image
 from cryptography.fernet import Fernet
 
 from scripts.database.queries import DatabaseManager
+from scripts.gui.helpers import Helpers
 
 
 class Login(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
+        self._master = master
         # Set theme
         sv_ttk.use_dark_theme()
 
+        # Initialize helpers
+        self._helpers = Helpers()
+
         # Set dark title bar
-        self.master.dark_title_bar()
+        self._helpers.set_title_bar_mode(self._master, 2)
 
         # Set styles
         self.configure_styles()
 
         # background image
         img = Image.open("../../res/login-background.png")
+        img = img.resize((int(master.winfo_width() + 2), int(master.winfo_height() + 2)))
         self._background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
         # Create form frame
-        form_frame = ttk.Label(self, image=self._background_image)
-        form_frame.pack(side="bottom", fill="both", expand=True)
+        self.form_frame = ttk.Label(self, image=self._background_image)
+        self.form_frame.pack(side="bottom", fill="both", expand=True)
 
+        self.add_widgets()
+
+    def add_widgets(self):
         # Create username label and entry
-        self._username_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self._username_entry = ttk.Entry(self.form_frame, width=35, font=('Helvetica', 11, 'normal'))
         self._username_entry.insert(0, 'Username')
         self._username_entry.bind('<FocusIn>', self._clear_username)
         self._username_entry.bind('<FocusOut>', self._fill_username)
-        self._username_entry.place(relx=0.51, rely=0.56, anchor='center')
+        self._username_entry.place(relx=0.5, rely=0.52, anchor='center')
 
         # Create password label and entry
-        self._password_entry = ttk.Entry(form_frame, width=35, font=('Helvetica', 11, 'normal'))
+        self._password_entry = ttk.Entry(self.form_frame, width=35, font=('Helvetica', 11, 'normal'))
         self._password_entry.insert(0, 'Password')
         self._password_entry.bind('<FocusIn>', self._clear_password)
         self._password_entry.bind('<FocusOut>', self._fill_password)
-        self._password_entry.place(relx=0.51, rely=0.64, anchor='center')
+        self._password_entry.place(relx=0.5, rely=0.60, anchor='center')
 
         self.remember_me = tk.IntVar(value=0)
-        self.remember_me_field = ttk.Checkbutton(form_frame, text='Remember me', variable=self.remember_me)
-        self.remember_me_field.place(relx=0.51, rely=0.7, anchor='center')
+        self.remember_me_field = ttk.Checkbutton(self.form_frame, text='Remember me', variable=self.remember_me)
+        self.remember_me_field.place(relx=0.5, rely=0.66, anchor='center')
 
         # Create login button
-        login_button = ttk.Button(form_frame, text='Login', width=15, command=self._check_credentials,
+        login_button = ttk.Button(self.form_frame, text='Login', width=15, command=self._check_credentials,
                                   style='TButton', cursor='hand2')
-        login_button.place(relx=0.51, rely=0.755, anchor='center')
+        login_button.place(relx=0.5, rely=0.715, anchor='center')
 
         # Create forgot password link
-        forgot_password_link = ttk.Label(form_frame, text='Forgot password?', cursor='hand2',
+        forgot_password_link = ttk.Label(self.form_frame, text='Forgot password?', cursor='hand2',
                                          font=('Helvetica', 10, 'normal', 'underline'))
-        forgot_password_link.place(relx=0.51, rely=0.81, anchor='center')
+        forgot_password_link.place(relx=0.5, rely=0.77, anchor='center')
         forgot_password_link.bind("<Button-1>", self.__forgot_password)
 
         # Load credentials if remember_me file exists

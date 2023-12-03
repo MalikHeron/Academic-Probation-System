@@ -502,18 +502,29 @@ class Helpers:
             selected = tree.selection()
             if len(selected) == 1:
                 self._update_button.config(state='normal')
-                tree.bind('<Control-u>', lambda e: update())
+                tree.bind('<Control-u>', on_command)
             else:
                 self._update_button.config(state='disabled')
                 tree.bind('<Control-u>', lambda e: None)
+
+        def on_command(event):
+            logging.info(event)
+            if event.keysym == "Delete":
+                delete()
+            elif event.keysym == "a":
+                add()
+            elif event.keysym == "r":
+                refresh(frame, data_func)
+            elif event.keysym == "u":
+                update()
 
         # Bind the function to the tree's selection event
         tree.bind('<<TreeviewSelect>>', on_tree_select)
 
         # Bind the functions to the keyboard shortcuts
-        tree.bind('<Control-a>', lambda event: add())
-        tree.bind('<Control-r>', lambda event: refresh(frame, data_func))
-        tree.bind('<Control-d>', lambda event: delete())
+        tree.bind('<Control-a>', on_command)
+        tree.bind('<Control-r>', on_command)
+        tree.bind('<Control-d>', on_command)
 
     @staticmethod
     def create_label_and_field(frame, text, row, padx=0, pad_y=20, f_width=25, l_width=11, is_password=False):

@@ -9,6 +9,7 @@ from tkinter import ttk
 import sv_ttk
 
 from scripts.gui.dialogs import Dialog
+from scripts.gui.helpers import Helpers
 from scripts.gui.report import Report
 from scripts.gui.views import Views
 
@@ -16,6 +17,13 @@ from scripts.gui.views import Views
 class Dashboard(tk.Frame):
     def __init__(self, user=None, master=None):
         super().__init__(master)
+
+        # Initialize master
+        self._master = master
+
+        # Initialize helpers
+        self._helpers = Helpers()
+
         # Load the configuration
         self._config = configparser.ConfigParser()
         self._config.read('../../config/config.ini')
@@ -86,13 +94,13 @@ class Dashboard(tk.Frame):
         self.frame = ttk.Notebook(self)
 
         # Create tabs
-        tab1 = Views(self.frame).student_view()
-        tab2 = Views(self.frame).details_view()
-        tab3 = Views(self.frame).staff_view()
-        tab4 = Views(self.frame).module_view()
-        tab5 = Views(self.frame).faculty_view()
-        tab6 = Views(self.frame).school_view()
-        tab7 = Views(self.frame).programme_view()
+        tab1 = Views(self.frame, self._master).student_view()
+        tab2 = Views(self.frame, self._master).details_view()
+        tab3 = Views(self.frame, self._master).staff_view()
+        tab4 = Views(self.frame, self._master).module_view()
+        tab5 = Views(self.frame, self._master).faculty_view()
+        tab6 = Views(self.frame, self._master).school_view()
+        tab7 = Views(self.frame, self._master).programme_view()
         tab8 = Report(self.frame).generate_view()
 
         # Add tabs to notebook
@@ -171,7 +179,7 @@ class Dashboard(tk.Frame):
         self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
         self._logout_button.config(image=self._dark_logout_icon)
         self._settings_button.config(image=self._dark_settings_icon)
-        self.master.dark_title_bar()
+        self.dark_title_bar()
         sv_ttk.use_dark_theme()
         self.configure_styles()
 
@@ -179,9 +187,17 @@ class Dashboard(tk.Frame):
         self._theme_button.config(text="Dark Mode", image=self._dark_theme_icon)
         self._logout_button.config(image=self._light_logout_icon)
         self._settings_button.config(image=self._light_settings_icon)
-        self.master.light_title_bar()
+        self.light_title_bar()
         sv_ttk.use_light_theme()
         self.configure_styles()
+
+    def dark_title_bar(self):
+        # Set the title bar to dark mode
+        self._helpers.set_title_bar_mode(self._master, 2)
+
+    def light_title_bar(self):
+        # Set the title bar to light mode
+        self._helpers.set_title_bar_mode(self._master, 0)
 
     def switch_theme(self):
         # Get the current theme

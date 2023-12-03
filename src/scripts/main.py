@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import messagebox
 
 from scripts.gui.dashboard import Dashboard
-from scripts.gui.helpers import Helpers
 from scripts.gui.login import Login
 
 # setting path
@@ -18,44 +17,34 @@ class AcademicProbationSystem(tk.Tk):
         # Hide the window
         self.withdraw()
 
-        # Initialize helpers
-        self._helpers = Helpers()
-
         # Set window title and icon
         self.title('Academic Probation System')
         self.iconbitmap('../../res/icon.ico')
-
-        # Set window size
-        self._window_width = 1330
-        self._window_height = 820
 
         # Get screen width and height
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
+        # Set window size to 80% of the screen size
+        self.window_width = int(screen_width * 0.8)
+        self.window_height = int(screen_height * 0.8)
+
         # Calculate position
-        position_top = int(screen_height / 2 - self._window_height / 2)
-        position_right = int(screen_width / 2 - self._window_width / 2)
+        position_top = int(screen_height / 2 - self.window_height / 2)
+        position_right = int(screen_width / 2 - self.window_width / 2)
 
         # Set window size and position
-        self.geometry(f"{self._window_width}x{self._window_height}+{position_right}+{position_top}")
+        self.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
         self.resizable(False, False)
+
+        # Bind function to window resize event
+        self.bind('<Configure>', self._on_resize)
 
         # window close event
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
 
         # Initialize frames
         self._frames = {}
-
-        # Initialize Login and add it to frames dictionary
-        login_frame = Login(master=self)
-        self._frames['login'] = login_frame
-        login_frame.grid(row=0, column=0, sticky="nsew")
-
-        # Initialize Dashboard and add it to frames dictionary
-        dashboard_frame = Dashboard(master=self)
-        self._frames['dashboard'] = dashboard_frame
-        dashboard_frame.grid(row=0, column=0, sticky="nsew")
 
         # Fill the entire window
         self.grid_rowconfigure(0, weight=1)
@@ -72,6 +61,11 @@ class AcademicProbationSystem(tk.Tk):
         if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
             self.destroy()
 
+    def _on_resize(self, event):
+        # Update the current window size
+        self.window_width = event.width
+        self.window_height = event.height
+
     def raise_frame(self, name, user=None):
         # Destroy the current frame
         for frame in self._frames.values():
@@ -85,14 +79,6 @@ class AcademicProbationSystem(tk.Tk):
 
         self._frames[name] = self.frame
         self.frame.grid(row=0, column=0, sticky="nsew")
-
-    def dark_title_bar(self):
-        # Set the title bar to dark mode
-        self._helpers.set_title_bar_mode(self, 2)
-
-    def light_title_bar(self):
-        # Set the title bar to light mode
-        self._helpers.set_title_bar_mode(self, 0)
 
     def run(self):
         self.mainloop()
