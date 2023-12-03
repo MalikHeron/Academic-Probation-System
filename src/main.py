@@ -63,14 +63,14 @@ class AcademicProbationSystem(tk.Tk):
     @staticmethod
     def load_config():
         try:
-            with open('../config/window_state.json', 'r') as configfile:
+            with open('config/window_state.json', 'r') as configfile:
                 return json.load(configfile)
         except FileNotFoundError:
             return {}
 
     def _on_closing(self):
         self._config['DEFAULT'] = {'Maximized': self.state() == 'zoomed'}
-        with open('../config/window_state.json', 'w') as configfile:
+        with open('config/window_state.json', 'w') as configfile:
             json.dump(self._config, configfile)
 
         # Ask the user if they want to quit

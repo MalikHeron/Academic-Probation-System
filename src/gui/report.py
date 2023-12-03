@@ -281,7 +281,7 @@ class Report(ttk.Frame):
             self._progressbar.start(3)
 
             # Specify the directory where the report will be saved
-            directory = "../../reports/"
+            directory = "reports/"
 
             # Create a PDF with the data
             report_name = self._helpers.create_pdf(pdf_data, year, gpa, directory)

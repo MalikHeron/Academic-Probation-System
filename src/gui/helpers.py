@@ -362,7 +362,7 @@ class Helpers:
             file_tree.heading(col, text=col, command=lambda _col=col: self._sort_column(file_tree, _col, False))
 
         # Get all the PDF files from a folder
-        folder_path = "../../reports"  # Replace with your folder path
+        folder_path = "reports"  # Replace with your folder path
         pdf_files = self.get_pdf_files(folder_path)
 
         # Store their names in the container as a list

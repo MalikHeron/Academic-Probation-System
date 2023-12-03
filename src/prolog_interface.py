@@ -4,17 +4,17 @@ import os  # Import the os module
 from pyswip import Prolog  # Import the Prolog class from the pyswip module
 
 # Create the logs and data directories if they do not exist
-if not os.path.exists("../logs"):
-    os.makedirs("../logs")  # Create a logs directory
-if not os.path.exists("../data"):
-    os.makedirs("../data")  # Create a data directory
-if not os.path.exists("../reports"):
-    os.makedirs("../reports")  # Create a reports directory
-if not os.path.exists("../config"):
-    os.makedirs("../config")  # Create a config directory
+if not os.path.exists("logs"):
+    os.makedirs("logs")  # Create a logs directory
+if not os.path.exists("data"):
+    os.makedirs("data")  # Create a data directory
+if not os.path.exists("reports"):
+    os.makedirs("reports")  # Create a reports directory
+if not os.path.exists("config"):
+    os.makedirs("config")  # Create a config directory
 
 # Configure the logging module
-logging.basicConfig(filename='../logs/app.log', filemode='a',
+logging.basicConfig(filename='logs/app.log', filemode='a',
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')  # Set the basic configuration for the logging
 logging.getLogger().setLevel(logging.INFO)  # Set logger's level to INFO

@@ -26,7 +26,7 @@ class Dashboard(tk.Frame):
 
         # Load the configuration
         self._config = configparser.ConfigParser()
-        self._config.read('../config/config.ini')
+        self._config.read('config/config.ini')
 
         # Create a ribbon frame below the tabs
         self.ribbon_frame = ttk.Frame(self)
@@ -223,7 +223,7 @@ class Dashboard(tk.Frame):
     def set_theme_config(self, theme):
         # Save the theme to the config file
         self._config['Theme'] = {'theme': theme}
-        with open('../config/config.ini', 'w') as configfile:
+        with open('config/config.ini', 'w') as configfile:
             self._config.write(configfile)
 
     def configure_styles(self):
