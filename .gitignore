@@ -6,3 +6,5 @@ __pycache__
 /src/data/
 /src/logs/
 /src/reports/
+build.json
+/src/.env

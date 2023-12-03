@@ -2,14 +2,13 @@
 
 ## Project Structure
 ```bash
-├── res/                        # PNGs, JPEGs, GIFs etc
-├── src/                        
+├── src/                    
+    ├── res/                    # PNGs, JPEGs, GIFs etc    
     ├── prolog/                 # prolog files
-    ├── scripts/                # python source files
-        ├── database/           # database functions
-        ├── gui/                # UI components
-        ├── main.py             # app entry point
-        └── prolog_interface.py # bridge between prolog and python
+    ├── database/               # database functions
+    ├── gui/                    # UI components
+    ├── main.py                 # app entry point
+    └── prolog_interface.py     # bridge between prolog and python
 ├── Project Outline.pdf         # project outline
 ├── requirements.txt            # pip dependencies
 └── README.md
