@@ -14,8 +14,9 @@ if not os.path.exists("../../config"):
     os.makedirs("../../config")  # Create a config directory
 
 # Configure the logging module
-logging.basicConfig(filename='../../logs/app.log', filemode='w',
-                    format='%(name)s - %(levelname)s - %(message)s')  # Set the basic configuration for the logging
+logging.basicConfig(filename='../../logs/app.log', filemode='a',
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')  # Set the basic configuration for the logging
 logging.getLogger().setLevel(logging.INFO)  # Set logger's level to INFO
 
 # Connects the application to the prolog knowledge base

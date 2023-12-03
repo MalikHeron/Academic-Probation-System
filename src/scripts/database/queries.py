@@ -9,67 +9,57 @@ from src.scripts.prolog_interface import PrologQueryHandler as Prolog
 class DatabaseManager:
 
     def __init__(self, db_file_path='../../data/student_grades.db'):
-        # Database file path
         self.db_file = db_file_path
-
-        # Create tables
-        self.create_table(sql_create_students_table)
-        self.create_table(sql_create_modules_table)
-        self.create_table(sql_create_details_table)
-        self.create_table(sql_create_staff_table)
-        self.create_table(sql_create_faculty_table)
-        self.create_table(sql_create_programmes_table)
-        self.create_table(sql_create_school_table)
-        self.create_table(sql_create_credentials_table)
-
-        # Check if database is empty
-        if not self.get_students() and not self.get_modules() and not self.get_details() and not self.get_staff() \
-                and not self.get_faculties() and not self.get_schools() and not self.get_programmes():
-            # Insert data
-            self.insert_data(sql_insert_students)
-            self.insert_data(sql_insert_modules)
-            self.insert_data(sql_insert_details)
-            self.insert_data(sql_insert_staff)
-            self.insert_data(sql_insert_faculty)
-            self.insert_data(sql_insert_programmes)
-            self.insert_data(sql_insert_schools)
-            self.insert_data(sql_insert_credentials)
+        self.create_tables()
+        self.check_and_insert_data()
 
     def create_connection(self):
-        connection = None
         try:
-            connection = sqlite3.connect(self.db_file)
+            return sqlite3.connect(self.db_file)
         except Error as e:
             logging.error(f"An error occurred: {e}")
-        return connection
 
-    def close_connection(self, conn):
+    @staticmethod
+    def close_connection(conn):
         try:
             conn.close()
         except Error as e:
             logging.error(f"An error occurred: {e}")
 
-    def create_table(self, create_table_sql):
+    def execute_sql(self, sql, values=None):
         conn = self.create_connection()
         cursor = conn.cursor()
         try:
-            cursor.execute(create_table_sql)
-            if create_table_sql == sql_create_details_table:
-                try:
-                    cursor.execute(sql_create_unique_index)
-                except Error as e:
-                    logging.warning(e)
+            if values:
+                cursor.execute(sql, values)
+            else:
+                cursor.execute(sql)
+                if sql == sql_create_details_table:
+                    try:
+                        cursor.execute(sql_create_unique_index)
+                    except Error as e:
+                        logging.warning(e)
+            conn.commit()
         except Error as e:
             logging.error(f"An error occurred: {e}")
         finally:
             self.close_connection(conn)
 
-    def insert_data(self, insert_data_sql):
-        conn = self.create_connection()
-        cursor = conn.cursor()
-        cursor.execute(insert_data_sql)
-        conn.commit()  # Commit changes after executing the SQL command
-        self.close_connection(conn)
+    def create_tables(self):
+        tables = [sql_create_students_table, sql_create_modules_table, sql_create_details_table,
+                  sql_create_staff_table, sql_create_faculty_table, sql_create_programmes_table,
+                  sql_create_school_table, sql_create_credentials_table]
+        for table in tables:
+            self.execute_sql(table)
+
+    def check_and_insert_data(self):
+        data_check = [self.get_students(), self.get_modules(), self.get_details(), self.get_staff(),
+                      self.get_faculties(), self.get_schools(), self.get_programmes()]
+        if not all(data_check):
+            data_insert = [sql_insert_students, sql_insert_modules, sql_insert_details, sql_insert_staff,
+                           sql_insert_faculty, sql_insert_programmes, sql_insert_schools, sql_insert_credentials]
+            for data in data_insert:
+                self.execute_sql(data)
 
     def get_credentials(self, username, password):
         conn = self.create_connection()

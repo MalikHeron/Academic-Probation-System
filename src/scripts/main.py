@@ -1,12 +1,9 @@
-import sys
+import configparser
 import tkinter as tk
 from tkinter import messagebox
 
 from scripts.gui.dashboard import Dashboard
 from scripts.gui.login import Login
-
-# setting path
-sys.path.append('../../src')
 
 
 class AcademicProbationSystem(tk.Tk):
@@ -16,6 +13,10 @@ class AcademicProbationSystem(tk.Tk):
 
         # Hide the window
         self.withdraw()
+
+        # Load the configuration
+        self._config = configparser.ConfigParser()
+        self._config.read('../../config/window_state.ini')
 
         # Set window title and icon
         self.title('Academic Probation System')
@@ -53,10 +54,18 @@ class AcademicProbationSystem(tk.Tk):
         # Raise the login frame
         self.raise_frame('login')
 
+        # Check if the window was maximized last time
+        if self._config.getboolean('DEFAULT', 'Maximized', fallback=False):
+            self.state('zoomed')
+
         # Show the window
         self.deiconify()
 
     def _on_closing(self):
+        self._config['DEFAULT'] = {'Maximized': str(self.state() == 'zoomed')}
+        with open('../../config/window_state.ini', 'w') as configfile:
+            self._config.write(configfile)
+
         # Ask the user if they want to quit
         if messagebox.askokcancel("Confirm Exit", "Do you want to quit?"):
             self.destroy()

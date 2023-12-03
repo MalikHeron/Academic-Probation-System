@@ -186,9 +186,8 @@ class Dashboard(tk.Frame):
             else:
                 self.set_light_theme()
         else:
-            # Create a style
-            sv_ttk.use_light_theme()
-            self.configure_styles()
+            # Default to light theme
+            self.set_light_theme()
 
     def set_dark_theme(self):
         self._theme_button.config(text="Light Mode", image=self._light_theme_icon)
