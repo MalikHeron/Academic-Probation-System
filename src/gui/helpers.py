@@ -26,16 +26,16 @@ class Helpers:
         self._add_button = None
 
         # Load the icon and keep it in memory
-        self._dark_refresh_icon = tk.PhotoImage(file="../../res/reload-dark.png")
-        self._dark_delete_icon = tk.PhotoImage(file="../../res/delete-dark.png")
-        self._dark_update_icon = tk.PhotoImage(file="../../res/update-dark.png")
-        self._dark_add_icon = tk.PhotoImage(file="../../res/add-dark.png")
+        self._dark_refresh_icon = tk.PhotoImage(file="res/reload-dark.png")
+        self._dark_delete_icon = tk.PhotoImage(file="res/delete-dark.png")
+        self._dark_update_icon = tk.PhotoImage(file="res/update-dark.png")
+        self._dark_add_icon = tk.PhotoImage(file="res/add-dark.png")
 
         # Load the icon and keep it in memory
-        self._light_refresh_icon = tk.PhotoImage(file="../../res/reload-light.png")
-        self._light_delete_icon = tk.PhotoImage(file="../../res/delete-light.png")
-        self._light_update_icon = tk.PhotoImage(file="../../res/update-light.png")
-        self._light_add_icon = tk.PhotoImage(file="../../res/add-light.png")
+        self._light_refresh_icon = tk.PhotoImage(file="res/reload-light.png")
+        self._light_delete_icon = tk.PhotoImage(file="res/delete-light.png")
+        self._light_update_icon = tk.PhotoImage(file="res/update-light.png")
+        self._light_add_icon = tk.PhotoImage(file="res/add-light.png")
 
     @staticmethod
     def create_pdf(data, year, gpa, directory):
@@ -52,7 +52,7 @@ class Helpers:
         styles = getSampleStyleSheet()
 
         # Add image at the top center
-        logo = "../../res/icon.ico"  # replace with your image file path
+        logo = "res/icon.ico"  # replace with your image file path
         im = Image(logo, 0.8 * inch, 0.8 * inch)  # specify image width and height
         elems = [im]
 

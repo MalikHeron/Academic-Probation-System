@@ -2,8 +2,8 @@ import json
 import tkinter as tk
 from tkinter import messagebox
 
-from scripts.gui.dashboard import Dashboard
-from scripts.gui.login import Login
+from gui.dashboard import Dashboard
+from gui.login import Login
 
 
 class AcademicProbationSystem(tk.Tk):
@@ -19,7 +19,7 @@ class AcademicProbationSystem(tk.Tk):
 
         # Set window title and icon
         self.title('Academic Probation System')
-        self.iconbitmap('../../res/icon.ico')
+        self.iconbitmap('res/icon.ico')
 
         # Get screen width and height
         screen_width = self.winfo_screenwidth()
@@ -63,14 +63,14 @@ class AcademicProbationSystem(tk.Tk):
     @staticmethod
     def load_config():
         try:
-            with open('../../config/window_state.json', 'r') as configfile:
+            with open('../config/window_state.json', 'r') as configfile:
                 return json.load(configfile)
         except FileNotFoundError:
             return {}
 
     def _on_closing(self):
         self._config['DEFAULT'] = {'Maximized': self.state() == 'zoomed'}
-        with open('../../config/window_state.json', 'w') as configfile:
+        with open('../config/window_state.json', 'w') as configfile:
             json.dump(self._config, configfile)
 
         # Ask the user if they want to quit

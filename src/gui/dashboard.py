@@ -1,17 +1,17 @@
 import configparser
-import os
 import time
 import tkinter as tk
 from datetime import datetime
 from tkinter import messagebox
 from tkinter import ttk
 
+import keyring
 import sv_ttk
 
-from scripts.gui.dialogs import Dialog
-from scripts.gui.helpers import Helpers
-from scripts.gui.report import Report
-from scripts.gui.views import Views
+from gui.dialogs import Dialog
+from gui.helpers import Helpers
+from gui.report import Report
+from gui.views import Views
 
 
 class Dashboard(tk.Frame):
@@ -26,23 +26,23 @@ class Dashboard(tk.Frame):
 
         # Load the configuration
         self._config = configparser.ConfigParser()
-        self._config.read('../../config/config.ini')
+        self._config.read('../config/config.ini')
 
         # Create a ribbon frame below the tabs
         self.ribbon_frame = ttk.Frame(self)
         self.ribbon_frame.pack(fill=tk.X)
 
         # Load the icon and keep it in memory
-        self._dark_theme_icon = tk.PhotoImage(file="../../res/switch-light.png")
-        self._light_theme_icon = tk.PhotoImage(file="../../res/switch-dark.png")
+        self._dark_theme_icon = tk.PhotoImage(file="res/switch-light.png")
+        self._light_theme_icon = tk.PhotoImage(file="res/switch-dark.png")
 
         # Load the icon and keep it in memory
-        self._dark_logout_icon = tk.PhotoImage(file="../../res/logout-dark.png")
-        self._light_logout_icon = tk.PhotoImage(file="../../res/logout-light.png")
+        self._dark_logout_icon = tk.PhotoImage(file="res/logout-dark.png")
+        self._light_logout_icon = tk.PhotoImage(file="res/logout-light.png")
 
         # Load the icon and keep it in memory
-        self._dark_settings_icon = tk.PhotoImage(file="../../res/settings-dark.png")
-        self._light_settings_icon = tk.PhotoImage(file="../../res/settings-light.png")
+        self._dark_settings_icon = tk.PhotoImage(file="res/settings-dark.png")
+        self._light_settings_icon = tk.PhotoImage(file="res/settings-light.png")
 
         # Create a logout button with an icon
         self._logout_button = ttk.Button(self.ribbon_frame, text="Logout", image=self._light_logout_icon,
@@ -67,11 +67,11 @@ class Dashboard(tk.Frame):
 
         # Load the icons and keep them in memory
         self._emoji_icons = {
-            "morning": tk.PhotoImage(file="../../res/smile_teeth.png"),
-            "afternoon": tk.PhotoImage(file="../../res/smile.png"),
-            "evening": tk.PhotoImage(file="../../res/sunglass.png"),
-            "night": tk.PhotoImage(file="../../res/sleep.png"),
-            "late_night": tk.PhotoImage(file="../../res/cry.png"),
+            "morning": tk.PhotoImage(file="res/smile_teeth.png"),
+            "afternoon": tk.PhotoImage(file="res/smile.png"),
+            "evening": tk.PhotoImage(file="res/sunglass.png"),
+            "night": tk.PhotoImage(file="res/sleep.png"),
+            "late_night": tk.PhotoImage(file="res/cry.png"),
         }
 
         # Create a label to display the time active
@@ -140,12 +140,9 @@ class Dashboard(tk.Frame):
 
     def _logout(self):
         if messagebox.askokcancel("Confirm Logout", "Do you want to logout?"):
-            # Delete the remember_me.txt file
-            if os.path.exists('../../config/remember_me.txt'):
-                try:
-                    os.remove('../../config/remember_me.txt')
-                except OSError:
-                    print("Error: File is in use and cannot be deleted.")
+            # Delete credentials if remember_me is checked
+            keyring.delete_password("AcademicProbationSystem", "username")
+            keyring.delete_password("AcademicProbationSystem", "password")
             # Switch back to the login frame
             self.master.raise_frame('login')
 
@@ -226,7 +223,7 @@ class Dashboard(tk.Frame):
     def set_theme_config(self, theme):
         # Save the theme to the config file
         self._config['Theme'] = {'theme': theme}
-        with open('../../config/config.ini', 'w') as configfile:
+        with open('../config/config.ini', 'w') as configfile:
             self._config.write(configfile)
 
     def configure_styles(self):

@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from scripts.database.queries import DatabaseManager
-from scripts.gui.dialogs import Dialog
-from scripts.gui.helpers import Helpers
+from database.queries import DatabaseManager
+from gui.dialogs import Dialog
+from gui.helpers import Helpers
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 global student_count  # keep track of the number of student records

@@ -4,8 +4,8 @@ from tkinter import ttk
 
 import sv_ttk
 
-from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import Helpers
+from database.queries import DatabaseManager
+from gui.helpers import Helpers
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
 

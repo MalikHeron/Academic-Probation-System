@@ -2,13 +2,13 @@ import logging
 import sqlite3
 from sqlite3 import Error
 
-from src.scripts.database.sql import *
-from src.scripts.prolog_interface import PrologQueryHandler as Prolog
+from database.sql import *
+from prolog_interface import PrologQueryHandler as Prolog
 
 
 class DatabaseManager:
 
-    def __init__(self, db_file_path='../../data/student_grades.db'):
+    def __init__(self, db_file_path='../data/student_grades.db'):
         self.db_file = db_file_path
         self.create_tables()
         self.check_and_insert_data()

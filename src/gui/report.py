@@ -10,12 +10,12 @@ from tkinter.ttk import Progressbar
 
 from dotenv import load_dotenv
 
-from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import Helpers
-from scripts.prolog_interface import PrologQueryHandler as Prolog
+from database.queries import DatabaseManager
+from gui.helpers import Helpers
+from prolog_interface import PrologQueryHandler as Prolog
 
 db_manager = DatabaseManager()  # create an instance of DatabaseManager
-load_dotenv('../.env')
+load_dotenv('.env')
 
 
 class Report(ttk.Frame):

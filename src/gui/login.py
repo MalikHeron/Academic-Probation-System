@@ -6,8 +6,8 @@ import keyring
 import sv_ttk
 from PIL import ImageTk, Image
 
-from scripts.database.queries import DatabaseManager
-from scripts.gui.helpers import Helpers
+from database.queries import DatabaseManager
+from gui.helpers import Helpers
 
 
 class Login(tk.Frame):
@@ -33,7 +33,7 @@ class Login(tk.Frame):
         self.configure_styles()
 
         # background image
-        img = Image.open("../../res/login-background.png")
+        img = Image.open("res/login-background.png")
         img = img.resize((int(master.winfo_width() + 2), int(master.winfo_height() + 2)))
         self._background_image = ImageTk.PhotoImage(img)  # Keep a reference to the image object
 
@@ -48,7 +48,7 @@ class Login(tk.Frame):
 
     def update_size(self, event):
         # Resize the image
-        img = Image.open("../../res/login-background.png")
+        img = Image.open("res/login-background.png")
         img = img.resize((int(event.width + 2), int(event.height + 2)))
         self._background_image = ImageTk.PhotoImage(img)
 
