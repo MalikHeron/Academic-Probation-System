@@ -37,7 +37,10 @@ class AcademicProbationSystem(tk.Tk):
         self.geometry(f"{self.window_width}x{self.window_height}+{position_right}+{position_top}")
         self.resizable(True, True)
 
-        # window close event
+        # Set minimum window size
+        self.minsize(1280, 768)
+
+        # window close events
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
 
         # Initialize frames
