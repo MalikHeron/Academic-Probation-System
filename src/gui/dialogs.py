@@ -545,6 +545,29 @@ class Dialog(tk.Toplevel):
         self._helpers.create_label_and_field_setting(frame, "Tabs", 18,
                                                      self._tab_family_var, self._tab_style_var, self._tab_size_var)
 
+        def configure_styles():
+            # Create a style
+            style = ttk.Style()
+
+            # Get the font settings from the config file
+            font_settings = {
+                setting: config.get('Font', setting)
+                for setting in config.options('Font')
+            }
+
+            # Configure the font styles
+            style.configure('TButton', font=(
+                font_settings['button_family'], font_settings['button_size'], font_settings['button_style']))
+            style.configure('TLabel',
+                            font=(
+                            font_settings['label_family'], font_settings['label_size'], font_settings['label_style']))
+            style.configure('Treeview', font=(
+                font_settings['tree_family'], font_settings['tree_size'], font_settings['tree_style']))
+            style.configure('Treeview.Heading', font=(
+                font_settings['heading_family'], font_settings['heading_size'], font_settings['heading_style']))
+            style.configure('TNotebook.Tab', focuscolor='',
+                            font=(font_settings['tab_family'], font_settings['tab_size'], font_settings['tab_style']))
+
         def update_config(*args):
             # List of all font settings
             font_settings = ['button_family', 'button_size', 'button_style', 'label_family', 'label_size',
@@ -559,8 +582,11 @@ class Dialog(tk.Toplevel):
             for setting in font_settings:
                 config.set('Font', setting, getattr(self, f'_{setting}_var').get())
 
-            with open('../../config/config.ini', 'w') as configfile:
+            with open('config/config.ini', 'w') as configfile:
                 config.write(configfile)
+
+            # Update the view
+            configure_styles()
 
             # Unbind the mouse scroll event
             canvas.unbind_all("<MouseWheel>")

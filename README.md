@@ -3,15 +3,15 @@
 ## Project Structure
 ```bash
 ├── src/                    
-    ├── res/                    # PNGs, JPEGs, GIFs etc    
-    ├── prolog/                 # prolog files
-    ├── database/               # database functions
-    ├── gui/                    # UI components
-    ├── main.py                 # app entry point
-    └── prolog_interface.py     # bridge between prolog and python
+│    ├── database/               # database functions   
+│    ├── gui/                    # UI components
+│    ├── prolog/                 # prolog files
+│    ├── res/                    # PNGs, JPEGs, GIFs etc 
+│    ├── main.py                 # app entry point
+│    └── prolog_interface.py     # bridge between prolog and python
 ├── Project Outline.pdf         # project outline
-├── requirements.txt            # pip dependencies
-└── README.md
+├── README.md
+└── requirements.txt            # pip dependencies
 ```
 
 ## Getting Started
@@ -32,6 +32,7 @@
 - sqlite3 `pip install sqlite3`
 - reportlab `pip install reportlab`
 - python-dotenv `pip install python-dotenv`
-- cryptography `pip install cryptograph`
+- keyring `pip install keyring`
+- configparser `pip install configparser`
 
 > Tested in IntelliJ IDEA (Ultimate Edition) with Python and Prolog plugin.

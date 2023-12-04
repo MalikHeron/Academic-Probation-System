@@ -135,8 +135,6 @@ class Dashboard(tk.Frame):
         _dialog = Dialog(self)
         _dialog.settings_dialog(self._config)
         _dialog.wait_window()
-        # Set styles
-        self.configure_styles()
 
     def _logout(self):
         if messagebox.askokcancel("Confirm Logout", "Do you want to logout?"):
