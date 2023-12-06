@@ -26,7 +26,8 @@ class Report(ttk.Frame):
         self._width = self._master.winfo_width()
         self._height = self._master.winfo_height()
         self._original_width = 1330  # define the original screen width
-        self._table_height = int((self._height / 900) * 26)  # Calculate table height based on window size
+        self._table_height = int(
+            (self._height / 900) * (24 if self._height <= 768 else 27))  # Calculate table height based on window size
         self._first_focus = None
         self._min_year = None
         self._max_year = None

@@ -38,7 +38,7 @@ class AcademicProbationSystem(tk.Tk):
         self.resizable(True, True)
 
         # Set minimum window size
-        self.minsize(1280, 768)
+        self.minsize(1280, 720)
 
         # window close events
         self.protocol("WM_DELETE_WINDOW", self._on_closing)
