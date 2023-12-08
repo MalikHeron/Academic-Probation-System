@@ -2,6 +2,7 @@ import logging
 import os
 import smtplib
 import threading
+import time
 import tkinter as tk
 from email.message import EmailMessage
 from tkinter import messagebox
@@ -293,7 +294,7 @@ class Report(ttk.Frame):
             else:
                 messagebox.showerror("Error", "Report could not be saved as a PDF.")
 
-    def send_email(self, recipient, subject, body):
+    def send_email(self, recipient, subject, body, retries=2):
         message = EmailMessage()
         message['Subject'] = subject
         message['From'] = self._sender
@@ -304,27 +305,32 @@ class Report(ttk.Frame):
         t = threading.Thread(target=self._helpers.animate, args=(done,))
         t.start()
 
-        try:
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(self._sender, self._password)
-            server.send_message(message)
-            server.quit()
+        for _ in range(retries):
+            try:
+                server = smtplib.SMTP('smtp.gmail.com', 587)
+                server.starttls()
+                server.login(self._sender, self._password)
+                server.send_message(message)
+                server.quit()
 
-            done[0] = True
-            t.join()  # Wait for the animation thread to finish
+                done[0] = True
+                t.join()  # Wait for the animation thread to finish
 
-            print(f'\rAlert sent to {recipient}', flush=True)
-            logging.info(f'Alert sent to {recipient}')
+                print(f'\rAlert sent to {recipient}', flush=True)
+                logging.info(f'Alert sent to {recipient}')
 
-            return True
-        except Exception as e:
-            done[0] = True
-            t.join()  # Wait for the animation thread to finish
-            print(f'\rFailed to send alert to {recipient}', flush=True)
-            logging.error(f'Failed to send alert to {recipient}: {e}')
-            self._check_alerts_sent("One or more alerts failed to send", 'red')
-            return False
+                return True
+            except Exception as e:
+                done[0] = True
+                t.join()  # Wait for the animation thread to finish
+                print(f'Failed to send alert to {recipient}, retrying...', flush=True)
+                logging.error(f'Failed to send alert to {recipient}: {e}')
+                time.sleep(5)  # wait for 5 seconds before retrying
+
+        print(f'Failed to send alert to {recipient} after {retries} attempts', flush=True)
+        logging.error(f'Failed to send alert to {recipient} after {retries} attempts')
+        self._check_alerts_sent("One or more alerts failed to send", 'red')
+        return False
 
     def send_student_alert(self, name, email, school, programme, cumulative_gpa, gpa):
         body = f"""
@@ -486,7 +492,7 @@ class Report(ttk.Frame):
             self._alert_var.set(message)
             self._alert_label.config(foreground=color)
             self._generate_button.config(state="normal")
-            self._generate_frame.after(5000, self._remove_alerts)
+            self._generate_frame.after(3000, self._remove_alerts)
 
     def _remove_alerts(self):
         # Remove the label

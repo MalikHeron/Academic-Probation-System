@@ -1,5 +1,6 @@
 import logging  # Import the logging module
 import os  # Import the os module
+from datetime import datetime
 
 from pyswip import Prolog  # Import the Prolog class from the pyswip module
 
@@ -13,10 +14,15 @@ if not os.path.exists("reports"):
 if not os.path.exists("config"):
     os.makedirs("config")  # Create a config directory
 
+# Get the current date and time
+now = datetime.now()
+# Format the date and time as a string
+date = now.strftime("%Y-%m-%d")
+
 # Configure the logging module
-logging.basicConfig(filename='logs/app.log', filemode='a',
+logging.basicConfig(filename=f'logs/{date}.log', filemode='a',
                     format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')  # Set the basic configuration for the logging
+                    datefmt='%H:%M:%S')  # Set the basic configuration for the logging
 logging.getLogger().setLevel(logging.INFO)  # Set logger's level to INFO
 
 # Connects the application to the prolog knowledge base
