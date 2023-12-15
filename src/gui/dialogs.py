@@ -13,6 +13,7 @@ db_manager = DatabaseManager()  # create an instance of DatabaseManager
 class Dialog(tk.Toplevel):
     def __init__(self, parent):
         tk.Toplevel.__init__(self, parent)
+        self._alt_input_field = None
         self.original_values = None
         self._button_family_var = None
         self._button_size_var = None
@@ -560,7 +561,8 @@ class Dialog(tk.Toplevel):
                 font_settings['button_family'], font_settings['button_size'], font_settings['button_style']))
             style.configure('TLabel',
                             font=(
-                            font_settings['label_family'], font_settings['label_size'], font_settings['label_style']))
+                                font_settings['label_family'], font_settings['label_size'],
+                                font_settings['label_style']))
             style.configure('Treeview', font=(
                 font_settings['tree_family'], font_settings['tree_size'], font_settings['tree_style']))
             style.configure('Treeview.Heading', font=(
@@ -651,7 +653,7 @@ class Dialog(tk.Toplevel):
             data_values = [data[0] for data in data_list]
         else:
             data_values = [data[1] for data in data_list]
-        self._input_field = ttk.Combobox(frame, state="readonly", values=data_values, width=self._f_width,
+        self._input_field = ttk.Combobox(frame, values=data_values, width=self._f_width,
                                          font=('Helvetica', 11, 'normal'))
         self._input_field.grid(row=0, column=1)
 
@@ -662,7 +664,7 @@ class Dialog(tk.Toplevel):
 
         # Submit and Cancel buttons
         button_frame = ttk.Frame(self)
-        button_frame.grid(row=1, column=0, columnspan=3)
+        button_frame.grid(row=1, column=0, columnspan=3, padx=self._x_padding)
 
         # Create the buttons
         self._helpers.create_button_widget(button_frame, "Confirm", submit_action)
@@ -684,7 +686,7 @@ class Dialog(tk.Toplevel):
                                                                                   pady=self._y_padding)
         student_list = db_manager.get_students()
         student_ids = [student[0] for student in student_list]  # Extract module codes
-        self._id_field = ttk.Combobox(frame, state="readonly", values=student_ids, width=self._f_width,
+        self._id_field = ttk.Combobox(frame, values=student_ids, width=self._f_width,
                                       font=('Helvetica', 11, 'normal'))
         self._id_field.grid(row=0, column=1)
 
