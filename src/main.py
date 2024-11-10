@@ -1,9 +1,15 @@
 import json
+import ctypes
 import tkinter as tk
 from tkinter import messagebox
 
 from gui.dashboard import Dashboard
 from gui.login import Login
+
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)  # Set DPI awareness to system-aware
+except Exception as e:
+    print(f"DPI awareness error: {e}")
 
 
 class AcademicProbationSystem(tk.Tk):

@@ -27,7 +27,7 @@ logging.getLogger().setLevel(logging.INFO)  # Set logger's level to INFO
 
 # Connects the application to the prolog knowledge base
 prolog = Prolog()  # Create a Prolog instance
-prolog.consult("prolog/knowledge_base.pl")  # Consult the Prolog knowledge base file
+prolog.consult("knowledge_base.pl")  # Consult the Prolog knowledge base file
 
 
 # Define a class to handle Prolog queries

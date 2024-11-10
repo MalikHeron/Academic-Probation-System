@@ -89,7 +89,7 @@ class Dialog(tk.Toplevel):
 
     def student_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 660, 480)
+        self.initialize_properties(title, 760, 480)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[50, 0])
@@ -166,7 +166,7 @@ class Dialog(tk.Toplevel):
 
     def module_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 560, 300)
+        self.initialize_properties(title, 660, 300)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[30, 0])
@@ -197,7 +197,7 @@ class Dialog(tk.Toplevel):
 
     def details_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 570, 430)
+        self.initialize_properties(title, 670, 430)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[20, 0])
@@ -260,7 +260,7 @@ class Dialog(tk.Toplevel):
 
     def staff_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 550, 480)
+        self.initialize_properties(title, 660, 480)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[50, 0])
@@ -319,7 +319,7 @@ class Dialog(tk.Toplevel):
 
     def faculty_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 660, 300)
+        self.initialize_properties(title, 760, 300)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[15, 0])
@@ -353,7 +353,7 @@ class Dialog(tk.Toplevel):
 
     def school_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 680, 300)
+        self.initialize_properties(title, 780, 300)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[15, 0])
@@ -387,7 +387,7 @@ class Dialog(tk.Toplevel):
 
     def programme_dialog(self, title, submit_action):
         # Initialize window properties
-        self.initialize_properties(title, 660, 360)
+        self.initialize_properties(title, 760, 360)
 
         # Create the input frame
         self.frame = ttk.Frame(self, padding=[15, 0])
@@ -432,7 +432,7 @@ class Dialog(tk.Toplevel):
 
     def settings_dialog(self, config):
         # Initialize window properties
-        self.initialize_properties("Settings", 550, 600)
+        self.initialize_properties("Settings", 650, 600)
 
         # Create the canvas
         canvas = tk.Canvas(self, highlightthickness=0)
@@ -638,7 +638,7 @@ class Dialog(tk.Toplevel):
 
     def single_input_dialog(self, text, get_func, get_id):
         # Initialize window properties
-        self.initialize_properties("Input Required", 500, 150)
+        self.initialize_properties("Input Required", 600, 150)
 
         # Create the input frame
         frame = ttk.Frame(self)
@@ -675,7 +675,7 @@ class Dialog(tk.Toplevel):
 
     def multi_input_dialog(self):
         # Initialize window properties
-        self.initialize_properties("Input Required", 500, 340)
+        self.initialize_properties("Input Required", 600, 340)
 
         # Create the input frame
         frame = ttk.Frame(self)
