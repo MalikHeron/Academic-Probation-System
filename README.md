@@ -1,4 +1,4 @@
-# Artificial Intelligence Project
+# Academic Probation System
 
 ## Project Structure
 ```bash
